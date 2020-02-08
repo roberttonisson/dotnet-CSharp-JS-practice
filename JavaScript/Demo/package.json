@@ -1,0 +1,10 @@
+{
+  "name": "demo",
+  "version": "0.0.1",
+  "description": "JS Basic Demo",
+  "main": "index.js",
+  "scripts": {
+  },
+  "author": "rotoni",
+  "license": "ISC"
+}
