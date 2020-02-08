@@ -3,7 +3,11 @@
   "version": "0.0.1",
   "description": "JS Basic Demo",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "build" : "webpack --mode production",
+    "start" : "webpack-dev-server --mode development --progress --color"
+
+  },
   "author": "rotoni",
   "license": "ISC",
   "devDependencies": {
