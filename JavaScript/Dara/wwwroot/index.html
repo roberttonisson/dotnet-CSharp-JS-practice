@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <title>Starter Template - Materialize</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+</head>
+
+<body>
+  <nav class="light-green lighten-1" role="navigation">
+    <div class="nav-wrapper container">
+      <a id="logo-container" href="#" class="brand-logo">Dara</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+      </ul>
+    </div>
+  </nav>
+
+  <br><br>
+  <h4 text-align="center" class="game-phase">Phase 1 : put down your pieces.</h4>
+  <br>
+
+  <table id="board" class="brown lighten-2">
+    <tbody>
+      <tr>
+        <td class="board-tile" data-coord="00"></td>
+        <td class="board-tile" data-coord="01"></td>
+        <td class="board-tile" data-coord="02"></td>
+        <td class="board-tile" data-coord="03"></td>
+        <td class="board-tile" data-coord="04"></td>
+        <td class="board-tile" data-coord="05"></td>
+      </tr>
+      <tr>
+        <td class="board-tile" data-coord="10"></td>
+        <td class="board-tile" data-coord="11"></td>
+        <td class="board-tile" data-coord="12"></td>
+        <td class="board-tile" data-coord="13"></td>
+        <td class="board-tile" data-coord="14"></td>
+        <td class="board-tile" data-coord="15"></td>
+      </tr>
+      <tr>
+        <td class="board-tile" data-coord="20"></td>
+        <td class="board-tile" data-coord="21"></td>
+        <td class="board-tile" data-coord="22"></td>
+        <td class="board-tile" data-coord="23"></td>
+        <td class="board-tile" data-coord="24"></td>
+        <td class="board-tile" data-coord="25"></td>
+      </tr>
+      <tr>
+        <td class="board-tile" data-coord="30"></td>
+        <td class="board-tile" data-coord="31"></td>
+        <td class="board-tile" data-coord="32"></td>
+        <td class="board-tile" data-coord="33"></td>
+        <td class="board-tile" data-coord="34"></td>
+        <td class="board-tile" data-coord="35"></td>
+      </tr>
+      <tr>
+        <td class="board-tile" data-coord="40"></td>
+        <td class="board-tile" data-coord="41"></td>
+        <td class="board-tile" data-coord="42"></td>
+        <td class="board-tile" data-coord="43"></td>
+        <td class="board-tile" data-coord="44"></td>
+        <td class="board-tile" data-coord="45"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <br>
+  <button id="newgame" class="btn waves-effect light-green lighten-1 waves-light btn-large" type="submit" name="action">NEW GAME
+    <i class="material-icons right">send</i>
+  </button>
+  <br>
+  <div class="contentt">
+    <form action="#" name="radio">
+      <p>
+        <label>
+          <input name="group1" type="radio" checked value="1" onclick="dontShowMenu();" />
+          <span>Player vs Player</span>
+        </label>
+      </p>
+      <p>
+        <label>
+          <input name="group1" type="radio" value="2" onclick="showMenu();" />
+          <span>Player vs Computer</span>
+        </label>
+      </p>
+      <p>
+        <label>
+          <input name="group1" type="radio" value="3" onclick="dontShowMenu();" />
+          <span>Computer vs Computer</span>
+        </label>
+      </p>
+    </form>
+
+    <form class="hideMe" id="start-order" action="#" style="margin-left: 20px;">
+      <p>--------------------------------------------</p>
+      <p>
+        <label>
+          <input name="group2" type="radio" checked value="4" />
+          <span>Player starts</span>
+        </label>
+      </p>
+      <p>
+        <label>
+          <input name="group2" type="radio" value="5" />
+          <span>Computer starts</span>
+        </label>
+      </p>
+    </form>
+    <br>
+    <br>
+    <footer class="page-footer grey darken-3">
+      <div class="container">
+        <div class="row">
+          <div class="col l6 s12">
+            <h5 class="white-text">Company Bio</h5>
+            <p class="grey-text text-lighten-4">KEKW.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-copyright">
+        <div class="container">
+          Made by rotoni
+        </div>
+      </div>
+    </footer>
+  </div>
+
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="js/materialize.js"></script>
+  <script src="js/init.js"></script>
+  <script src="main.js"></script>
+  <script>
+    function showMenu() {
+      document.querySelector('#start-order').style.display = "block";
+
+    }
+  </script>
+  <script>
+    function dontShowMenu() {
+      document.querySelector('#start-order').style.display = "none";
+    }
+  </script>
+
+</body>
+
+</html>

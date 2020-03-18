@@ -1,0 +1,39 @@
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+	font-size: inherit;
+}
+
+
+table{
+  height: 400px;
+  width: 480px;
+  margin-left: 20px;
+}
+td{
+  width: 80px;
+  height: 80px;
+}
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.hideMe {
+  display: none;
+}
+
+h4, button, form {
+  margin-left: 20px;
+}
