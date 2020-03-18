@@ -1,47 +1,63 @@
-import { TileState } from './TileState';
-import * as AI from './AI';
+import { TileState } from './TileState'
+import * as AI from './AI'
+
+
 export class Game {
-    constructor(PlayerOneHuman = true, PlayerTwoHuman = true) {
-        this.PlayerOneTurn = true;
-        this.PlayerOneHuman = true;
-        this.PlayerTwoHuman = true;
-        this.PlayerOnePieces = 0;
-        this.PlayerTwoPieces = 0;
-        this.GamePhase = 1;
-        this.RemovingAPiece = false;
+
+    public Board: Array<Array<TileState>>;
+
+    public PlayerOneTurn: boolean = true;
+
+    public PlayerOneHuman: boolean = true;
+
+    public PlayerTwoHuman: boolean = true;
+
+    public PlayerOnePieces: number = 0;
+
+    public PlayerTwoPieces: number = 0;
+
+    public GamePhase: number = 1;
+
+    public Selected: HTMLTableCellElement | undefined;
+
+    public RemovingAPiece: boolean = false;
+
+
+    constructor(PlayerOneHuman: boolean = true, PlayerTwoHuman: boolean = true) {
         this.Board = [];
         this.PlayerOneHuman = PlayerOneHuman;
-        this.PlayerTwoHuman = PlayerTwoHuman;
+        this.PlayerTwoHuman = PlayerTwoHuman
         for (let index = 0; index < 5; index++) {
-            this.Board.push([
-                TileState.Empty,
-                TileState.Empty,
-                TileState.Empty,
-                TileState.Empty,
-                TileState.Empty,
-                TileState.Empty
-            ]);
+            this.Board.push(
+                [
+                    TileState.Empty,
+                    TileState.Empty,
+                    TileState.Empty,
+                    TileState.Empty,
+                    TileState.Empty,
+                    TileState.Empty
+                ]
+            )
         }
         if (this.isAIMoving()) {
             AI.AIPutPiece(this);
         }
     }
-    MovePhaseOne(coord) {
+
+    public MovePhaseOne(coord: string) {
         let x = Number(coord.charAt(0));
         let y = Number(coord.charAt(1));
         if (this.PlayerOneTurn) {
             this.PlayerOnePieces += 1;
             this.Board[x][y] = TileState.X;
-        }
-        else {
+        } else {
             this.Board[x][y] = TileState.O;
             this.PlayerTwoPieces += 1;
         }
         this.PlayerOneTurn = !this.PlayerOneTurn;
         if (this.PlayerOnePieces + this.PlayerTwoPieces >= 24) {
             this.GamePhase = 2;
-        }
-        else {
+        } else {
             if (this.isAIMoving()) {
                 AI.AIPutPiece(this);
             }
@@ -49,10 +65,12 @@ export class Game {
         if (this.isAIMoving() && this.GamePhase == 2) {
             AI.AIMove(this);
         }
+
     }
-    MovePhaseTwo(coord, handler) {
-        var _a;
-        let piece = (_a = this.Selected) === null || _a === void 0 ? void 0 : _a.dataset.coord;
+
+    //TODO
+    public MovePhaseTwo(coord: string, handler: HTMLTableCellElement) {
+        let piece = this.Selected?.dataset.coord!;
         let pieceX = Number(piece.charAt(0));
         let pieceY = Number(piece.charAt(1));
         let type = this.Board[pieceX][pieceY];
@@ -62,11 +80,14 @@ export class Game {
             this.Selected = undefined;
         }
         this.Board[pieceX][pieceY] = TileState.Empty;
+
+
         let x = Number(coord.charAt(0));
         let y = Number(coord.charAt(1));
         if (this.countMaxInARow(x, y) == 3) {
             this.RemovingAPiece = true;
         }
+
         let element = document.createElement("i");
         element.style.fontSize = "40px";
         element.classList.add("material-icons");
@@ -75,8 +96,7 @@ export class Game {
             element.appendChild(node);
             handler.appendChild(element);
             this.Board[x][y] = TileState.X;
-        }
-        else {
+        } else {
             let node = document.createTextNode("brightness_low");
             element.appendChild(node);
             handler.appendChild(element);
@@ -84,18 +104,21 @@ export class Game {
         }
         handler.style.backgroundColor = "#a1887f";
         this.PlayerOneTurn = !this.PlayerOneTurn;
-        if (this.PlayerOnePieces < 3 || this.PlayerTwoPieces < 3) {
+        if(this.PlayerOnePieces < 3 || this.PlayerTwoPieces < 3){
             this.GamePhase = 3;
-            let htmlTile = document.querySelector(`.game-phase`);
+            let htmlTile = document.querySelector(`.game-phase`)!;
             htmlTile.innerHTML = "Game Over!";
         }
         if (this.isAIMoving() && this.GamePhase == 2 && !this.RemovingAPiece) {
             AI.AIMove(this);
         }
+
     }
-    isValidMovePhaseOne(coord) {
+
+    public isValidMovePhaseOne(coord: string): boolean {
         let x = Number(coord.charAt(0));
         let y = Number(coord.charAt(1));
+
         if (!(this.Board[x][y] == TileState.Empty)) {
             return false;
         }
@@ -104,93 +127,108 @@ export class Game {
         }
         return true;
     }
-    isValidMovePhaseTwo(coord) {
-        var _a;
+
+    public isValidMovePhaseTwo(coord: string): boolean {
         let x = Number(coord.charAt(0));
         let y = Number(coord.charAt(1));
         if (!(this.Board[x][y] == TileState.Empty)) {
             return false;
         }
-        let piece = (_a = this.Selected) === null || _a === void 0 ? void 0 : _a.dataset.coord;
+
+        let piece = this.Selected?.dataset.coord!;
         let pieceX = Number(piece.charAt(0));
         let pieceY = Number(piece.charAt(1));
-        if (!((x + 1 <= 4 && (x + 1 == pieceX) && (y == pieceY))
+        if (!(
+            (x + 1 <= 4 && (x + 1 == pieceX) && (y == pieceY))
             || x - 1 >= 0 && ((x - 1 == pieceX) && (y == pieceY))
             || y + 1 <= 5 && ((x == pieceX) && (y + 1 == pieceY))
-            || y - 1 >= 0 && ((x == pieceX) && (y - 1 == pieceY)))) {
+            || y - 1 >= 0 && ((x == pieceX) && (y - 1 == pieceY))
+        )) {
             return false;
         }
+
         if (x + 1 <= 4 && (x + 1 == pieceX) && (y == pieceY)) {
             if (!this.checkUp(pieceX, pieceY)) {
                 return false;
             }
         }
-        if (x - 1 >= 0 && (x - 1 == pieceX) && (y == pieceY)) {
+        if ( x - 1 >= 0 && (x - 1 == pieceX) && (y == pieceY)) {
             if (!this.checkDown(pieceX, pieceY)) {
                 return false;
             }
         }
-        if (y + 1 <= 5 && (x == pieceX) && (y + 1 == pieceY)) {
+        if ( y + 1 <= 5 && (x == pieceX) && (y + 1 == pieceY)) {
             if (!this.checkLeft(pieceX, pieceY)) {
                 return false;
             }
         }
-        if (y - 1 >= 0 && (x == pieceX) && (y - 1 == pieceY)) {
+        if ( y - 1 >= 0 && (x == pieceX) && (y - 1 == pieceY)) {
             if (!this.checkRight(pieceX, pieceY)) {
                 return false;
             }
         }
+
+
         return true;
     }
-    isValidPiecePhaseTwo(coord) {
+
+
+    public isValidPiecePhaseTwo(coord: string): boolean {
         let x = Number(coord.charAt(0));
         let y = Number(coord.charAt(1));
+
         if (this.Board[x][y] == TileState.Empty) {
             return false;
         }
+
         if (this.PlayerOneTurn) {
             if (!(this.Board[x][y] == TileState.X)) {
                 return false;
             }
-        }
-        else {
+
+        } else {
             if (!(this.Board[x][y] == TileState.O)) {
                 return false;
             }
         }
+
         if (this.checkUp(x, y) || this.checkDown(x, y) || this.checkLeft(x, y) || this.checkRight(x, y)) {
             return true;
         }
         return false;
     }
-    RemovePiece(coord, handler) {
+
+    public RemovePiece(coord: string, handler: HTMLTableCellElement) {
+
         let x = Number(coord.charAt(0));
         let y = Number(coord.charAt(1));
         if (this.Board[x][y] == TileState.X) {
             this.PlayerOnePieces -= 1;
-        }
-        else {
+        } else {
             this.PlayerTwoPieces -= 1;
         }
         this.Board[x][y] = TileState.Empty;
+
         if (handler instanceof HTMLTableCellElement) {
             handler.innerHTML = "";
             handler.style.backgroundColor = "#a1887f";
         }
         this.RemovingAPiece = false;
-        if (AI.checkForMoves(this).length == 0) {
+        if(AI.checkForMoves(this).length == 0){
             this.GamePhase = 3;
-            let htmlTile = document.querySelector(`.game-phase`);
+            let htmlTile = document.querySelector(`.game-phase`)!;
             htmlTile.innerHTML = "Game Over!";
         }
         if (this.isAIMoving() && this.GamePhase == 2) {
             AI.AIMove(this);
         }
+
     }
-    checkUp(x, y) {
+
+    public checkUp(x: number, y: number): boolean {
         if (x - 1 >= 0 && this.Board[x - 1][y] == TileState.Empty) {
             let piece = this.Board[x][y];
-            this.Board[x][y] = TileState.Empty;
+            this.Board[x][y] = TileState.Empty
             let max = this.countMaxInARow(x - 1, y);
             this.Board[x][y] = piece;
             if (max > 3) {
@@ -200,10 +238,10 @@ export class Game {
         }
         return false;
     }
-    checkDown(x, y, isMoving = 0) {
+    public checkDown(x: number, y: number, isMoving: number = 0): boolean {
         if (x + 1 <= 4 && this.Board[x + 1][y] == TileState.Empty) {
             let piece = this.Board[x][y];
-            this.Board[x][y] = TileState.Empty;
+            this.Board[x][y] = TileState.Empty
             let max = this.countMaxInARow(x + 1, y);
             this.Board[x][y] = piece;
             if (max > 3) {
@@ -213,10 +251,10 @@ export class Game {
         }
         return false;
     }
-    checkLeft(x, y) {
+    public checkLeft(x: number, y: number): boolean {
         if (y - 1 >= 0 && this.Board[x][y - 1] == TileState.Empty) {
             let piece = this.Board[x][y];
-            this.Board[x][y] = TileState.Empty;
+            this.Board[x][y] = TileState.Empty
             let max = this.countMaxInARow(x, y - 1);
             this.Board[x][y] = piece;
             if (max > 3) {
@@ -226,10 +264,10 @@ export class Game {
         }
         return false;
     }
-    checkRight(x, y) {
+    public checkRight(x: number, y: number): boolean {
         if (y + 1 <= 5 && this.Board[x][y + 1] == TileState.Empty) {
             let piece = this.Board[x][y];
-            this.Board[x][y] = TileState.Empty;
+            this.Board[x][y] = TileState.Empty
             let max = this.countMaxInARow(x, y + 1);
             this.Board[x][y] = piece;
             if (max > 3) {
@@ -239,25 +277,31 @@ export class Game {
         }
         return false;
     }
-    isPhaseOneOver() {
+
+    public isPhaseOneOver(): boolean {
         if (this.PlayerOnePieces + this.PlayerTwoPieces >= 24) {
             return true;
         }
         return false;
     }
-    isAIMoving() {
+
+    public isAIMoving(): boolean {
         if ((this.PlayerOneTurn && !this.PlayerOneHuman) || (!this.PlayerOneTurn && !this.PlayerTwoHuman)) {
             return true;
         }
         return false;
     }
-    countMaxInARow(x, y, checkForEnemy = false) {
+
+
+    public countMaxInARow(x: number, y: number, checkForEnemy: boolean = false): number {
         let horizontal = 1;
         let vertical = 1;
         let tile = this.PlayerOneTurn ? TileState.X : TileState.O;
         if (checkForEnemy) {
             let tile = this.PlayerOneTurn ? TileState.O : TileState.X;
         }
+
+        //vertical total
         for (let i = 1; i < 5; i++) {
             if (x + i <= 4 && this.Board[x + i][y] == tile) {
                 vertical += 1;
@@ -272,6 +316,8 @@ export class Game {
             }
             break;
         }
+
+        //horizontal total
         for (let i = 1; i < 6; i++) {
             if (y + i <= 5 && this.Board[x][y + i] == tile) {
                 horizontal += 1;
@@ -286,7 +332,9 @@ export class Game {
             }
             break;
         }
+
         return Math.max(vertical, horizontal);
+
     }
+
 }
-//# sourceMappingURL=GameLogic.js.map
