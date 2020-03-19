@@ -1,5 +1,6 @@
 import { Game } from "./GameLogic";
 import { TileState } from "./TileState";
+import * as UI from "./UI";
 
 export function checkForMoves(game: Game): Array<[[number, number], [number, number]]> {
     let moves = new Array<[[number, number], [number, number]]>();
@@ -60,35 +61,23 @@ export function findBestMove(game: Game): [[number, number], [number, number]] {
 
 export function AIMove(game: Game) {
     let move = findBestMove(game);
-
     let type = game.Board[move[0][0]][move[0][1]];
-    let htmlTile = (document.querySelector(`[data-coord='${move[0][0].toString() + move[0][1].toString()}']`)!) as HTMLTableCellElement;
-    if (htmlTile instanceof HTMLTableCellElement) {
-        htmlTile.innerHTML = "";
-        htmlTile.style.backgroundColor = "#a1887f";
-    }
+
+    UI.RemovePiece(move[0][0], move[0][1]);
+
     game.Board[move[0][0]][move[0][1]] = TileState.Empty;
 
     if (game.countMaxInARow(move[1][0], move[1][1]) == 3) {
         game.RemovingAPiece = true;
     }
 
-    let element = document.createElement("i");
-    element.style.fontSize = "40px";
-    element.classList.add("material-icons");
-    let handler = (document.querySelector(`[data-coord='${move[1][0].toString() + move[1][1].toString()}']`)!) as HTMLTableCellElement;
     if (type == TileState.X) {
-        let node = document.createTextNode("brightness_high");
-        element.appendChild(node);
-        handler.appendChild(element);
         game.Board[move[1][0]][move[1][1]] = TileState.X;
     } else {
-        let node = document.createTextNode("brightness_low");
-        element.appendChild(node);
-        handler.appendChild(element);
         game.Board[move[1][0]][move[1][1]] = TileState.O;
     }
-    handler.style.backgroundColor = "#a1887f";
+    UI.AddPiece(move[1][0], move[1][1], type);
+
     game.PlayerOneTurn = !game.PlayerOneTurn;
 
     if (game.RemovingAPiece) {
@@ -131,17 +120,18 @@ export function AIRemove(game: Game) {
     } else if (movesWithTwo.length > 0) {
         let move = movesWithTwo[Math.floor(Math.random() * movesWithTwo.length)];
         Remove(game, move[0], move[1])
-    }else{
+    } else {
         let move = movesAll[Math.floor(Math.random() * movesAll.length)];
         Remove(game, move[0], move[1])
     }
-    if(game.PlayerOnePieces < 3 || game.PlayerTwoPieces < 3){
+    if (game.PlayerOnePieces < 3 || game.PlayerTwoPieces < 3) {
         game.GamePhase = 3;
     }
     if (game.isAIMoving() && game.GamePhase == 2) {
         AIMove(game);
     }
 }
+
 export function Remove(game: Game, x: number, y: number) {
     if (game.Board[x][y] == TileState.X) {
         game.PlayerOnePieces -= 1;
@@ -149,17 +139,12 @@ export function Remove(game: Game, x: number, y: number) {
         game.PlayerTwoPieces -= 1;
     }
     game.Board[x][y] = TileState.Empty;
-    if(game.PlayerOnePieces < 3 || game.PlayerTwoPieces < 3){
+    if (game.PlayerOnePieces < 3 || game.PlayerTwoPieces < 3) {
         game.GamePhase = 3;
-        let htmlTile = document.querySelector('.game-phase')!;
-        htmlTile.innerHTML = "Game Over!";
+        UI.changeHeader(game.GamePhase);
     }
 
-    let handler = (document.querySelector(`[data-coord='${x.toString() + y.toString()}']`)!) as HTMLTableCellElement;
-    if (handler instanceof HTMLTableCellElement) {
-        handler.innerHTML = "";
-        handler.style.backgroundColor = "#a1887f";
-    }
+    UI.RemovePiece(x, y);
     game.RemovingAPiece = false;
 
 }
@@ -174,25 +159,14 @@ export function AIPutPiece(game: Game) {
     } else {
         game.PlayerTwoPieces += 1;
     }
-    if(game.PlayerOnePieces >= 12 || game.PlayerTwoPieces >= 12){
+    if (game.PlayerOnePieces >= 12 || game.PlayerTwoPieces >= 12) {
         game.GamePhase = 2;
-        let htmlTile = document.querySelector('.game-phase')!;
-        htmlTile.innerHTML = "Move your pieces!";
+        UI.changeHeader(game.GamePhase)
     }
     game.Board[move[0]][move[1]] = tile;
     game.PlayerOneTurn = !game.PlayerOneTurn;
 
-    let htmlTile = document.querySelector(`[data-coord='${move[0].toString() + move[1].toString()}']`)!;
-    let element = document.createElement("i");
-    element.style.fontSize = "40px";
-    element.classList.add("material-icons");
-    let text: string = 'brightness_high';
-    if (game.PlayerOneTurn) {
-        text = 'brightness_low'
-    }
-    let node = document.createTextNode(text);
-    element.appendChild(node);
-    htmlTile.appendChild(element);
+    UI.AddPiece(move[0], move[1], tile);
 
     if (game.isAIMoving() && game.GamePhase == 1) {
         AIPutPiece(game);

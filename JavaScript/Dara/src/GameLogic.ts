@@ -1,5 +1,6 @@
 import { TileState } from './TileState'
 import * as AI from './AI'
+import * as UI from './UI'
 
 
 export class Game {
@@ -18,7 +19,7 @@ export class Game {
 
     public GamePhase: number = 1;
 
-    public Selected: HTMLTableCellElement | undefined;
+    public Selected: [number, number] | undefined;
 
     public RemovingAPiece: boolean = false;
 
@@ -44,19 +45,22 @@ export class Game {
         }
     }
 
-    public MovePhaseOne(coord: string) {
-        let x = Number(coord.charAt(0));
-        let y = Number(coord.charAt(1));
+    public MovePhaseOne(x: number, y:number) {
+        let type = TileState.O
         if (this.PlayerOneTurn) {
             this.PlayerOnePieces += 1;
             this.Board[x][y] = TileState.X;
+            type = TileState.X;
         } else {
             this.Board[x][y] = TileState.O;
             this.PlayerTwoPieces += 1;
         }
+        UI.AddPiece(x, y, type);
+
         this.PlayerOneTurn = !this.PlayerOneTurn;
         if (this.PlayerOnePieces + this.PlayerTwoPieces >= 24) {
             this.GamePhase = 2;
+            UI.changeHeader(this.GamePhase)
         } else {
             if (this.isAIMoving()) {
                 AI.AIPutPiece(this);
@@ -68,46 +72,29 @@ export class Game {
 
     }
 
-    //TODO
-    public MovePhaseTwo(coord: string, handler: HTMLTableCellElement) {
-        let piece = this.Selected?.dataset.coord!;
-        let pieceX = Number(piece.charAt(0));
-        let pieceY = Number(piece.charAt(1));
+    public MovePhaseTwo(x: number, y:number) {
+        let pieceX = this.Selected![0];
+        let pieceY = this.Selected![1];
         let type = this.Board[pieceX][pieceY];
-        if (this.Selected instanceof HTMLTableCellElement) {
-            this.Selected.innerHTML = "";
-            this.Selected.style.backgroundColor = "#a1887f";
-            this.Selected = undefined;
-        }
+
+        UI.RemovePiece(pieceX, pieceY);
         this.Board[pieceX][pieceY] = TileState.Empty;
-
-
-        let x = Number(coord.charAt(0));
-        let y = Number(coord.charAt(1));
+        
         if (this.countMaxInARow(x, y) == 3) {
             this.RemovingAPiece = true;
         }
-
-        let element = document.createElement("i");
-        element.style.fontSize = "40px";
-        element.classList.add("material-icons");
         if (type == TileState.X) {
-            let node = document.createTextNode("brightness_high");
-            element.appendChild(node);
-            handler.appendChild(element);
             this.Board[x][y] = TileState.X;
         } else {
-            let node = document.createTextNode("brightness_low");
-            element.appendChild(node);
-            handler.appendChild(element);
             this.Board[x][y] = TileState.O;
         }
-        handler.style.backgroundColor = "#a1887f";
+        UI.AddPiece(x, y, type)
+        this.Selected = undefined;
         this.PlayerOneTurn = !this.PlayerOneTurn;
-        if(this.PlayerOnePieces < 3 || this.PlayerTwoPieces < 3){
+
+        if (this.PlayerOnePieces < 3 || this.PlayerTwoPieces < 3) {
             this.GamePhase = 3;
-            let htmlTile = document.querySelector(`.game-phase`)!;
-            htmlTile.innerHTML = "Game Over!";
+            UI.changeHeader(this.GamePhase);
         }
         if (this.isAIMoving() && this.GamePhase == 2 && !this.RemovingAPiece) {
             AI.AIMove(this);
@@ -115,10 +102,7 @@ export class Game {
 
     }
 
-    public isValidMovePhaseOne(coord: string): boolean {
-        let x = Number(coord.charAt(0));
-        let y = Number(coord.charAt(1));
-
+    public isValidMovePhaseOne(x: number, y:number): boolean {
         if (!(this.Board[x][y] == TileState.Empty)) {
             return false;
         }
@@ -128,16 +112,13 @@ export class Game {
         return true;
     }
 
-    public isValidMovePhaseTwo(coord: string): boolean {
-        let x = Number(coord.charAt(0));
-        let y = Number(coord.charAt(1));
+    public isValidMovePhaseTwo(x: number, y:number): boolean {
         if (!(this.Board[x][y] == TileState.Empty)) {
             return false;
         }
+        let pieceX = this.Selected![0];
+        let pieceY = this.Selected![1];
 
-        let piece = this.Selected?.dataset.coord!;
-        let pieceX = Number(piece.charAt(0));
-        let pieceY = Number(piece.charAt(1));
         if (!(
             (x + 1 <= 4 && (x + 1 == pieceX) && (y == pieceY))
             || x - 1 >= 0 && ((x - 1 == pieceX) && (y == pieceY))
@@ -152,17 +133,17 @@ export class Game {
                 return false;
             }
         }
-        if ( x - 1 >= 0 && (x - 1 == pieceX) && (y == pieceY)) {
+        if (x - 1 >= 0 && (x - 1 == pieceX) && (y == pieceY)) {
             if (!this.checkDown(pieceX, pieceY)) {
                 return false;
             }
         }
-        if ( y + 1 <= 5 && (x == pieceX) && (y + 1 == pieceY)) {
+        if (y + 1 <= 5 && (x == pieceX) && (y + 1 == pieceY)) {
             if (!this.checkLeft(pieceX, pieceY)) {
                 return false;
             }
         }
-        if ( y - 1 >= 0 && (x == pieceX) && (y - 1 == pieceY)) {
+        if (y - 1 >= 0 && (x == pieceX) && (y - 1 == pieceY)) {
             if (!this.checkRight(pieceX, pieceY)) {
                 return false;
             }
@@ -173,10 +154,7 @@ export class Game {
     }
 
 
-    public isValidPiecePhaseTwo(coord: string): boolean {
-        let x = Number(coord.charAt(0));
-        let y = Number(coord.charAt(1));
-
+    public isValidPiecePhaseTwo(x: number, y: number): boolean {
         if (this.Board[x][y] == TileState.Empty) {
             return false;
         }
@@ -198,10 +176,7 @@ export class Game {
         return false;
     }
 
-    public RemovePiece(coord: string, handler: HTMLTableCellElement) {
-
-        let x = Number(coord.charAt(0));
-        let y = Number(coord.charAt(1));
+    public RemovePiece(x: number, y:number) {
         if (this.Board[x][y] == TileState.X) {
             this.PlayerOnePieces -= 1;
         } else {
@@ -209,15 +184,12 @@ export class Game {
         }
         this.Board[x][y] = TileState.Empty;
 
-        if (handler instanceof HTMLTableCellElement) {
-            handler.innerHTML = "";
-            handler.style.backgroundColor = "#a1887f";
-        }
+        UI.RemovePiece(x, y);
         this.RemovingAPiece = false;
-        if(AI.checkForMoves(this).length == 0){
+
+        if (AI.checkForMoves(this).length == 0) {
             this.GamePhase = 3;
-            let htmlTile = document.querySelector(`.game-phase`)!;
-            htmlTile.innerHTML = "Game Over!";
+            UI.changeHeader(this.GamePhase)
         }
         if (this.isAIMoving() && this.GamePhase == 2) {
             AI.AIMove(this);

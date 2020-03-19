@@ -12,11 +12,13 @@ createGame();
 function tilePressed(this: GlobalEventHandlers, event: MouseEvent) {
     if (this instanceof HTMLTableCellElement) {
         let coord = this.dataset.coord!;
+        let x = Number(coord.charAt(0));
+        let y = Number(coord.charAt(1));
         if (game.GamePhase === 1) {
-            Actions.phaseOne(game, coord, this, phaseText);
+            Actions.phaseOne(game, x, y, phaseText);
         }
         if (game.GamePhase === 2) {
-            Actions.phaseTwo(game, coord, this, phaseText);
+            Actions.phaseTwo(game, x, y, phaseText);
         }
     }
 
@@ -25,7 +27,10 @@ function tilePressed(this: GlobalEventHandlers, event: MouseEvent) {
 //before #a1887f, after #8d6e63 
 function onHover(this: GlobalEventHandlers, event: MouseEvent) {
     if (this instanceof HTMLTableCellElement) {
-        Actions.hoverAction(this, game, false);
+        let coord = this.dataset.coord!;
+        let x = Number(coord.charAt(0));
+        let y = Number(coord.charAt(1));
+        Actions.hoverAction(game, false, x, y);
     } else {
         console.error("Bad element type for this! - ", JSON.stringify(this));
     }
@@ -33,7 +38,10 @@ function onHover(this: GlobalEventHandlers, event: MouseEvent) {
 }
 function onOut(this: GlobalEventHandlers, event: MouseEvent) {
     if (this instanceof HTMLTableCellElement) {
-        Actions.hoverAction(this, game, true);
+        let coord = this.dataset.coord!;
+        let x = Number(coord.charAt(0));
+        let y = Number(coord.charAt(1));
+        Actions.hoverAction(game, true, x, y);
     } else {
         console.error("Bad element type for this! - ", JSON.stringify(this));
     }

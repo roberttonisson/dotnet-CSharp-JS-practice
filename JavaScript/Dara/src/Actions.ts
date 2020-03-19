@@ -1,129 +1,72 @@
 import { Game, } from './GameLogic';
 import { TileState } from './TileState';
+import * as UI from './UI';
 
-export function phaseOne(game: Game, coord: string, handler: HTMLTableCellElement, phaseText: Element) {
-    if (game.isValidMovePhaseOne(coord)) {
-        let element = document.createElement("i");
-        element.style.fontSize = "40px";
-        element.classList.add("material-icons");
-        if (game.PlayerOneTurn) {
-            let node = document.createTextNode("brightness_high");
-            element.appendChild(node);
-            handler.appendChild(element);
-            game.MovePhaseOne(coord);
-        } else {
-            let node = document.createTextNode("brightness_low");
-            element.appendChild(node);
-            handler.appendChild(element);
-            game.MovePhaseOne(coord);
-        }
-        handler.style.backgroundColor = "#a1887f";
+export function phaseOne(game: Game, x: number, y: number, phaseText: Element) {
+    if (game.isValidMovePhaseOne(x, y)) {
+        game.MovePhaseOne(x, y);
     } else {
         console.log("Invalid tile!")
     }
-    if (game.isPhaseOneOver()) {
-        phaseText.innerHTML = "Phase 2 : start moving."
-        game.GamePhase = 2;
-    }
 }
 
-export function phaseTwo(game: Game, coord: string, handler: HTMLTableCellElement, phaseText: Element) {
+export function phaseTwo(game: Game, x: number, y: number, phaseText: Element) {
     if (typeof game.Selected === 'undefined') {
         if (game.RemovingAPiece) {
-            let piece: TileState;
+            let piece = TileState.O;
             if (game.PlayerOneTurn) {
                 piece = TileState.X;
             }
-            else {
-                piece = TileState.O;
+            if (game.Board[x][y] === piece) {
+                game.RemovePiece(x, y);
             }
-            if (game.Board[Number(coord.charAt(0))][Number(coord.charAt(1))] === piece) {
-                game.RemovePiece(coord, handler);
-                if(game.PlayerOnePieces<3 || game.PlayerTwoPieces<3){
-                    phaseText.innerHTML = "Game Over!"
-                    game.GamePhase = 3;
-                }
-            }
-        } else { phaseTwoSelect(game, coord, handler); }
+        } else {
+            phaseTwoSelect(game, x, y);
+        }
     } else {
-        if (game.isValidMovePhaseTwo(coord)) {
-            game.MovePhaseTwo(coord, handler);
+        if (game.isValidMovePhaseTwo(x, y)) {
+            game.MovePhaseTwo(x, y);
         }
         else {
-            game.Selected.style.backgroundColor = "#a1887f";
+            UI.SelectedPieceColor(x, y, false);
             game.Selected = undefined;
         }
-
     }
 }
 
-function phaseTwoSelect(game: Game, coord: string, handler: HTMLTableCellElement) {
-    if (game.isValidPiecePhaseTwo(coord)) {
-        game.Selected = handler;
-        handler.style.backgroundColor = "#ff8000"
+function phaseTwoSelect(game: Game, x: number, y: number) {
+    if (game.isValidPiecePhaseTwo(x, y)) {
+        game.Selected = [x, y];
+        UI.SelectedPieceColor(x, y, true)
     } else {
         console.log("Invalid tile!")
     }
 }
-function phaseTwoMove(game: Game, coord: string, handler: HTMLTableCellElement, phaseText: Element) {
-    if (game.isValidMovePhaseOne(coord)) {
-        let element = document.createElement("i");
-        element.style.fontSize = "40px";
-        element.classList.add("material-icons");
-        if (game.PlayerOneTurn) {
-            let node = document.createTextNode("brightness_high");
-            element.appendChild(node);
-            handler.appendChild(element);
-            game.MovePhaseOne(coord);
-        } else {
-            let node = document.createTextNode("brightness_low");
-            element.appendChild(node);
-            handler.appendChild(element);
-            game.MovePhaseOne(coord);
-        }
-    } else {
-        console.log("Invalid tile!")
-    }
-
-}
 
 
-export function hoverAction(handler: HTMLTableCellElement, game: Game, out: boolean) {
-    let color1 = "#a1887f";
-    let color2 = "#a1887f";
-    if (out) {
-        color2 = "#8d6e63"
-    } else {
-        color1 = "#8d6e63"
-    }
-    let coord = handler.dataset.coord!;
+export function hoverAction(game: Game, out: boolean, x: number, y: number) {
     if (game.GamePhase === 1) {
-        if (game.isValidMovePhaseOne(coord)) {
-            handler.style.backgroundColor = color1;
+        if (game.isValidMovePhaseOne(x, y)) {
+            UI.changeBackground(x,y,out);
         }
     }
     if (game.GamePhase === 2) {
         if (game.RemovingAPiece) {
-            let piece: TileState;
+            let piece = TileState.O;
             if (game.PlayerOneTurn) {
                 piece = TileState.X;
             }
-            else {
-                piece = TileState.O;
+            if (game.Board[x][y] === piece) {
+                UI.changeBackground(x,y,out);
             }
-            if (game.Board[Number(coord.charAt(0))][Number(coord.charAt(1))] === piece) {
-                handler.style.backgroundColor = color1;
-            }
-
         }
         else {
-            if (game.isValidPiecePhaseTwo(coord) && !(handler === game.Selected)) {
-                handler.style.backgroundColor = color1;
+            if (game.isValidPiecePhaseTwo(x,y) && (!(x === game.Selected?.[0]) && !(x === game.Selected?.[0]))) {
+                UI.changeBackground(x,y,out);
             }
-            if (!(typeof game.Selected === 'undefined') && game.isValidMovePhaseTwo(coord)) {
-                handler.style.backgroundColor = color1;
+            if (!(typeof game.Selected === 'undefined') && game.isValidMovePhaseTwo(x, y)) {
+                UI.changeBackground(x,y,out);
             }
         }
-
     }
 }
