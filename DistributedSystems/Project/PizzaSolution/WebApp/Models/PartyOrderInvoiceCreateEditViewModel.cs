@@ -7,6 +7,7 @@ namespace WebApp.Models
     {
         public PartyOrderInvoice PartyOrderInvoice { get; set; } = default!;
 
-        public SelectList? PartyOrderInvoiceSelectList { get; set; }
+        public SelectList? PartyOrderSelectList { get; set; }
+        public SelectList? InvoiceSelectList { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-@model Domain.PartyOrderInvoice
+@model PartyOrderInvoiceCreateEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,35 +13,35 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="PartyOrderId" class="control-label"></label>
-                <select asp-for="PartyOrderId" class="form-control" asp-items="ViewBag.PartyOrderId"></select>
-                <span asp-validation-for="PartyOrderId" class="text-danger"></span>
+                <label asp-for="PartyOrderInvoice.PartyOrderId" class="control-label"></label>
+                <select asp-for="PartyOrderInvoice.PartyOrderId" class="form-control" asp-items="ViewBag.PartyOrderId"></select>
+                <span asp-validation-for="PartyOrderInvoice.PartyOrderId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="InvoiceId" class="control-label"></label>
-                <select asp-for="InvoiceId" class="form-control" asp-items="ViewBag.InvoiceId"></select>
-                <span asp-validation-for="InvoiceId" class="text-danger"></span>
+                <label asp-for="PartyOrderInvoice.InvoiceId" class="control-label"></label>
+                <select asp-for="PartyOrderInvoice.InvoiceId" class="form-control" asp-items="ViewBag.InvoiceId"></select>
+                <span asp-validation-for="PartyOrderInvoice.InvoiceId" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="PartyOrderInvoice.Id" />
             <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                <label asp-for="PartyOrderInvoice.CreatedBy" class="control-label"></label>
+                <input asp-for="PartyOrderInvoice.CreatedBy" class="form-control" />
+                <span asp-validation-for="PartyOrderInvoice.CreatedBy" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ChangedBy" class="control-label"></label>
-                <input asp-for="ChangedBy" class="form-control" />
-                <span asp-validation-for="ChangedBy" class="text-danger"></span>
+                <label asp-for="PartyOrderInvoice.CreatedAt" class="control-label"></label>
+                <input asp-for="PartyOrderInvoice.CreatedAt" class="form-control" />
+                <span asp-validation-for="PartyOrderInvoice.CreatedAt" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ChangedAt" class="control-label"></label>
-                <input asp-for="ChangedAt" class="form-control" />
-                <span asp-validation-for="ChangedAt" class="text-danger"></span>
+                <label asp-for="PartyOrderInvoice.ChangedBy" class="control-label"></label>
+                <input asp-for="PartyOrderInvoice.ChangedBy" class="form-control" />
+                <span asp-validation-for="PartyOrderInvoice.ChangedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PartyOrderInvoice.ChangedAt" class="control-label"></label>
+                <input asp-for="PartyOrderInvoice.ChangedAt" class="form-control" />
+                <span asp-validation-for="PartyOrderInvoice.ChangedAt" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

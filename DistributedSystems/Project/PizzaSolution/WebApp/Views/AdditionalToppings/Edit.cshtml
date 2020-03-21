@@ -1,4 +1,4 @@
-@model Domain.AdditionalTopping
+@model AdditionalToppingCreateEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,35 +13,35 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="ToppingId" class="control-label"></label>
-                <select asp-for="ToppingId" class="form-control" asp-items="ViewBag.ToppingId"></select>
-                <span asp-validation-for="ToppingId" class="text-danger"></span>
+                <label asp-for="AdditionalTopping.ToppingId" class="control-label"></label>
+                <select asp-for="AdditionalTopping.ToppingId" class="form-control" asp-items="Model.ToppingSelectList"></select>
+                <span asp-validation-for="AdditionalTopping.ToppingId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PizzaInCartId" class="control-label"></label>
-                <select asp-for="PizzaInCartId" class="form-control" asp-items="ViewBag.PizzaInCartId"></select>
-                <span asp-validation-for="PizzaInCartId" class="text-danger"></span>
+                <label asp-for="AdditionalTopping.PizzaInCartId" class="control-label"></label>
+                <select asp-for="AdditionalTopping.PizzaInCartId" class="form-control" asp-items="Model.PizzaInCartSelectList"></select>
+                <span asp-validation-for="AdditionalTopping.PizzaInCartId" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="AdditionalTopping.Id" />
             <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                <label asp-for="AdditionalTopping.CreatedBy" class="control-label"></label>
+                <input asp-for="AdditionalTopping.CreatedBy" class="form-control" />
+                <span asp-validation-for="AdditionalTopping.CreatedBy" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ChangedBy" class="control-label"></label>
-                <input asp-for="ChangedBy" class="form-control" />
-                <span asp-validation-for="ChangedBy" class="text-danger"></span>
+                <label asp-for="AdditionalTopping.CreatedAt" class="control-label"></label>
+                <input asp-for="AdditionalTopping.CreatedAt" class="form-control" />
+                <span asp-validation-for="AdditionalTopping.CreatedAt" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ChangedAt" class="control-label"></label>
-                <input asp-for="ChangedAt" class="form-control" />
-                <span asp-validation-for="ChangedAt" class="text-danger"></span>
+                <label asp-for="AdditionalTopping.ChangedBy" class="control-label"></label>
+                <input asp-for="AdditionalTopping.ChangedBy" class="form-control" />
+                <span asp-validation-for="AdditionalTopping.ChangedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AdditionalTopping.ChangedAt" class="control-label"></label>
+                <input asp-for="AdditionalTopping.ChangedAt" class="form-control" />
+                <span asp-validation-for="AdditionalTopping.ChangedAt" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

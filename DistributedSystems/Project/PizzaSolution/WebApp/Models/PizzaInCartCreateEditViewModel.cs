@@ -7,6 +7,9 @@ namespace WebApp.Models
     {
         public PizzaInCart PizzaInCart { get; set; } = default!;
 
-        public SelectList? PizzaInCartSelectList { get; set; }
+        public SelectList? PizzaTypeSelectList { get; set; }
+        public SelectList? CrustSelectList { get; set; }
+        public SelectList? SizeSelectList { get; set; }
+        public SelectList? CartSelectList { get; set; }
     }
 }

@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Domain.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -44,9 +48,13 @@ namespace WebApp.Controllers
         }
 
         // GET: Invoices/Create
+         // GET: Invoices/Create
         public IActionResult Create()
         {
-            return View();
+            var vm =  new InvoiceCreateEditViewModel();
+            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.TransportSelectList = new SelectList(_context.Transports, nameof(Transport.Id), nameof(Transport.Id));
+            return View(vm);
         }
 
         // POST: Invoices/Create
@@ -54,38 +62,38 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("IsPaid,UserId,TransportId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Invoice invoice)
+        public async Task<IActionResult> Create(InvoiceCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
                 //invoice.Id = Guid.NewGuid();
-                _invoiceRepository.Add(invoice);
+                _invoiceRepository.Add(vm.Invoice);
                 await _invoiceRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(invoice);
+            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.TransportSelectList = new SelectList(_context.Transports, nameof(Transport.Id), nameof(Transport.Id));
+            return View(vm);
         }
 
         // GET: Invoices/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, InvoiceCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var invoice = await _invoiceRepository.FindAsync(id);
-
-            if (invoice == null)
+            vm.Invoice = await _invoiceRepository.FindAsync(id);
+            if (vm.Invoice == null)
             {
                 return NotFound();
             }
+            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.TransportSelectList = new SelectList(_context.Transports, nameof(Transport.Id), nameof(Transport.Id));
 
-            return View(invoice);
+            return View(vm);
         }
 
         // POST: Invoices/Edit/5
@@ -93,24 +101,23 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            [Bind("IsPaid,UserId,TransportId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Invoice invoice)
+        public async Task<IActionResult> Edit(Guid id, InvoiceCreateEditViewModel vm)
         {
-            if (id != invoice.Id)
+            if (id != vm.Invoice.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _invoiceRepository.Update(invoice);
+                _invoiceRepository.Update(vm.Invoice);
                 await _invoiceRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(invoice);
+            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.TransportSelectList = new SelectList(_context.Transports, nameof(Transport.Id), nameof(Transport.Id));
+            return View(vm);
         }
 
         // GET: Invoices/Delete/5

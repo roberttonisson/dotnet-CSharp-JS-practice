@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -43,10 +44,11 @@ namespace WebApp.Controllers
             return View(drink);
         }
 
-        // GET: Drinks/Create
+          // GET: Drinks/Create
         public IActionResult Create()
         {
-            return View();
+            var vm = new DrinkCreateEditViewModel();
+            return View(vm);
         }
 
         // POST: Drinks/Create
@@ -54,38 +56,35 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Name,Price,Size,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Drink drink)
+        public async Task<IActionResult> Create(DrinkCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                //drink.Id = Guid.NewGuid();
-                _drinkRepository.Add(drink);
+                //crust.Id = Guid.NewGuid();
+                _drinkRepository.Add(vm.Drink);
                 await _drinkRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(drink);
+            return View(vm);
         }
 
         // GET: Drinks/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, DrinkCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var drink = await _drinkRepository.FindAsync(id);
+            vm.Drink = await _drinkRepository.FindAsync(id);
 
-            if (drink == null)
+            if (vm.Drink == null)
             {
                 return NotFound();
             }
 
-            return View(drink);
+            return View(vm);
         }
 
         // POST: Drinks/Edit/5
@@ -94,23 +93,22 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id,
-            [Bind("Name,Price,Size,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Drink drink)
+            DrinkCreateEditViewModel vm)
         {
-            if (id != drink.Id)
+            if (id != vm.Drink.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _drinkRepository.Update(drink);
+                _drinkRepository.Update(vm.Drink);
                 await _drinkRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(drink);
+            return View(vm);
         }
 
         // GET: Drinks/Delete/5

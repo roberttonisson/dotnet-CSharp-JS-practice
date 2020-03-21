@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -43,10 +44,11 @@ namespace WebApp.Controllers
             return View(size);
         }
 
-        // GET: Sizes/Create
+      // GET: Sizes/Create
         public IActionResult Create()
         {
-            return View();
+            var vm = new SizeCreateEditViewModel();
+            return View(vm);
         }
 
         // POST: Sizes/Create
@@ -54,38 +56,35 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Name,Price,SizeCm,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Size size)
+        public async Task<IActionResult> Create(SizeCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                //size.Id = Guid.NewGuid();
-                _sizeRepository.Add(size);
+                //crust.Id = Guid.NewGuid();
+                _sizeRepository.Add(vm.Size);
                 await _sizeRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(size);
+            return View(vm);
         }
 
         // GET: Sizes/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, SizeCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var size = await _sizeRepository.FindAsync(id);
+            vm.Size = await _sizeRepository.FindAsync(id);
 
-            if (size == null)
+            if (vm.Size == null)
             {
                 return NotFound();
             }
 
-            return View(size);
+            return View(vm);
         }
 
         // POST: Sizes/Edit/5
@@ -94,23 +93,22 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id,
-            [Bind("Name,Price,SizeCm,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Size size)
+            SizeCreateEditViewModel vm)
         {
-            if (id != size.Id)
+            if (id != vm.Size.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _sizeRepository.Update(size);
+                _sizeRepository.Update(vm.Size);
                 await _sizeRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(size);
+            return View(vm);
         }
 
         // GET: Sizes/Delete/5

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -46,7 +48,10 @@ namespace WebApp.Controllers
         // GET: AdditionalToppings/Create
         public IActionResult Create()
         {
-            return View();
+            var vm =  new AdditionalToppingCreateEditViewModel();
+            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaInCartSelectList = new SelectList(_context.PizzaInCarts, nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            return View(vm);
         }
 
         // POST: AdditionalToppings/Create
@@ -54,38 +59,38 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("ToppingId,PizzaInCartId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            AdditionalTopping additionalTopping)
+        public async Task<IActionResult> Create(AdditionalToppingCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
                 //additionalTopping.Id = Guid.NewGuid();
-                _additionalToppingRepository.Add(additionalTopping);
+                _additionalToppingRepository.Add(vm.AdditionalTopping);
                 await _additionalToppingRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(additionalTopping);
+            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaInCartSelectList = new SelectList(_context.PizzaInCarts, nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            return View(vm);
         }
 
         // GET: AdditionalToppings/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, AdditionalToppingCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var additionalTopping = await _additionalToppingRepository.FindAsync(id);
-
-            if (additionalTopping == null)
+            vm.AdditionalTopping = await _additionalToppingRepository.FindAsync(id);
+            if (vm.AdditionalTopping == null)
             {
                 return NotFound();
             }
+            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaInCartSelectList = new SelectList(_context.PizzaInCarts, nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
 
-            return View(additionalTopping);
+            return View(vm);
         }
 
         // POST: AdditionalToppings/Edit/5
@@ -93,24 +98,23 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            [Bind("ToppingId,PizzaInCartId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            AdditionalTopping additionalTopping)
+        public async Task<IActionResult> Edit(Guid id, AdditionalToppingCreateEditViewModel vm)
         {
-            if (id != additionalTopping.Id)
+            if (id != vm.AdditionalTopping.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _additionalToppingRepository.Update(additionalTopping);
+                _additionalToppingRepository.Update(vm.AdditionalTopping);
                 await _additionalToppingRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(additionalTopping);
+            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaInCartSelectList = new SelectList(_context.PizzaInCarts, nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            return View(vm);
         }
 
         // GET: AdditionalToppings/Delete/5

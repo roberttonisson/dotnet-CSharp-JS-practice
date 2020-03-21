@@ -1,4 +1,4 @@
-@model Domain.Drink
+@model DrinkCreateEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,40 +13,40 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Drink.Name" class="control-label"></label>
+                <input asp-for="Drink.Name" class="form-control" />
+                <span asp-validation-for="Drink.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
+                <label asp-for="Drink.Price" class="control-label"></label>
+                <input asp-for="Drink.Price" class="form-control" />
+                <span asp-validation-for="Drink.Price" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Size" class="control-label"></label>
-                <input asp-for="Size" class="form-control" />
-                <span asp-validation-for="Size" class="text-danger"></span>
+                <label asp-for="Drink.Size" class="control-label"></label>
+                <input asp-for="Drink.Size" class="form-control" />
+                <span asp-validation-for="Drink.Size" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Drink.Id" />
             <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                <label asp-for="Drink.CreatedBy" class="control-label"></label>
+                <input asp-for="Drink.CreatedBy" class="form-control" />
+                <span asp-validation-for="Drink.CreatedBy" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ChangedBy" class="control-label"></label>
-                <input asp-for="ChangedBy" class="form-control" />
-                <span asp-validation-for="ChangedBy" class="text-danger"></span>
+                <label asp-for="Drink.CreatedAt" class="control-label"></label>
+                <input asp-for="Drink.CreatedAt" class="form-control" />
+                <span asp-validation-for="Drink.CreatedAt" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ChangedAt" class="control-label"></label>
-                <input asp-for="ChangedAt" class="form-control" />
-                <span asp-validation-for="ChangedAt" class="text-danger"></span>
+                <label asp-for="Drink.ChangedBy" class="control-label"></label>
+                <input asp-for="Drink.ChangedBy" class="form-control" />
+                <span asp-validation-for="Drink.ChangedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Drink.ChangedAt" class="control-label"></label>
+                <input asp-for="Drink.ChangedAt" class="form-control" />
+                <span asp-validation-for="Drink.ChangedAt" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

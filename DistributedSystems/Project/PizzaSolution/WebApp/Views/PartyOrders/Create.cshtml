@@ -1,4 +1,4 @@
-@model Domain.PartyOrder
+@model PartyOrderCreateEditViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -13,48 +13,48 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Start" class="control-label"></label>
-                <input asp-for="Start" class="form-control" />
-                <span asp-validation-for="Start" class="text-danger"></span>
+                <label asp-for="PartyOrder.Start" class="control-label"></label>
+                <input asp-for="PartyOrder.Start" class="form-control" />
+                <span asp-validation-for="PartyOrder.Start" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="End" class="control-label"></label>
-                <input asp-for="End" class="form-control" />
-                <span asp-validation-for="End" class="text-danger"></span>
+                <label asp-for="PartyOrder.End" class="control-label"></label>
+                <input asp-for="PartyOrder.End" class="form-control" />
+                <span asp-validation-for="PartyOrder.End" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
+                <label asp-for="PartyOrder.Address" class="control-label"></label>
+                <input asp-for="PartyOrder.Address" class="form-control" />
+                <span asp-validation-for="PartyOrder.Address" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="InviteKey" class="control-label"></label>
-                <input asp-for="InviteKey" class="form-control" />
-                <span asp-validation-for="InviteKey" class="text-danger"></span>
+                <label asp-for="PartyOrder.InviteKey" class="control-label"></label>
+                <input asp-for="PartyOrder.InviteKey" class="form-control" />
+                <span asp-validation-for="PartyOrder.InviteKey" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="OwnerId" class="control-label"></label>
-                <select asp-for="OwnerId" class ="form-control" asp-items="ViewBag.OwnerId"></select>
+                <label asp-for="PartyOrder.OwnerId" class="control-label"></label>
+                <select asp-for="PartyOrder.OwnerId" class="form-control" asp-items="Model.AppUserSelectList"></select>
             </div>
             <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
+                <label asp-for="PartyOrder.CreatedBy" class="control-label"></label>
+                <input asp-for="PartyOrder.CreatedBy" class="form-control" />
+                <span asp-validation-for="PartyOrder.CreatedBy" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                <label asp-for="PartyOrder.CreatedAt" class="control-label"></label>
+                <input asp-for="PartyOrder.CreatedAt" class="form-control" />
+                <span asp-validation-for="PartyOrder.CreatedAt" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ChangedBy" class="control-label"></label>
-                <input asp-for="ChangedBy" class="form-control" />
-                <span asp-validation-for="ChangedBy" class="text-danger"></span>
+                <label asp-for="PartyOrder.ChangedBy" class="control-label"></label>
+                <input asp-for="PartyOrder.ChangedBy" class="form-control" />
+                <span asp-validation-for="PartyOrder.ChangedBy" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ChangedAt" class="control-label"></label>
-                <input asp-for="ChangedAt" class="form-control" />
-                <span asp-validation-for="ChangedAt" class="text-danger"></span>
+                <label asp-for="PartyOrder.ChangedAt" class="control-label"></label>
+                <input asp-for="PartyOrder.ChangedAt" class="form-control" />
+                <span asp-validation-for="PartyOrder.ChangedAt" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

@@ -7,6 +7,6 @@ namespace WebApp.Models
     {
         public PartyOrder PartyOrder { get; set; } = default!;
 
-        public SelectList? PartyOrderSelectList { get; set; }
+        public SelectList? AppUserSelectList { get; set; }
     }
 }

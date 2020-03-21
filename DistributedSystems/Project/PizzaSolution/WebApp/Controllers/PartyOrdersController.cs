@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Domain.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -44,9 +47,12 @@ namespace WebApp.Controllers
         }
 
         // GET: PartyOrders/Create
+            // GET: PartyOrders/Create
         public IActionResult Create()
         {
-            return View();
+            var vm =  new PartyOrderCreateEditViewModel();
+            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            return View(vm);
         }
 
         // POST: PartyOrders/Create
@@ -54,38 +60,36 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Start,End,Address,InviteKey,OwnerId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            PartyOrder partyOrder)
+        public async Task<IActionResult> Create(PartyOrderCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
                 //partyOrder.Id = Guid.NewGuid();
-                _partyOrderRepository.Add(partyOrder);
+                _partyOrderRepository.Add(vm.PartyOrder);
                 await _partyOrderRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(partyOrder);
+            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            return View(vm);
         }
 
         // GET: PartyOrders/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, PartyOrderCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var partyOrder = await _partyOrderRepository.FindAsync(id);
-
-            if (partyOrder == null)
+            vm.PartyOrder = await _partyOrderRepository.FindAsync(id);
+            if (vm.PartyOrder == null)
             {
                 return NotFound();
             }
+            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
 
-            return View(partyOrder);
+            return View(vm);
         }
 
         // POST: PartyOrders/Edit/5
@@ -93,24 +97,22 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            [Bind("Start,End,Address,InviteKey,OwnerId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            PartyOrder partyOrder)
+        public async Task<IActionResult> Edit(Guid id, PartyOrderCreateEditViewModel vm)
         {
-            if (id != partyOrder.Id)
+            if (id != vm.PartyOrder.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _partyOrderRepository.Update(partyOrder);
+                _partyOrderRepository.Update(vm.PartyOrder);
                 await _partyOrderRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(partyOrder);
+            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            return View(vm);
         }
 
         // GET: PartyOrders/Delete/5

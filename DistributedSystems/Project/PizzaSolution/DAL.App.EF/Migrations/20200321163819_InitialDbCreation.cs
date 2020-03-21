@@ -59,7 +59,7 @@ namespace DAL.App.EF.Migrations
                     ChangedBy = table.Column<string>(nullable: true),
                     ChangedAt = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
-                    Price = table.Column<decimal>(type: "numeric(6,2)", nullable: false)
+                    Price = table.Column<decimal>(type: "decimal(6,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,7 +85,7 @@ namespace DAL.App.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PizzaRestaurants",
+                name: "PizzaTypes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -94,11 +94,11 @@ namespace DAL.App.EF.Migrations
                     ChangedBy = table.Column<string>(nullable: true),
                     ChangedAt = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
-                    Address = table.Column<string>(maxLength: 256, nullable: false)
+                    Price = table.Column<decimal>(type: "decimal(6,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PizzaRestaurants", x => x.Id);
+                    table.PrimaryKey("PK_PizzaTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -309,7 +309,7 @@ namespace DAL.App.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PizzaTypes",
+                name: "DefaultToppings",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -317,17 +317,22 @@ namespace DAL.App.EF.Migrations
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     ChangedBy = table.Column<string>(nullable: true),
                     ChangedAt = table.Column<DateTime>(nullable: false),
-                    Name = table.Column<string>(maxLength: 64, nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(6,2)", nullable: false),
-                    PizzaRestaurantId = table.Column<Guid>(nullable: false)
+                    ToppingId = table.Column<Guid>(nullable: false),
+                    PizzaTypeId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PizzaTypes", x => x.Id);
+                    table.PrimaryKey("PK_DefaultToppings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PizzaTypes_PizzaRestaurants_PizzaRestaurantId",
-                        column: x => x.PizzaRestaurantId,
-                        principalTable: "PizzaRestaurants",
+                        name: "FK_DefaultToppings_PizzaTypes_PizzaTypeId",
+                        column: x => x.PizzaTypeId,
+                        principalTable: "PizzaTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DefaultToppings_Toppings_ToppingId",
+                        column: x => x.ToppingId,
+                        principalTable: "Toppings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -389,35 +394,6 @@ namespace DAL.App.EF.Migrations
                         name: "FK_DrinkInCarts_Drinks_DrinkId",
                         column: x => x.DrinkId,
                         principalTable: "Drinks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DefaultToppings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: true),
-                    CreatedAt = table.Column<DateTime>(nullable: false),
-                    ChangedBy = table.Column<string>(nullable: true),
-                    ChangedAt = table.Column<DateTime>(nullable: false),
-                    ToppingId = table.Column<Guid>(nullable: false),
-                    PizzaTypeId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DefaultToppings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DefaultToppings_PizzaTypes_PizzaTypeId",
-                        column: x => x.PizzaTypeId,
-                        principalTable: "PizzaTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_DefaultToppings_Toppings_ToppingId",
-                        column: x => x.ToppingId,
-                        principalTable: "Toppings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -706,11 +682,6 @@ namespace DAL.App.EF.Migrations
                 name: "IX_PizzaInCarts_SizeId",
                 table: "PizzaInCarts",
                 column: "SizeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PizzaTypes_PizzaRestaurantId",
-                table: "PizzaTypes",
-                column: "PizzaRestaurantId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -780,9 +751,6 @@ namespace DAL.App.EF.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "PizzaRestaurants");
         }
     }
 }

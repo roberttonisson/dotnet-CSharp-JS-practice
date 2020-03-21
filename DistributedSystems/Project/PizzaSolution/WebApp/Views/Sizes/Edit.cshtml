@@ -1,4 +1,4 @@
-@model Domain.Size
+@model SizeCreateEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,40 +13,40 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Size.Name" class="control-label"></label>
+                <input asp-for="Size.Name" class="form-control" />
+                <span asp-validation-for="Size.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
+                <label asp-for="Size.Price" class="control-label"></label>
+                <input asp-for="Size.Price" class="form-control" />
+                <span asp-validation-for="Size.Price" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SizeCm" class="control-label"></label>
-                <input asp-for="SizeCm" class="form-control" />
-                <span asp-validation-for="SizeCm" class="text-danger"></span>
+                <label asp-for="Size.SizeCm" class="control-label"></label>
+                <input asp-for="Size.SizeCm" class="form-control" />
+                <span asp-validation-for="Size.SizeCm" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Size.Id" />
             <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                <label asp-for="Size.CreatedBy" class="control-label"></label>
+                <input asp-for="Size.CreatedBy" class="form-control" />
+                <span asp-validation-for="Size.CreatedBy" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ChangedBy" class="control-label"></label>
-                <input asp-for="ChangedBy" class="form-control" />
-                <span asp-validation-for="ChangedBy" class="text-danger"></span>
+                <label asp-for="Size.CreatedAt" class="control-label"></label>
+                <input asp-for="Size.CreatedAt" class="form-control" />
+                <span asp-validation-for="Size.CreatedAt" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ChangedAt" class="control-label"></label>
-                <input asp-for="ChangedAt" class="form-control" />
-                <span asp-validation-for="ChangedAt" class="text-danger"></span>
+                <label asp-for="Size.ChangedBy" class="control-label"></label>
+                <input asp-for="Size.ChangedBy" class="form-control" />
+                <span asp-validation-for="Size.ChangedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Size.ChangedAt" class="control-label"></label>
+                <input asp-for="Size.ChangedAt" class="form-control" />
+                <span asp-validation-for="Size.ChangedAt" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

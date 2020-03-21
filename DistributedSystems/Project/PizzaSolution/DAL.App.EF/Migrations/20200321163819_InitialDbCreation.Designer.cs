@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20200321124502_InitialDbCreation")]
+    [Migration("20200321163819_InitialDbCreation")]
     partial class InitialDbCreation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -114,7 +114,7 @@ namespace DAL.App.EF.Migrations
                         .HasMaxLength(64);
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("numeric(6,2)");
+                        .HasColumnType("decimal(6,2)");
 
                     b.HasKey("Id");
 
@@ -536,39 +536,6 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("PizzaInCarts");
                 });
 
-            modelBuilder.Entity("Domain.PizzaRestaurant", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
-
-                    b.Property<DateTime>("ChangedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ChangedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PizzaRestaurants");
-                });
-
             modelBuilder.Entity("Domain.PizzaType", b =>
                 {
                     b.Property<Guid>("Id")
@@ -592,15 +559,10 @@ namespace DAL.App.EF.Migrations
                         .HasColumnType("nvarchar(64)")
                         .HasMaxLength(64);
 
-                    b.Property<Guid>("PizzaRestaurantId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(6,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PizzaRestaurantId");
 
                     b.ToTable("PizzaTypes");
                 });
@@ -939,15 +901,6 @@ namespace DAL.App.EF.Migrations
                     b.HasOne("Domain.Size", "Size")
                         .WithMany("PizzaInCarts")
                         .HasForeignKey("SizeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.PizzaType", b =>
-                {
-                    b.HasOne("Domain.PizzaRestaurant", "PizzaRestaurant")
-                        .WithMany("PizzaTypes")
-                        .HasForeignKey("PizzaRestaurantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

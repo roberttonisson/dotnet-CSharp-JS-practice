@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -43,10 +45,13 @@ namespace WebApp.Controllers
             return View(drinkInCart);
         }
 
-        // GET: DrinkInCarts/Create
+           // GET: DrinkInCarts/Create
         public IActionResult Create()
         {
-            return View();
+            var vm =  new DrinkInCartCreateEditViewModel();
+            vm.DrinkSelectList = new SelectList(_context.Drinks, nameof(Drink.Id), nameof(Drink.Name));
+            vm.CartSelectList = new SelectList(_context.Carts, nameof(Cart.Id), nameof(Cart.Id));
+            return View(vm);
         }
 
         // POST: DrinkInCarts/Create
@@ -54,38 +59,38 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Quantity,DrinkId,CartId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            DrinkInCart drinkInCart)
+        public async Task<IActionResult> Create(DrinkInCartCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
                 //drinkInCart.Id = Guid.NewGuid();
-                _drinkInCartRepository.Add(drinkInCart);
+                _drinkInCartRepository.Add(vm.DrinkInCart);
                 await _drinkInCartRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(drinkInCart);
+            vm.DrinkSelectList = new SelectList(_context.Drinks, nameof(Drink.Id), nameof(Drink.Name));
+            vm.CartSelectList = new SelectList(_context.Carts, nameof(Cart.Id), nameof(Cart.Id));
+            return View(vm);
         }
 
         // GET: DrinkInCarts/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, DrinkInCartCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var drinkInCart = await _drinkInCartRepository.FindAsync(id);
-
-            if (drinkInCart == null)
+            vm.DrinkInCart = await _drinkInCartRepository.FindAsync(id);
+            if (vm.DrinkInCart == null)
             {
                 return NotFound();
             }
+            vm.DrinkSelectList = new SelectList(_context.Drinks, nameof(Drink.Id), nameof(Drink.Name));
+            vm.CartSelectList = new SelectList(_context.Carts, nameof(Cart.Id), nameof(Cart.Id));
 
-            return View(drinkInCart);
+            return View(vm);
         }
 
         // POST: DrinkInCarts/Edit/5
@@ -93,24 +98,23 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            [Bind("Quantity,DrinkId,CartId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            DrinkInCart drinkInCart)
+        public async Task<IActionResult> Edit(Guid id, DrinkInCartCreateEditViewModel vm)
         {
-            if (id != drinkInCart.Id)
+            if (id != vm.DrinkInCart.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _drinkInCartRepository.Update(drinkInCart);
+                _drinkInCartRepository.Update(vm.DrinkInCart);
                 await _drinkInCartRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(drinkInCart);
+            vm.DrinkSelectList = new SelectList(_context.Drinks, nameof(Drink.Id), nameof(Drink.Name));
+            vm.CartSelectList = new SelectList(_context.Carts, nameof(Cart.Id), nameof(Cart.Id));
+            return View(vm);
         }
 
         // GET: DrinkInCarts/Delete/5

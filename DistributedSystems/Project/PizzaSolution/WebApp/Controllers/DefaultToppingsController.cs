@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -44,9 +46,13 @@ namespace WebApp.Controllers
         }
 
         // GET: DefaultToppings/Create
+           // GET: DefaultToppings/Create
         public IActionResult Create()
         {
-            return View();
+            var vm =  new DefaultToppingCreateEditViewModel();
+            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaTypeSelectList = new SelectList(_context.PizzaTypes, nameof(PizzaType.Id), nameof(PizzaType.Name));
+            return View(vm);
         }
 
         // POST: DefaultToppings/Create
@@ -54,38 +60,38 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("ToppingId,PizzaTypeId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            DefaultTopping defaultTopping)
+        public async Task<IActionResult> Create(DefaultToppingCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
                 //defaultTopping.Id = Guid.NewGuid();
-                _defaultToppingRepository.Add(defaultTopping);
+                _defaultToppingRepository.Add(vm.DefaultTopping);
                 await _defaultToppingRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(defaultTopping);
+            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaTypeSelectList = new SelectList(_context.PizzaTypes, nameof(PizzaType.Id), nameof(PizzaType.Name));
+            return View(vm);
         }
 
         // GET: DefaultToppings/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, DefaultToppingCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var defaultTopping = await _defaultToppingRepository.FindAsync(id);
-
-            if (defaultTopping == null)
+            vm.DefaultTopping = await _defaultToppingRepository.FindAsync(id);
+            if (vm.DefaultTopping == null)
             {
                 return NotFound();
             }
+            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaTypeSelectList = new SelectList(_context.PizzaTypes, nameof(PizzaType.Id), nameof(PizzaType.Name));
 
-            return View(defaultTopping);
+            return View(vm);
         }
 
         // POST: DefaultToppings/Edit/5
@@ -93,24 +99,23 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            [Bind("ToppingId,PizzaTypeId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            DefaultTopping defaultTopping)
+        public async Task<IActionResult> Edit(Guid id, DefaultToppingCreateEditViewModel vm)
         {
-            if (id != defaultTopping.Id)
+            if (id != vm.DefaultTopping.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _defaultToppingRepository.Update(defaultTopping);
+                _defaultToppingRepository.Update(vm.DefaultTopping);
                 await _defaultToppingRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(defaultTopping);
+            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaTypeSelectList = new SelectList(_context.PizzaTypes, nameof(PizzaType.Id), nameof(PizzaType.Name));
+            return View(vm);
         }
 
         // GET: DefaultToppings/Delete/5

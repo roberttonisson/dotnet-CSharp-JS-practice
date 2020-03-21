@@ -61,7 +61,6 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //crust.Id = Guid.NewGuid();
                 _crustRepository.Add(vm.Crust);
                 await _crustRepository.SaveChangesAsync();
 
@@ -71,21 +70,21 @@ namespace WebApp.Controllers
         }
 
         // GET: Crusts/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, CrustCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var crust = await _crustRepository.FindAsync(id);
+            vm.Crust = await _crustRepository.FindAsync(id);
 
-            if (crust == null)
+            if (vm.Crust == null)
             {
                 return NotFound();
             }
 
-            return View(crust);
+            return View(vm);
         }
 
         // POST: Crusts/Edit/5
@@ -94,27 +93,26 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id,
-            [Bind("Name,Price,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Crust crust)
+            CrustCreateEditViewModel vm)
         {
-            if (id != crust.Id)
+            if (id != vm.Crust.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _crustRepository.Update(crust);
+                _crustRepository.Update(vm.Crust);
                 await _crustRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(crust);
+            return View(vm);
         }
 
         // GET: Crusts/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        public async Task<IActionResult> Delete(Guid? id, CrustCreateEditViewModel vm)
         {
             if (id == null)
             {

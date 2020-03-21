@@ -18,7 +18,6 @@ namespace DAL.App.EF
         public DbSet<Invoice> Invoices { get; set; } = default!;
         public DbSet<InvoiceLine> InvoiceLines { get; set; } = default!;
         public DbSet<PizzaInCart> PizzaInCarts { get; set; } = default!;
-        public DbSet<PizzaRestaurant> PizzaRestaurants { get; set; } = default!;
         public DbSet<PizzaType> PizzaTypes { get; set; } = default!;
         public DbSet<Size> Sizes { get; set; } = default!;
         public DbSet<Topping> Toppings { get; set; } = default!;
@@ -32,5 +31,6 @@ namespace DAL.App.EF
             : base(options)
         {
         }
+        
     }
 }

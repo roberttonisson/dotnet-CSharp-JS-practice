@@ -7,6 +7,9 @@ namespace WebApp.Models
     {
         public InvoiceLine InvoiceLine { get; set; } = default!;
 
-        public SelectList? InvoiceLineSelectList { get; set; }
+        public SelectList? PizzaInCartSelectList { get; set; }
+        public SelectList? DrinkInCartSelectList { get; set; }
+        public SelectList? InvoiceSelectList { get; set; }
+        
     }
 }

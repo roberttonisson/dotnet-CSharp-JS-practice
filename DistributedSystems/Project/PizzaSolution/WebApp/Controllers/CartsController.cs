@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Domain.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -46,7 +49,9 @@ namespace WebApp.Controllers
         // GET: Carts/Create
         public IActionResult Create()
         {
-            return View();
+            var vm =  new CartCreateEditViewModel();
+            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            return View(vm);
         }
 
         // POST: Carts/Create
@@ -54,38 +59,36 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("UserId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Cart cart)
+        public async Task<IActionResult> Create(CartCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
                 //cart.Id = Guid.NewGuid();
-                _cartRepository.Add(cart);
+                _cartRepository.Add(vm.Cart);
                 await _cartRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(cart);
+            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            return View(vm);
         }
 
         // GET: Carts/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, CartCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var cart = await _cartRepository.FindAsync(id);
-
-            if (cart == null)
+            vm.Cart = await _cartRepository.FindAsync(id);
+            if (vm.Cart == null)
             {
                 return NotFound();
             }
+            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
 
-            return View(cart);
+            return View(vm);
         }
 
         // POST: Carts/Edit/5
@@ -93,24 +96,22 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            [Bind("UserId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Cart cart)
+        public async Task<IActionResult> Edit(Guid id, CartCreateEditViewModel vm)
         {
-            if (id != cart.Id)
+            if (id != vm.Cart.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _cartRepository.Update(cart);
+                _cartRepository.Update(vm.Cart);
                 await _cartRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(cart);
+            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            return View(vm);
         }
 
         // GET: Carts/Delete/5

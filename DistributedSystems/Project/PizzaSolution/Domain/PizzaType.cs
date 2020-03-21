@@ -12,10 +12,7 @@ namespace Domain
 
         [Column(TypeName = "decimal(6,2)")]
         public decimal Price { get; set; } = default!;
-        
-        public Guid PizzaRestaurantId { get; set; } = default!;
-        public PizzaRestaurant? PizzaRestaurant { get; set; }
-        
+
         public ICollection<DefaultTopping>? DefaultToppings { get; set; }
         
     }

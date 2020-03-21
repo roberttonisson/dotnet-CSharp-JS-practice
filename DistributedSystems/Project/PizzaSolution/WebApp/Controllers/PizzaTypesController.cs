@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -46,7 +47,8 @@ namespace WebApp.Controllers
         // GET: PizzaTypes/Create
         public IActionResult Create()
         {
-            return View();
+            var vm = new PizzaTypeCreateEditViewModel();
+            return View(vm);
         }
 
         // POST: PizzaTypes/Create
@@ -54,38 +56,35 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Name,Price,PizzaRestaurantId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")] 
-            PizzaType pizzaType)
+        public async Task<IActionResult> Create(PizzaTypeCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                //pizzaType.Id = Guid.NewGuid();
-                _pizzaTypeRepository.Add(pizzaType);
+                //crust.Id = Guid.NewGuid();
+                _pizzaTypeRepository.Add(vm.PizzaType);
                 await _pizzaTypeRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(pizzaType);
+            return View(vm);
         }
 
         // GET: PizzaTypes/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, PizzaTypeCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var pizzaType = await _pizzaTypeRepository.FindAsync(id);
+            vm.PizzaType = await _pizzaTypeRepository.FindAsync(id);
 
-            if (pizzaType == null)
+            if (vm.PizzaType == null)
             {
                 return NotFound();
             }
 
-            return View(pizzaType);
+            return View(vm);
         }
 
         // POST: PizzaTypes/Edit/5
@@ -94,23 +93,22 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id,
-            [Bind("Name,Price,PizzaRestaurantId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")] 
-            PizzaType pizzaType)
+            PizzaTypeCreateEditViewModel vm)
         {
-            if (id != pizzaType.Id)
+            if (id != vm.PizzaType.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _pizzaTypeRepository.Update(pizzaType);
+                _pizzaTypeRepository.Update(vm.PizzaType);
                 await _pizzaTypeRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(pizzaType);
+            return View(vm);
         }
 
         // GET: PizzaTypes/Delete/5

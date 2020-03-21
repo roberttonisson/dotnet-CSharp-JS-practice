@@ -103,4 +103,17 @@
       <_ContentIncludedByDefault Remove="Views\InvoiceLines\Index.cshtml" />
     </ItemGroup>
 
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Views\Transports\Create.cshtml" />
+      <UpToDateCheckInput Remove="Views\Transports\Delete.cshtml" />
+      <UpToDateCheckInput Remove="Views\Transports\Details.cshtml" />
+      <UpToDateCheckInput Remove="Views\Transports\Edit.cshtml" />
+      <UpToDateCheckInput Remove="Views\Transports\Index.cshtml" />
+      <UpToDateCheckInput Remove="Views\PizzaRestaurants\Create.cshtml" />
+      <UpToDateCheckInput Remove="Views\PizzaRestaurants\Delete.cshtml" />
+      <UpToDateCheckInput Remove="Views\PizzaRestaurants\Details.cshtml" />
+      <UpToDateCheckInput Remove="Views\PizzaRestaurants\Edit.cshtml" />
+      <UpToDateCheckInput Remove="Views\PizzaRestaurants\Index.cshtml" />
+    </ItemGroup>
+
 </Project>

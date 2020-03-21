@@ -6,7 +6,5 @@ namespace WebApp.Models
     public class ToppingCreateEditViewModel
     {
         public Topping Topping { get; set; } = default!;
-
-        public SelectList? ToppingSelectList { get; set; }
     }
 }

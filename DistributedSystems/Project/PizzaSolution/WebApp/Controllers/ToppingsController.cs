@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -18,6 +19,7 @@ namespace WebApp.Controllers
             _context = context;
             _toppingRepository = new ToppingRepository(_context);
         }
+
 
         // GET: Toppings
         public async Task<IActionResult> Index()
@@ -46,7 +48,8 @@ namespace WebApp.Controllers
         // GET: Toppings/Create
         public IActionResult Create()
         {
-            return View();
+            var vm = new ToppingCreateEditViewModel();
+            return View(vm);
         }
 
         // POST: Toppings/Create
@@ -54,38 +57,36 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Name,Price,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Topping topping)
+        public async Task<IActionResult> Create(ToppingCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                //topping.Id = Guid.NewGuid();
-                _toppingRepository.Add(topping);
+                //crust.Id = Guid.NewGuid();
+                _toppingRepository.Add(vm.Topping);
                 await _toppingRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(topping);
+            return View(vm);
         }
 
         // GET: Toppings/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, ToppingCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var topping = await _toppingRepository.FindAsync(id);
+            vm.Topping = await _toppingRepository.FindAsync(id);
 
-            if (topping == null)
+            if (vm.Topping == null)
             {
                 return NotFound();
             }
 
-            return View(topping);
+            return View(vm);
         }
 
         // POST: Toppings/Edit/5
@@ -94,23 +95,22 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id,
-            [Bind("Name,Price,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Topping topping)
+            ToppingCreateEditViewModel vm)
         {
-            if (id != topping.Id)
+            if (id != vm.Topping.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _toppingRepository.Update(topping);
+                _toppingRepository.Update(vm.Topping);
                 await _toppingRepository.SaveChangesAsync();
-                
+
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(topping);
+            return View(vm);
         }
 
         // GET: Toppings/Delete/5

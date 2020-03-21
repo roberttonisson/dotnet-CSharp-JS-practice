@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -43,10 +45,13 @@ namespace WebApp.Controllers
             return View(partyOrderInvoice);
         }
 
-        // GET: PartyOrderInvoices/Create
+          // GET: PartyOrderInvoices/Create
         public IActionResult Create()
         {
-            return View();
+            var vm =  new PartyOrderInvoiceCreateEditViewModel();
+            vm.PartyOrderSelectList = new SelectList(_context.PartyOrders, nameof(PartyOrder.Id), nameof(PartyOrder.Id));
+            vm.InvoiceSelectList = new SelectList(_context.Invoices, nameof(Invoice.Id), nameof(Invoice.Id));
+            return View(vm);
         }
 
         // POST: PartyOrderInvoices/Create
@@ -54,38 +59,38 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("PartyOrderId,InvoiceId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            PartyOrderInvoice partyOrderInvoice)
+        public async Task<IActionResult> Create(PartyOrderInvoiceCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
                 //partyOrderInvoice.Id = Guid.NewGuid();
-                _partyOrderInvoiceRepository.Add(partyOrderInvoice);
+                _partyOrderInvoiceRepository.Add(vm.PartyOrderInvoice);
                 await _partyOrderInvoiceRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(partyOrderInvoice);
+            vm.PartyOrderSelectList = new SelectList(_context.PartyOrders, nameof(PartyOrder.Id), nameof(PartyOrder.Id));
+            vm.InvoiceSelectList = new SelectList(_context.Invoices, nameof(Invoice.Id), nameof(Invoice.Id));
+            return View(vm);
         }
 
         // GET: PartyOrderInvoices/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, PartyOrderInvoiceCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var partyOrderInvoice = await _partyOrderInvoiceRepository.FindAsync(id);
-
-            if (partyOrderInvoice == null)
+            vm.PartyOrderInvoice = await _partyOrderInvoiceRepository.FindAsync(id);
+            if (vm.PartyOrderInvoice == null)
             {
                 return NotFound();
             }
+            vm.PartyOrderSelectList = new SelectList(_context.PartyOrders, nameof(PartyOrder.Id), nameof(PartyOrder.Id));
+            vm.InvoiceSelectList = new SelectList(_context.Invoices, nameof(Invoice.Id), nameof(Invoice.Id));
 
-            return View(partyOrderInvoice);
+            return View(vm);
         }
 
         // POST: PartyOrderInvoices/Edit/5
@@ -93,24 +98,23 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            [Bind("PartyOrderId,InvoiceId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            PartyOrderInvoice partyOrderInvoice)
+        public async Task<IActionResult> Edit(Guid id, PartyOrderInvoiceCreateEditViewModel vm)
         {
-            if (id != partyOrderInvoice.Id)
+            if (id != vm.PartyOrderInvoice.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _partyOrderInvoiceRepository.Update(partyOrderInvoice);
+                _partyOrderInvoiceRepository.Update(vm.PartyOrderInvoice);
                 await _partyOrderInvoiceRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(partyOrderInvoice);
+            vm.PartyOrderSelectList = new SelectList(_context.PartyOrders, nameof(PartyOrder.Id), nameof(PartyOrder.Id));
+            vm.InvoiceSelectList = new SelectList(_context.Invoices, nameof(Invoice.Id), nameof(Invoice.Id));
+            return View(vm);
         }
 
         // GET: PartyOrderInvoices/Delete/5

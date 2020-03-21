@@ -7,6 +7,7 @@ namespace WebApp.Models
     {
         public Invoice Invoice { get; set; } = default!;
 
-        public SelectList? InvoiceSelectList { get; set; }
+        public SelectList? AppUserSelectList { get; set; }
+        public SelectList? TransportSelectList { get; set; }
     }
 }

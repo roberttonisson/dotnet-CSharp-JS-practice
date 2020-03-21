@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -43,10 +45,14 @@ namespace WebApp.Controllers
             return View(invoiceLine);
         }
 
-        // GET: InvoiceLines/Create
+             // GET: InvoiceLines/Create
         public IActionResult Create()
         {
-            return View();
+            var vm =  new InvoiceLineCreateEditViewModel();
+            vm.InvoiceSelectList = new SelectList(_context.Invoices, nameof(Invoice.Id), nameof(Invoice.Id));
+            vm.DrinkInCartSelectList = new SelectList(_context.DrinkInCarts, nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
+            vm.PizzaInCartSelectList = new SelectList(_context.PizzaInCarts, nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            return View(vm);
         }
 
         // POST: InvoiceLines/Create
@@ -54,38 +60,40 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Quantity,PizzaInCartId,DrinkInCartId,InvoiceId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            InvoiceLine invoiceLine)
+        public async Task<IActionResult> Create(InvoiceLineCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
                 //invoiceLine.Id = Guid.NewGuid();
-                _invoiceLineRepository.Add(invoiceLine);
+                _invoiceLineRepository.Add(vm.InvoiceLine);
                 await _invoiceLineRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(invoiceLine);
+            vm.InvoiceSelectList = new SelectList(_context.Invoices, nameof(Invoice.Id), nameof(Invoice.Id));
+            vm.DrinkInCartSelectList = new SelectList(_context.DrinkInCarts, nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
+            vm.PizzaInCartSelectList = new SelectList(_context.PizzaInCarts, nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            return View(vm);
         }
 
         // GET: InvoiceLines/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, InvoiceLineCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var invoiceLine = await _invoiceLineRepository.FindAsync(id);
-
-            if (invoiceLine == null)
+            vm.InvoiceLine = await _invoiceLineRepository.FindAsync(id);
+            if (vm.InvoiceLine == null)
             {
                 return NotFound();
             }
+            vm.InvoiceSelectList = new SelectList(_context.Invoices, nameof(Invoice.Id), nameof(Invoice.Id));
+            vm.DrinkInCartSelectList = new SelectList(_context.DrinkInCarts, nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
+            vm.PizzaInCartSelectList = new SelectList(_context.PizzaInCarts, nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
 
-            return View(invoiceLine);
+            return View(vm);
         }
 
         // POST: InvoiceLines/Edit/5
@@ -93,24 +101,24 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            [Bind("Quantity,PizzaInCartId,DrinkInCartId,InvoiceId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            InvoiceLine invoiceLine)
+        public async Task<IActionResult> Edit(Guid id, InvoiceLineCreateEditViewModel vm)
         {
-            if (id != invoiceLine.Id)
+            if (id != vm.InvoiceLine.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _invoiceLineRepository.Update(invoiceLine);
+                _invoiceLineRepository.Update(vm.InvoiceLine);
                 await _invoiceLineRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(invoiceLine);
+            vm.InvoiceSelectList = new SelectList(_context.Invoices, nameof(Invoice.Id), nameof(Invoice.Id));
+            vm.DrinkInCartSelectList = new SelectList(_context.DrinkInCarts, nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
+            vm.PizzaInCartSelectList = new SelectList(_context.PizzaInCarts, nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            return View(vm);
         }
 
         // GET: InvoiceLines/Delete/5

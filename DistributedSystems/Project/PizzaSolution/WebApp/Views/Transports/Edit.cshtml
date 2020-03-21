@@ -1,4 +1,4 @@
-@model Domain.Transport
+@model TransportCreateEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,35 +13,35 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Cost" class="control-label"></label>
-                <input asp-for="Cost" class="form-control" />
-                <span asp-validation-for="Cost" class="text-danger"></span>
+                <label asp-for="Transport.Cost" class="control-label"></label>
+                <input asp-for="Transport.Cost" class="form-control" />
+                <span asp-validation-for="Transport.Cost" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
+                <label asp-for="Transport.Address" class="control-label"></label>
+                <input asp-for="Transport.Address" class="form-control" />
+                <span asp-validation-for="Transport.Address" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Transport.Id" />
             <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                <label asp-for="Transport.CreatedBy" class="control-label"></label>
+                <input asp-for="Transport.CreatedBy" class="form-control" />
+                <span asp-validation-for="Transport.CreatedBy" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ChangedBy" class="control-label"></label>
-                <input asp-for="ChangedBy" class="form-control" />
-                <span asp-validation-for="ChangedBy" class="text-danger"></span>
+                <label asp-for="Transport.CreatedAt" class="control-label"></label>
+                <input asp-for="Transport.CreatedAt" class="form-control" />
+                <span asp-validation-for="Transport.CreatedAt" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ChangedAt" class="control-label"></label>
-                <input asp-for="ChangedAt" class="form-control" />
-                <span asp-validation-for="ChangedAt" class="text-danger"></span>
+                <label asp-for="Transport.ChangedBy" class="control-label"></label>
+                <input asp-for="Transport.ChangedBy" class="form-control" />
+                <span asp-validation-for="Transport.ChangedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Transport.ChangedAt" class="control-label"></label>
+                <input asp-for="Transport.ChangedAt" class="form-control" />
+                <span asp-validation-for="Transport.ChangedAt" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

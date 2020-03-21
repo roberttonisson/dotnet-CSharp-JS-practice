@@ -7,6 +7,8 @@ namespace WebApp.Models
     {
         public AdditionalTopping AdditionalTopping { get; set; } = default!;
 
-        public SelectList? AdditionalToppingSelectList { get; set; }
+        public SelectList? PizzaInCartSelectList { get; set; }
+        
+        public SelectList? ToppingSelectList { get; set; }
     }
 }

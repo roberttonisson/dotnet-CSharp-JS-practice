@@ -6,7 +6,5 @@ namespace WebApp.Models
     public class PizzaTypeCreateEditViewModel
     {
         public PizzaType PizzaType { get; set; } = default!;
-
-        public SelectList? PizzaTypeSelectList { get; set; }
     }
 }

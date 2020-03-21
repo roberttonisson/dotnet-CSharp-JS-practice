@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
@@ -46,7 +47,8 @@ namespace WebApp.Controllers
         // GET: Transports/Create
         public IActionResult Create()
         {
-            return View();
+            var vm = new TransportCreateEditViewModel();
+            return View(vm);
         }
 
         // POST: Transports/Create
@@ -54,38 +56,35 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Cost,Address,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Transport transport)
+        public async Task<IActionResult> Create(TransportCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                //transport.Id = Guid.NewGuid();
-                _transportRepository.Add(transport);
+                //crust.Id = Guid.NewGuid();
+                _transportRepository.Add(vm.Transport);
                 await _transportRepository.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(transport);
+            return View(vm);
         }
 
         // GET: Transports/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? id, TransportCreateEditViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var transport = await _transportRepository.FindAsync(id);
+            vm.Transport = await _transportRepository.FindAsync(id);
 
-            if (transport == null)
+            if (vm.Transport == null)
             {
                 return NotFound();
             }
 
-            return View(transport);
+            return View(vm);
         }
 
         // POST: Transports/Edit/5
@@ -94,23 +93,22 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id,
-            [Bind("Cost,Address,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
-            Transport transport)
+            TransportCreateEditViewModel vm)
         {
-            if (id != transport.Id)
+            if (id != vm.Transport.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _transportRepository.Update(transport);
+                _transportRepository.Update(vm.Transport);
                 await _transportRepository.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(transport);
+            return View(vm);
         }
 
         // GET: Transports/Delete/5

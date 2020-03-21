@@ -7,6 +7,6 @@ namespace WebApp.Models
     {
         public Cart Cart { get; set; } = default!;
 
-        public SelectList? CartSelectList { get; set; }
+        public SelectList? AppUserSelectList { get; set; }
     }
 }
