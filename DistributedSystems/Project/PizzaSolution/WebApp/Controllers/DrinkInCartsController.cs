@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,31 +11,30 @@ namespace WebApp.Controllers
     public class DrinkInCartsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IDrinkInCartRepository _drinkInCartRepository;
 
         public DrinkInCartsController(AppDbContext context)
         {
             _context = context;
+            _drinkInCartRepository = new DrinkInCartRepository(_context);
         }
 
         // GET: DrinkInCarts
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.DrinkInCarts.Include(d => d.Cart).Include(d => d.Drink);
-            return View(await appDbContext.ToListAsync());
+            return View(await _drinkInCartRepository.AllAsync());
         }
 
         // GET: DrinkInCarts/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var drinkInCart = await _context.DrinkInCarts
-                .Include(d => d.Cart)
-                .Include(d => d.Drink)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var drinkInCart = await _drinkInCartRepository.FindAsync(id);
+
             if (drinkInCart == null)
             {
                 return NotFound();
@@ -49,8 +46,6 @@ namespace WebApp.Controllers
         // GET: DrinkInCarts/Create
         public IActionResult Create()
         {
-            ViewData["CartId"] = new SelectList(_context.Carts, "Id", "Id");
-            ViewData["DrinkId"] = new SelectList(_context.Drinks, "Id", "Id");
             return View();
         }
 
@@ -59,34 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Quantity,DrinkId,CartId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] DrinkInCart drinkInCart)
+        public async Task<IActionResult> Create(
+            [Bind("Quantity,DrinkId,CartId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            DrinkInCart drinkInCart)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(drinkInCart);
-                await _context.SaveChangesAsync();
+                //drinkInCart.Id = Guid.NewGuid();
+                _drinkInCartRepository.Add(drinkInCart);
+                await _drinkInCartRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CartId"] = new SelectList(_context.Carts, "Id", "Id", drinkInCart.CartId);
-            ViewData["DrinkId"] = new SelectList(_context.Drinks, "Id", "Id", drinkInCart.DrinkId);
+
             return View(drinkInCart);
         }
 
         // GET: DrinkInCarts/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var drinkInCart = await _context.DrinkInCarts.FindAsync(id);
+            var drinkInCart = await _drinkInCartRepository.FindAsync(id);
+
             if (drinkInCart == null)
             {
                 return NotFound();
             }
-            ViewData["CartId"] = new SelectList(_context.Carts, "Id", "Id", drinkInCart.CartId);
-            ViewData["DrinkId"] = new SelectList(_context.Drinks, "Id", "Id", drinkInCart.DrinkId);
+
             return View(drinkInCart);
         }
 
@@ -95,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Quantity,DrinkId,CartId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] DrinkInCart drinkInCart)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Quantity,DrinkId,CartId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            DrinkInCart drinkInCart)
         {
             if (id != drinkInCart.Id)
             {
@@ -104,41 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(drinkInCart);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DrinkInCartExists(drinkInCart.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _drinkInCartRepository.Update(drinkInCart);
+                await _drinkInCartRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CartId"] = new SelectList(_context.Carts, "Id", "Id", drinkInCart.CartId);
-            ViewData["DrinkId"] = new SelectList(_context.Drinks, "Id", "Id", drinkInCart.DrinkId);
+
             return View(drinkInCart);
         }
 
         // GET: DrinkInCarts/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var drinkInCart = await _context.DrinkInCarts
-                .Include(d => d.Cart)
-                .Include(d => d.Drink)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var drinkInCart = await _drinkInCartRepository.FindAsync(id);
             if (drinkInCart == null)
             {
                 return NotFound();
@@ -150,17 +133,12 @@ namespace WebApp.Controllers
         // POST: DrinkInCarts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var drinkInCart = await _context.DrinkInCarts.FindAsync(id);
-            _context.DrinkInCarts.Remove(drinkInCart);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var drinkInCart = _drinkInCartRepository.Remove(id);
+            await _drinkInCartRepository.SaveChangesAsync();
 
-        private bool DrinkInCartExists(string id)
-        {
-            return _context.DrinkInCarts.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

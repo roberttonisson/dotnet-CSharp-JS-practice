@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.App.EF.Migrations
@@ -12,7 +11,7 @@ namespace DAL.App.EF.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(nullable: true)
@@ -26,7 +25,7 @@ namespace DAL.App.EF.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     UserName = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
@@ -54,13 +53,13 @@ namespace DAL.App.EF.Migrations
                 name: "Crusts",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
-                    Price = table.Column<decimal>(nullable: false)
+                    Price = table.Column<decimal>(type: "numeric(6,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -71,14 +70,14 @@ namespace DAL.App.EF.Migrations
                 name: "Drinks",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
-                    Price = table.Column<decimal>(nullable: false),
-                    Size = table.Column<decimal>(nullable: false)
+                    Price = table.Column<decimal>(type: "decimal(6,2)", nullable: false),
+                    Size = table.Column<decimal>(type: "decimal(4,3)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -89,11 +88,11 @@ namespace DAL.App.EF.Migrations
                 name: "PizzaRestaurants",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
                     Address = table.Column<string>(maxLength: 256, nullable: false)
                 },
@@ -106,13 +105,13 @@ namespace DAL.App.EF.Migrations
                 name: "Sizes",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
-                    Price = table.Column<decimal>(nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(6,2)", nullable: false),
                     SizeCm = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -124,13 +123,13 @@ namespace DAL.App.EF.Migrations
                 name: "Toppings",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
-                    Price = table.Column<decimal>(nullable: false)
+                    Price = table.Column<decimal>(type: "decimal(6,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -141,12 +140,12 @@ namespace DAL.App.EF.Migrations
                 name: "Transports",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
-                    Cost = table.Column<decimal>(nullable: false),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
+                    Cost = table.Column<decimal>(type: "decimal(6,2)", nullable: false),
                     Address = table.Column<string>(maxLength: 256, nullable: false)
                 },
                 constraints: table =>
@@ -159,8 +158,8 @@ namespace DAL.App.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RoleId = table.Column<string>(nullable: false),
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<Guid>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
                 },
@@ -180,8 +179,8 @@ namespace DAL.App.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<string>(nullable: false),
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
                 },
@@ -203,7 +202,7 @@ namespace DAL.App.EF.Migrations
                     LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
                     ProviderKey = table.Column<string>(maxLength: 128, nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: false)
+                    UserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -220,8 +219,8 @@ namespace DAL.App.EF.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(nullable: false),
-                    RoleId = table.Column<string>(nullable: false)
+                    UserId = table.Column<Guid>(nullable: false),
+                    RoleId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -244,7 +243,7 @@ namespace DAL.App.EF.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
                     LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
                     Name = table.Column<string>(maxLength: 128, nullable: false),
                     Value = table.Column<string>(nullable: true)
@@ -264,13 +263,13 @@ namespace DAL.App.EF.Migrations
                 name: "Carts",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
-                    UserId = table.Column<string>(maxLength: 36, nullable: false),
-                    AppUserId = table.Column<string>(nullable: true)
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
+                    AppUserId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -287,16 +286,16 @@ namespace DAL.App.EF.Migrations
                 name: "PartyOrders",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
                     Start = table.Column<DateTime>(nullable: false),
                     End = table.Column<DateTime>(nullable: true),
                     Address = table.Column<string>(maxLength: 256, nullable: false),
                     InviteKey = table.Column<string>(maxLength: 8, nullable: false),
-                    OwnerId = table.Column<string>(maxLength: 36, nullable: false)
+                    OwnerId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -313,14 +312,14 @@ namespace DAL.App.EF.Migrations
                 name: "PizzaTypes",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
-                    Price = table.Column<decimal>(nullable: false),
-                    PizzaRestaurantId = table.Column<string>(maxLength: 36, nullable: false)
+                    Price = table.Column<decimal>(type: "decimal(6,2)", nullable: false),
+                    PizzaRestaurantId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -337,15 +336,15 @@ namespace DAL.App.EF.Migrations
                 name: "Invoices",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
                     IsPaid = table.Column<bool>(nullable: false),
-                    UserId = table.Column<string>(maxLength: 36, nullable: false),
-                    AppUserId = table.Column<string>(nullable: true),
-                    TransportId = table.Column<string>(maxLength: 36, nullable: false)
+                    UserId = table.Column<Guid>(nullable: false),
+                    AppUserId = table.Column<Guid>(nullable: true),
+                    TransportId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -368,14 +367,14 @@ namespace DAL.App.EF.Migrations
                 name: "DrinkInCarts",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
                     Quantity = table.Column<int>(nullable: false),
-                    DrinkId = table.Column<string>(maxLength: 36, nullable: false),
-                    CartId = table.Column<string>(maxLength: 36, nullable: false)
+                    DrinkId = table.Column<Guid>(nullable: false),
+                    CartId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -398,13 +397,13 @@ namespace DAL.App.EF.Migrations
                 name: "DefaultToppings",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
-                    ToppingId = table.Column<string>(maxLength: 36, nullable: false),
-                    PizzaTypeId = table.Column<string>(maxLength: 36, nullable: false)
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
+                    ToppingId = table.Column<Guid>(nullable: false),
+                    PizzaTypeId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -427,16 +426,16 @@ namespace DAL.App.EF.Migrations
                 name: "PizzaInCarts",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
                     Quantity = table.Column<int>(nullable: false),
-                    PizzaTypeId = table.Column<string>(maxLength: 36, nullable: false),
-                    CrustId = table.Column<string>(maxLength: 36, nullable: false),
-                    SizeId = table.Column<string>(maxLength: 36, nullable: false),
-                    CartId = table.Column<string>(maxLength: 36, nullable: false)
+                    PizzaTypeId = table.Column<Guid>(nullable: false),
+                    CrustId = table.Column<Guid>(nullable: false),
+                    SizeId = table.Column<Guid>(nullable: false),
+                    CartId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -471,13 +470,13 @@ namespace DAL.App.EF.Migrations
                 name: "PartyOrderInvoices",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
-                    PartyOrderId = table.Column<string>(maxLength: 36, nullable: false),
-                    InvoiceId = table.Column<string>(maxLength: 36, nullable: false)
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
+                    PartyOrderId = table.Column<Guid>(nullable: false),
+                    InvoiceId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -500,14 +499,14 @@ namespace DAL.App.EF.Migrations
                 name: "AdditionalToppings",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
-                    ToppingId = table.Column<string>(maxLength: 36, nullable: false),
-                    PizzaInCartId = table.Column<string>(maxLength: 36, nullable: false),
-                    TransportId = table.Column<string>(nullable: true)
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
+                    ToppingId = table.Column<Guid>(nullable: false),
+                    PizzaInCartId = table.Column<Guid>(nullable: false),
+                    TransportId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -536,15 +535,15 @@ namespace DAL.App.EF.Migrations
                 name: "InvoiceLines",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    DeletedBy = table.Column<string>(nullable: true),
-                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
                     Quantity = table.Column<int>(nullable: false),
-                    PizzaInCartId = table.Column<string>(maxLength: 36, nullable: true),
-                    DrinkInCartId = table.Column<string>(maxLength: 36, nullable: true),
-                    InvoiceId = table.Column<string>(maxLength: 36, nullable: false)
+                    PizzaInCartId = table.Column<Guid>(nullable: true),
+                    DrinkInCartId = table.Column<Guid>(nullable: true),
+                    InvoiceId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -593,7 +592,8 @@ namespace DAL.App.EF.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -619,7 +619,8 @@ namespace DAL.App.EF.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_AppUserId",

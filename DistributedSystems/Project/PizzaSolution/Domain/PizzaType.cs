@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using DAL.Base;
 
 namespace Domain
 {
-    public class PizzaType : DomainEntityMetadata
+    public class PizzaType : DomainEntity
     {
         [MaxLength(64)] [MinLength(1)] public string Name { get; set; } = default!;
 
+        [Column(TypeName = "decimal(6,2)")]
         public decimal Price { get; set; } = default!;
         
-        [MaxLength(36)]
-        public string PizzaRestaurantId { get; set; } = default!;
+        public Guid PizzaRestaurantId { get; set; } = default!;
         public PizzaRestaurant? PizzaRestaurant { get; set; }
         
         public ICollection<DefaultTopping>? DefaultToppings { get; set; }

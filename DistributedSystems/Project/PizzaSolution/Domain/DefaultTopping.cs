@@ -1,16 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using DAL.Base;
 
 namespace Domain
 {
-    public class DefaultTopping : DomainEntityMetadata
+    public class DefaultTopping : DomainEntity
     {
-        [MaxLength(36)]
-        public string ToppingId { get; set; } = default!;
+        public Guid ToppingId { get; set; } = default!;
         public Topping? Topping { get; set; }
 
-        [MaxLength(36)] public string PizzaTypeId { get; set; } = default!;
+        public Guid PizzaTypeId { get; set; } = default!;
         public PizzaType? PizzaType { get; set; }
-
     }
 }

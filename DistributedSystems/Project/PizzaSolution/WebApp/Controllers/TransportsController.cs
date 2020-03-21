@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,28 +11,30 @@ namespace WebApp.Controllers
     public class TransportsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ITransportRepository _transportRepository;
 
         public TransportsController(AppDbContext context)
         {
             _context = context;
+            _transportRepository = new TransportRepository(_context);
         }
 
         // GET: Transports
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Transports.ToListAsync());
+            return View(await _transportRepository.AllAsync());
         }
 
         // GET: Transports/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var transport = await _context.Transports
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var transport = await _transportRepository.FindAsync(id);
+
             if (transport == null)
             {
                 return NotFound();
@@ -54,30 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Cost,Address,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] Transport transport)
+        public async Task<IActionResult> Create(
+            [Bind("Cost,Address,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            Transport transport)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(transport);
-                await _context.SaveChangesAsync();
+                //transport.Id = Guid.NewGuid();
+                _transportRepository.Add(transport);
+                await _transportRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(transport);
         }
 
         // GET: Transports/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var transport = await _context.Transports.FindAsync(id);
+            var transport = await _transportRepository.FindAsync(id);
+
             if (transport == null)
             {
                 return NotFound();
             }
+
             return View(transport);
         }
 
@@ -86,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Cost,Address,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] Transport transport)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Cost,Address,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            Transport transport)
         {
             if (id != transport.Id)
             {
@@ -95,37 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(transport);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TransportExists(transport.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _transportRepository.Update(transport);
+                await _transportRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
+
             return View(transport);
         }
 
         // GET: Transports/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var transport = await _context.Transports
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var transport = await _transportRepository.FindAsync(id);
             if (transport == null)
             {
                 return NotFound();
@@ -137,17 +133,12 @@ namespace WebApp.Controllers
         // POST: Transports/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var transport = await _context.Transports.FindAsync(id);
-            _context.Transports.Remove(transport);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var transport = _transportRepository.Remove(id);
+            await _transportRepository.SaveChangesAsync();
 
-        private bool TransportExists(string id)
-        {
-            return _context.Transports.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

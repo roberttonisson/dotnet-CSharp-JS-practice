@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,28 +11,30 @@ namespace WebApp.Controllers
     public class PizzaRestaurantsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IPizzaRestaurantRepository _pizzaRestaurantRepository;
 
         public PizzaRestaurantsController(AppDbContext context)
         {
             _context = context;
+            _pizzaRestaurantRepository = new PizzaRestaurantRepository(_context);
         }
 
         // GET: PizzaRestaurants
         public async Task<IActionResult> Index()
         {
-            return View(await _context.PizzaRestaurants.ToListAsync());
+            return View(await _pizzaRestaurantRepository.AllAsync());
         }
 
         // GET: PizzaRestaurants/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var pizzaRestaurant = await _context.PizzaRestaurants
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var pizzaRestaurant = await _pizzaRestaurantRepository.FindAsync(id);
+
             if (pizzaRestaurant == null)
             {
                 return NotFound();
@@ -54,30 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Address,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] PizzaRestaurant pizzaRestaurant)
+        public async Task<IActionResult> Create(
+            [Bind("Name,Address,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            PizzaRestaurant pizzaRestaurant)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(pizzaRestaurant);
-                await _context.SaveChangesAsync();
+                //pizzaRestaurant.Id = Guid.NewGuid();
+                _pizzaRestaurantRepository.Add(pizzaRestaurant);
+                await _pizzaRestaurantRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(pizzaRestaurant);
         }
 
         // GET: PizzaRestaurants/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var pizzaRestaurant = await _context.PizzaRestaurants.FindAsync(id);
+            var pizzaRestaurant = await _pizzaRestaurantRepository.FindAsync(id);
+
             if (pizzaRestaurant == null)
             {
                 return NotFound();
             }
+
             return View(pizzaRestaurant);
         }
 
@@ -86,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Address,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] PizzaRestaurant pizzaRestaurant)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Name,Address,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            PizzaRestaurant pizzaRestaurant)
         {
             if (id != pizzaRestaurant.Id)
             {
@@ -95,37 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(pizzaRestaurant);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PizzaRestaurantExists(pizzaRestaurant.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _pizzaRestaurantRepository.Update(pizzaRestaurant);
+                await _pizzaRestaurantRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
+
             return View(pizzaRestaurant);
         }
 
         // GET: PizzaRestaurants/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var pizzaRestaurant = await _context.PizzaRestaurants
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var pizzaRestaurant = await _pizzaRestaurantRepository.FindAsync(id);
             if (pizzaRestaurant == null)
             {
                 return NotFound();
@@ -137,17 +133,12 @@ namespace WebApp.Controllers
         // POST: PizzaRestaurants/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var pizzaRestaurant = await _context.PizzaRestaurants.FindAsync(id);
-            _context.PizzaRestaurants.Remove(pizzaRestaurant);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var pizzaRestaurant = _pizzaRestaurantRepository.Remove(id);
+            await _pizzaRestaurantRepository.SaveChangesAsync();
 
-        private bool PizzaRestaurantExists(string id)
-        {
-            return _context.PizzaRestaurants.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

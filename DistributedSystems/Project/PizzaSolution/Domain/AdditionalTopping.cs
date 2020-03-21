@@ -1,14 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using DAL.Base;
 
 namespace Domain
 {
-    public class AdditionalTopping : DomainEntityMetadata
+    public class AdditionalTopping : DomainEntity
     {
-        [MaxLength(36)] public string ToppingId { get; set; } = default!;
+        public Guid ToppingId { get; set; } = default!;
         public Topping? Topping { get; set; }
 
-        [MaxLength(36)] public string PizzaInCartId { get; set; } = default!;
+        public Guid PizzaInCartId { get; set; } = default!;
         public PizzaInCart? PizzaInCart { get; set; }
     }
 }

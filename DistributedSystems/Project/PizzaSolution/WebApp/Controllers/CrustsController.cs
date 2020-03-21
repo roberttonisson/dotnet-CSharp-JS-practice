@@ -1,40 +1,42 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using WebApp.Models;
 
 namespace WebApp.Controllers
 {
     public class CrustsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ICrustRepository _crustRepository;
 
         public CrustsController(AppDbContext context)
         {
             _context = context;
+            _crustRepository = new CrustRepository(_context);
         }
 
         // GET: Crusts
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Crusts.ToListAsync());
+            return View(await _crustRepository.AllAsync());
         }
 
         // GET: Crusts/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var crust = await _context.Crusts
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var crust = await _crustRepository.FindAsync(id);
+
             if (crust == null)
             {
                 return NotFound();
@@ -46,7 +48,8 @@ namespace WebApp.Controllers
         // GET: Crusts/Create
         public IActionResult Create()
         {
-            return View();
+            var vm = new CrustCreateEditViewModel();
+            return View(vm);
         }
 
         // POST: Crusts/Create
@@ -54,30 +57,34 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Price,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] Crust crust)
+        public async Task<IActionResult> Create(CrustCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(crust);
-                await _context.SaveChangesAsync();
+                //crust.Id = Guid.NewGuid();
+                _crustRepository.Add(vm.Crust);
+                await _crustRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(crust);
+            return View(vm);
         }
 
         // GET: Crusts/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var crust = await _context.Crusts.FindAsync(id);
+            var crust = await _crustRepository.FindAsync(id);
+
             if (crust == null)
             {
                 return NotFound();
             }
+
             return View(crust);
         }
 
@@ -86,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Price,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] Crust crust)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Name,Price,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            Crust crust)
         {
             if (id != crust.Id)
             {
@@ -95,37 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(crust);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CrustExists(crust.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _crustRepository.Update(crust);
+                await _crustRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
+
             return View(crust);
         }
 
         // GET: Crusts/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var crust = await _context.Crusts
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var crust = await _crustRepository.FindAsync(id);
             if (crust == null)
             {
                 return NotFound();
@@ -137,17 +133,12 @@ namespace WebApp.Controllers
         // POST: Crusts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var crust = await _context.Crusts.FindAsync(id);
-            _context.Crusts.Remove(crust);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var crust = _crustRepository.Remove(id);
+            await _crustRepository.SaveChangesAsync();
 
-        private bool CrustExists(string id)
-        {
-            return _context.Crusts.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

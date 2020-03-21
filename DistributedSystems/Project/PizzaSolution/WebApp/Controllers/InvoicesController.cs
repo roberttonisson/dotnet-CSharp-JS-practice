@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,30 +11,30 @@ namespace WebApp.Controllers
     public class InvoicesController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IInvoiceRepository _invoiceRepository;
 
         public InvoicesController(AppDbContext context)
         {
             _context = context;
+            _invoiceRepository = new InvoiceRepository(_context);
         }
 
         // GET: Invoices
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Invoices.Include(i => i.Transport);
-            return View(await appDbContext.ToListAsync());
+            return View(await _invoiceRepository.AllAsync());
         }
 
         // GET: Invoices/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var invoice = await _context.Invoices
-                .Include(i => i.Transport)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var invoice = await _invoiceRepository.FindAsync(id);
+
             if (invoice == null)
             {
                 return NotFound();
@@ -48,7 +46,6 @@ namespace WebApp.Controllers
         // GET: Invoices/Create
         public IActionResult Create()
         {
-            ViewData["TransportId"] = new SelectList(_context.Transports, "Id", "Id");
             return View();
         }
 
@@ -57,32 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IsPaid,UserId,TransportId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] Invoice invoice)
+        public async Task<IActionResult> Create(
+            [Bind("IsPaid,UserId,TransportId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            Invoice invoice)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(invoice);
-                await _context.SaveChangesAsync();
+                //invoice.Id = Guid.NewGuid();
+                _invoiceRepository.Add(invoice);
+                await _invoiceRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TransportId"] = new SelectList(_context.Transports, "Id", "Id", invoice.TransportId);
+
             return View(invoice);
         }
 
         // GET: Invoices/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var invoice = await _context.Invoices.FindAsync(id);
+            var invoice = await _invoiceRepository.FindAsync(id);
+
             if (invoice == null)
             {
                 return NotFound();
             }
-            ViewData["TransportId"] = new SelectList(_context.Transports, "Id", "Id", invoice.TransportId);
+
             return View(invoice);
         }
 
@@ -91,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("IsPaid,UserId,TransportId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] Invoice invoice)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("IsPaid,UserId,TransportId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            Invoice invoice)
         {
             if (id != invoice.Id)
             {
@@ -100,39 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(invoice);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!InvoiceExists(invoice.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _invoiceRepository.Update(invoice);
+                await _invoiceRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TransportId"] = new SelectList(_context.Transports, "Id", "Id", invoice.TransportId);
+
             return View(invoice);
         }
 
         // GET: Invoices/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var invoice = await _context.Invoices
-                .Include(i => i.Transport)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var invoice = await _invoiceRepository.FindAsync(id);
             if (invoice == null)
             {
                 return NotFound();
@@ -144,17 +133,12 @@ namespace WebApp.Controllers
         // POST: Invoices/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
-            _context.Invoices.Remove(invoice);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var invoice = _invoiceRepository.Remove(id);
+            await _invoiceRepository.SaveChangesAsync();
 
-        private bool InvoiceExists(string id)
-        {
-            return _context.Invoices.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

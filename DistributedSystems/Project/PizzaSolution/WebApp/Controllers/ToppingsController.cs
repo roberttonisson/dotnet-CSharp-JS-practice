@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,28 +11,30 @@ namespace WebApp.Controllers
     public class ToppingsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IToppingRepository _toppingRepository;
 
         public ToppingsController(AppDbContext context)
         {
             _context = context;
+            _toppingRepository = new ToppingRepository(_context);
         }
 
         // GET: Toppings
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Toppings.ToListAsync());
+            return View(await _toppingRepository.AllAsync());
         }
 
         // GET: Toppings/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var topping = await _context.Toppings
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var topping = await _toppingRepository.FindAsync(id);
+
             if (topping == null)
             {
                 return NotFound();
@@ -54,30 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Price,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] Topping topping)
+        public async Task<IActionResult> Create(
+            [Bind("Name,Price,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            Topping topping)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(topping);
-                await _context.SaveChangesAsync();
+                //topping.Id = Guid.NewGuid();
+                _toppingRepository.Add(topping);
+                await _toppingRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(topping);
         }
 
         // GET: Toppings/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var topping = await _context.Toppings.FindAsync(id);
+            var topping = await _toppingRepository.FindAsync(id);
+
             if (topping == null)
             {
                 return NotFound();
             }
+
             return View(topping);
         }
 
@@ -86,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Price,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] Topping topping)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Name,Price,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            Topping topping)
         {
             if (id != topping.Id)
             {
@@ -95,37 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(topping);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ToppingExists(topping.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _toppingRepository.Update(topping);
+                await _toppingRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
+
             return View(topping);
         }
 
         // GET: Toppings/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var topping = await _context.Toppings
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var topping = await _toppingRepository.FindAsync(id);
             if (topping == null)
             {
                 return NotFound();
@@ -137,17 +133,12 @@ namespace WebApp.Controllers
         // POST: Toppings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var topping = await _context.Toppings.FindAsync(id);
-            _context.Toppings.Remove(topping);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var topping = _toppingRepository.Remove(id);
+            await _toppingRepository.SaveChangesAsync();
 
-        private bool ToppingExists(string id)
-        {
-            return _context.Toppings.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

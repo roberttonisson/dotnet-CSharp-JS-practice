@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,32 +11,30 @@ namespace WebApp.Controllers
     public class InvoiceLinesController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IInvoiceLineRepository _invoiceLineRepository;
 
         public InvoiceLinesController(AppDbContext context)
         {
             _context = context;
+            _invoiceLineRepository = new InvoiceLineRepository(_context);
         }
 
         // GET: InvoiceLines
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.InvoiceLines.Include(i => i.DrinkInCart).Include(i => i.Invoice).Include(i => i.PizzaInCart);
-            return View(await appDbContext.ToListAsync());
+            return View(await _invoiceLineRepository.AllAsync());
         }
 
         // GET: InvoiceLines/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var invoiceLine = await _context.InvoiceLines
-                .Include(i => i.DrinkInCart)
-                .Include(i => i.Invoice)
-                .Include(i => i.PizzaInCart)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var invoiceLine = await _invoiceLineRepository.FindAsync(id);
+
             if (invoiceLine == null)
             {
                 return NotFound();
@@ -50,9 +46,6 @@ namespace WebApp.Controllers
         // GET: InvoiceLines/Create
         public IActionResult Create()
         {
-            ViewData["DrinkInCartId"] = new SelectList(_context.DrinkInCarts, "Id", "Id");
-            ViewData["InvoiceId"] = new SelectList(_context.Invoices, "Id", "Id");
-            ViewData["PizzaInCartId"] = new SelectList(_context.PizzaInCarts, "Id", "Id");
             return View();
         }
 
@@ -61,36 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Quantity,PizzaInCartId,DrinkInCartId,InvoiceId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] InvoiceLine invoiceLine)
+        public async Task<IActionResult> Create(
+            [Bind("Quantity,PizzaInCartId,DrinkInCartId,InvoiceId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            InvoiceLine invoiceLine)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(invoiceLine);
-                await _context.SaveChangesAsync();
+                //invoiceLine.Id = Guid.NewGuid();
+                _invoiceLineRepository.Add(invoiceLine);
+                await _invoiceLineRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DrinkInCartId"] = new SelectList(_context.DrinkInCarts, "Id", "Id", invoiceLine.DrinkInCartId);
-            ViewData["InvoiceId"] = new SelectList(_context.Invoices, "Id", "Id", invoiceLine.InvoiceId);
-            ViewData["PizzaInCartId"] = new SelectList(_context.PizzaInCarts, "Id", "Id", invoiceLine.PizzaInCartId);
+
             return View(invoiceLine);
         }
 
         // GET: InvoiceLines/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var invoiceLine = await _context.InvoiceLines.FindAsync(id);
+            var invoiceLine = await _invoiceLineRepository.FindAsync(id);
+
             if (invoiceLine == null)
             {
                 return NotFound();
             }
-            ViewData["DrinkInCartId"] = new SelectList(_context.DrinkInCarts, "Id", "Id", invoiceLine.DrinkInCartId);
-            ViewData["InvoiceId"] = new SelectList(_context.Invoices, "Id", "Id", invoiceLine.InvoiceId);
-            ViewData["PizzaInCartId"] = new SelectList(_context.PizzaInCarts, "Id", "Id", invoiceLine.PizzaInCartId);
+
             return View(invoiceLine);
         }
 
@@ -99,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Quantity,PizzaInCartId,DrinkInCartId,InvoiceId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] InvoiceLine invoiceLine)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Quantity,PizzaInCartId,DrinkInCartId,InvoiceId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            InvoiceLine invoiceLine)
         {
             if (id != invoiceLine.Id)
             {
@@ -108,43 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(invoiceLine);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!InvoiceLineExists(invoiceLine.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _invoiceLineRepository.Update(invoiceLine);
+                await _invoiceLineRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DrinkInCartId"] = new SelectList(_context.DrinkInCarts, "Id", "Id", invoiceLine.DrinkInCartId);
-            ViewData["InvoiceId"] = new SelectList(_context.Invoices, "Id", "Id", invoiceLine.InvoiceId);
-            ViewData["PizzaInCartId"] = new SelectList(_context.PizzaInCarts, "Id", "Id", invoiceLine.PizzaInCartId);
+
             return View(invoiceLine);
         }
 
         // GET: InvoiceLines/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var invoiceLine = await _context.InvoiceLines
-                .Include(i => i.DrinkInCart)
-                .Include(i => i.Invoice)
-                .Include(i => i.PizzaInCart)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var invoiceLine = await _invoiceLineRepository.FindAsync(id);
             if (invoiceLine == null)
             {
                 return NotFound();
@@ -156,17 +133,12 @@ namespace WebApp.Controllers
         // POST: InvoiceLines/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var invoiceLine = await _context.InvoiceLines.FindAsync(id);
-            _context.InvoiceLines.Remove(invoiceLine);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var invoiceLine = _invoiceLineRepository.Remove(id);
+            await _invoiceLineRepository.SaveChangesAsync();
 
-        private bool InvoiceLineExists(string id)
-        {
-            return _context.InvoiceLines.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

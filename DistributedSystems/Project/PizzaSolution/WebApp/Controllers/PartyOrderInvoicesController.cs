@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,31 +11,30 @@ namespace WebApp.Controllers
     public class PartyOrderInvoicesController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IPartyOrderInvoiceRepository _partyOrderInvoiceRepository;
 
         public PartyOrderInvoicesController(AppDbContext context)
         {
             _context = context;
+            _partyOrderInvoiceRepository = new PartyOrderInvoiceRepository(_context);
         }
 
         // GET: PartyOrderInvoices
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.PartyOrderInvoices.Include(p => p.Invoice).Include(p => p.PartyOrder);
-            return View(await appDbContext.ToListAsync());
+            return View(await _partyOrderInvoiceRepository.AllAsync());
         }
 
         // GET: PartyOrderInvoices/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var partyOrderInvoice = await _context.PartyOrderInvoices
-                .Include(p => p.Invoice)
-                .Include(p => p.PartyOrder)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var partyOrderInvoice = await _partyOrderInvoiceRepository.FindAsync(id);
+
             if (partyOrderInvoice == null)
             {
                 return NotFound();
@@ -49,8 +46,6 @@ namespace WebApp.Controllers
         // GET: PartyOrderInvoices/Create
         public IActionResult Create()
         {
-            ViewData["InvoiceId"] = new SelectList(_context.Invoices, "Id", "Id");
-            ViewData["PartyOrderId"] = new SelectList(_context.PartyOrders, "Id", "Id");
             return View();
         }
 
@@ -59,34 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PartyOrderId,InvoiceId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] PartyOrderInvoice partyOrderInvoice)
+        public async Task<IActionResult> Create(
+            [Bind("PartyOrderId,InvoiceId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            PartyOrderInvoice partyOrderInvoice)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(partyOrderInvoice);
-                await _context.SaveChangesAsync();
+                //partyOrderInvoice.Id = Guid.NewGuid();
+                _partyOrderInvoiceRepository.Add(partyOrderInvoice);
+                await _partyOrderInvoiceRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["InvoiceId"] = new SelectList(_context.Invoices, "Id", "Id", partyOrderInvoice.InvoiceId);
-            ViewData["PartyOrderId"] = new SelectList(_context.PartyOrders, "Id", "Id", partyOrderInvoice.PartyOrderId);
+
             return View(partyOrderInvoice);
         }
 
         // GET: PartyOrderInvoices/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var partyOrderInvoice = await _context.PartyOrderInvoices.FindAsync(id);
+            var partyOrderInvoice = await _partyOrderInvoiceRepository.FindAsync(id);
+
             if (partyOrderInvoice == null)
             {
                 return NotFound();
             }
-            ViewData["InvoiceId"] = new SelectList(_context.Invoices, "Id", "Id", partyOrderInvoice.InvoiceId);
-            ViewData["PartyOrderId"] = new SelectList(_context.PartyOrders, "Id", "Id", partyOrderInvoice.PartyOrderId);
+
             return View(partyOrderInvoice);
         }
 
@@ -95,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("PartyOrderId,InvoiceId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] PartyOrderInvoice partyOrderInvoice)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("PartyOrderId,InvoiceId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            PartyOrderInvoice partyOrderInvoice)
         {
             if (id != partyOrderInvoice.Id)
             {
@@ -104,41 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(partyOrderInvoice);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PartyOrderInvoiceExists(partyOrderInvoice.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _partyOrderInvoiceRepository.Update(partyOrderInvoice);
+                await _partyOrderInvoiceRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["InvoiceId"] = new SelectList(_context.Invoices, "Id", "Id", partyOrderInvoice.InvoiceId);
-            ViewData["PartyOrderId"] = new SelectList(_context.PartyOrders, "Id", "Id", partyOrderInvoice.PartyOrderId);
+
             return View(partyOrderInvoice);
         }
 
         // GET: PartyOrderInvoices/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var partyOrderInvoice = await _context.PartyOrderInvoices
-                .Include(p => p.Invoice)
-                .Include(p => p.PartyOrder)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var partyOrderInvoice = await _partyOrderInvoiceRepository.FindAsync(id);
             if (partyOrderInvoice == null)
             {
                 return NotFound();
@@ -150,17 +133,12 @@ namespace WebApp.Controllers
         // POST: PartyOrderInvoices/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var partyOrderInvoice = await _context.PartyOrderInvoices.FindAsync(id);
-            _context.PartyOrderInvoices.Remove(partyOrderInvoice);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var partyOrderInvoice = _partyOrderInvoiceRepository.Remove(id);
+            await _partyOrderInvoiceRepository.SaveChangesAsync();
 
-        private bool PartyOrderInvoiceExists(string id)
-        {
-            return _context.PartyOrderInvoices.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

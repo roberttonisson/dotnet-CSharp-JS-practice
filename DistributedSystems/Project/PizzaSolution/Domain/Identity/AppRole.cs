@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Identity
 {
-    public class AppRole : IdentityRole
+    public class AppRole : IdentityRole<Guid>
     {
         // fix the pk length
-        [MaxLength(36)] public override string Id { get; set; } = default!;
+        public override Guid Id { get; set; } = default!;
     }
 }

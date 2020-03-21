@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,30 +11,30 @@ namespace WebApp.Controllers
     public class PizzaTypesController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IPizzaTypeRepository _pizzaTypeRepository;
 
         public PizzaTypesController(AppDbContext context)
         {
             _context = context;
+            _pizzaTypeRepository = new PizzaTypeRepository(_context);
         }
 
         // GET: PizzaTypes
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.PizzaTypes.Include(p => p.PizzaRestaurant);
-            return View(await appDbContext.ToListAsync());
+            return View(await _pizzaTypeRepository.AllAsync());
         }
 
         // GET: PizzaTypes/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var pizzaType = await _context.PizzaTypes
-                .Include(p => p.PizzaRestaurant)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var pizzaType = await _pizzaTypeRepository.FindAsync(id);
+
             if (pizzaType == null)
             {
                 return NotFound();
@@ -48,7 +46,6 @@ namespace WebApp.Controllers
         // GET: PizzaTypes/Create
         public IActionResult Create()
         {
-            ViewData["PizzaRestaurantId"] = new SelectList(_context.PizzaRestaurants, "Id", "Id");
             return View();
         }
 
@@ -57,32 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Price,PizzaRestaurantId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] PizzaType pizzaType)
+        public async Task<IActionResult> Create(
+            [Bind("Name,Price,PizzaRestaurantId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")] 
+            PizzaType pizzaType)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(pizzaType);
-                await _context.SaveChangesAsync();
+                //pizzaType.Id = Guid.NewGuid();
+                _pizzaTypeRepository.Add(pizzaType);
+                await _pizzaTypeRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PizzaRestaurantId"] = new SelectList(_context.PizzaRestaurants, "Id", "Id", pizzaType.PizzaRestaurantId);
+
             return View(pizzaType);
         }
 
         // GET: PizzaTypes/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var pizzaType = await _context.PizzaTypes.FindAsync(id);
+            var pizzaType = await _pizzaTypeRepository.FindAsync(id);
+
             if (pizzaType == null)
             {
                 return NotFound();
             }
-            ViewData["PizzaRestaurantId"] = new SelectList(_context.PizzaRestaurants, "Id", "Id", pizzaType.PizzaRestaurantId);
+
             return View(pizzaType);
         }
 
@@ -91,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Price,PizzaRestaurantId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] PizzaType pizzaType)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Name,Price,PizzaRestaurantId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")] 
+            PizzaType pizzaType)
         {
             if (id != pizzaType.Id)
             {
@@ -100,39 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(pizzaType);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PizzaTypeExists(pizzaType.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _pizzaTypeRepository.Update(pizzaType);
+                await _pizzaTypeRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PizzaRestaurantId"] = new SelectList(_context.PizzaRestaurants, "Id", "Id", pizzaType.PizzaRestaurantId);
+
             return View(pizzaType);
         }
 
         // GET: PizzaTypes/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var pizzaType = await _context.PizzaTypes
-                .Include(p => p.PizzaRestaurant)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var pizzaType = await _pizzaTypeRepository.FindAsync(id);
             if (pizzaType == null)
             {
                 return NotFound();
@@ -144,17 +133,12 @@ namespace WebApp.Controllers
         // POST: PizzaTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var pizzaType = await _context.PizzaTypes.FindAsync(id);
-            _context.PizzaTypes.Remove(pizzaType);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var pizzaType = _pizzaTypeRepository.Remove(id);
+            await _pizzaTypeRepository.SaveChangesAsync();
 
-        private bool PizzaTypeExists(string id)
-        {
-            return _context.PizzaTypes.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

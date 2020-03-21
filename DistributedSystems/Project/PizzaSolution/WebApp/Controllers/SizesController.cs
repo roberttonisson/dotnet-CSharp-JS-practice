@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,28 +11,30 @@ namespace WebApp.Controllers
     public class SizesController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ISizeRepository _sizeRepository;
 
         public SizesController(AppDbContext context)
         {
             _context = context;
+            _sizeRepository = new SizeRepository(_context);
         }
 
         // GET: Sizes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Sizes.ToListAsync());
+            return View(await _sizeRepository.AllAsync());
         }
 
         // GET: Sizes/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var size = await _context.Sizes
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var size = await _sizeRepository.FindAsync(id);
+
             if (size == null)
             {
                 return NotFound();
@@ -54,30 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Price,SizeCm,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] Size size)
+        public async Task<IActionResult> Create(
+            [Bind("Name,Price,SizeCm,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            Size size)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(size);
-                await _context.SaveChangesAsync();
+                //size.Id = Guid.NewGuid();
+                _sizeRepository.Add(size);
+                await _sizeRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(size);
         }
 
         // GET: Sizes/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var size = await _context.Sizes.FindAsync(id);
+            var size = await _sizeRepository.FindAsync(id);
+
             if (size == null)
             {
                 return NotFound();
             }
+
             return View(size);
         }
 
@@ -86,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Price,SizeCm,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] Size size)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Name,Price,SizeCm,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            Size size)
         {
             if (id != size.Id)
             {
@@ -95,37 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(size);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SizeExists(size.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _sizeRepository.Update(size);
+                await _sizeRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
+
             return View(size);
         }
 
         // GET: Sizes/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var size = await _context.Sizes
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var size = await _sizeRepository.FindAsync(id);
             if (size == null)
             {
                 return NotFound();
@@ -137,17 +133,12 @@ namespace WebApp.Controllers
         // POST: Sizes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var size = await _context.Sizes.FindAsync(id);
-            _context.Sizes.Remove(size);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var size = _sizeRepository.Remove(id);
+            await _sizeRepository.SaveChangesAsync();
 
-        private bool SizeExists(string id)
-        {
-            return _context.Sizes.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

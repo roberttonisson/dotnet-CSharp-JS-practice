@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DAL.Base;
@@ -6,22 +7,20 @@ using Domain.Identity;
 
 namespace Domain
 {
-    public class Invoice : DomainEntityMetadata
+    public class Invoice : DomainEntity
     {
-        [NotMapped]
-        public decimal Total { get; set; }
+        [NotMapped] public decimal Total { get; set; }
 
         public bool IsPaid { get; set; } = false;
 
-        [MaxLength(36)] public string UserId { get; set; } = default!;
+        public Guid UserId { get; set; } = default!;
         public AppUser? AppUser { get; set; }
         
-        [MaxLength(36)] public string TransportId { get; set; } = default!;
+        public Guid TransportId { get; set; } = default!;
         public Transport? Transport { get; set; }
-        
+
         public ICollection<InvoiceLine>? InvoiceLines { get; set; }
-        
+
         public ICollection<PartyOrderInvoice>? PartyOrderInvoices { get; set; }
-        
     }
 }

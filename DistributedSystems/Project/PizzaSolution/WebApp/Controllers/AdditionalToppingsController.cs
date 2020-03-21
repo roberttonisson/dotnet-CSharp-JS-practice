@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,31 +11,30 @@ namespace WebApp.Controllers
     public class AdditionalToppingsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IAdditionalToppingRepository _additionalToppingRepository;
 
         public AdditionalToppingsController(AppDbContext context)
         {
             _context = context;
+            _additionalToppingRepository = new AdditionalToppingRepository(_context);
         }
 
         // GET: AdditionalToppings
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.AdditionalToppings.Include(a => a.PizzaInCart).Include(a => a.Topping);
-            return View(await appDbContext.ToListAsync());
+            return View(await _additionalToppingRepository.AllAsync());
         }
 
         // GET: AdditionalToppings/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var additionalTopping = await _context.AdditionalToppings
-                .Include(a => a.PizzaInCart)
-                .Include(a => a.Topping)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var additionalTopping = await _additionalToppingRepository.FindAsync(id);
+
             if (additionalTopping == null)
             {
                 return NotFound();
@@ -49,8 +46,6 @@ namespace WebApp.Controllers
         // GET: AdditionalToppings/Create
         public IActionResult Create()
         {
-            ViewData["PizzaInCartId"] = new SelectList(_context.PizzaInCarts, "Id", "Id");
-            ViewData["ToppingId"] = new SelectList(_context.Toppings, "Id", "Id");
             return View();
         }
 
@@ -59,34 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ToppingId,PizzaInCartId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] AdditionalTopping additionalTopping)
+        public async Task<IActionResult> Create(
+            [Bind("ToppingId,PizzaInCartId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            AdditionalTopping additionalTopping)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(additionalTopping);
-                await _context.SaveChangesAsync();
+                //additionalTopping.Id = Guid.NewGuid();
+                _additionalToppingRepository.Add(additionalTopping);
+                await _additionalToppingRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PizzaInCartId"] = new SelectList(_context.PizzaInCarts, "Id", "Id", additionalTopping.PizzaInCartId);
-            ViewData["ToppingId"] = new SelectList(_context.Toppings, "Id", "Id", additionalTopping.ToppingId);
+
             return View(additionalTopping);
         }
 
         // GET: AdditionalToppings/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var additionalTopping = await _context.AdditionalToppings.FindAsync(id);
+            var additionalTopping = await _additionalToppingRepository.FindAsync(id);
+
             if (additionalTopping == null)
             {
                 return NotFound();
             }
-            ViewData["PizzaInCartId"] = new SelectList(_context.PizzaInCarts, "Id", "Id", additionalTopping.PizzaInCartId);
-            ViewData["ToppingId"] = new SelectList(_context.Toppings, "Id", "Id", additionalTopping.ToppingId);
+
             return View(additionalTopping);
         }
 
@@ -95,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("ToppingId,PizzaInCartId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] AdditionalTopping additionalTopping)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("ToppingId,PizzaInCartId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            AdditionalTopping additionalTopping)
         {
             if (id != additionalTopping.Id)
             {
@@ -104,41 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(additionalTopping);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AdditionalToppingExists(additionalTopping.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _additionalToppingRepository.Update(additionalTopping);
+                await _additionalToppingRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PizzaInCartId"] = new SelectList(_context.PizzaInCarts, "Id", "Id", additionalTopping.PizzaInCartId);
-            ViewData["ToppingId"] = new SelectList(_context.Toppings, "Id", "Id", additionalTopping.ToppingId);
+
             return View(additionalTopping);
         }
 
         // GET: AdditionalToppings/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var additionalTopping = await _context.AdditionalToppings
-                .Include(a => a.PizzaInCart)
-                .Include(a => a.Topping)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var additionalTopping = await _additionalToppingRepository.FindAsync(id);
             if (additionalTopping == null)
             {
                 return NotFound();
@@ -150,17 +133,12 @@ namespace WebApp.Controllers
         // POST: AdditionalToppings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var additionalTopping = await _context.AdditionalToppings.FindAsync(id);
-            _context.AdditionalToppings.Remove(additionalTopping);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var additionalTopping = _additionalToppingRepository.Remove(id);
+            await _additionalToppingRepository.SaveChangesAsync();
 
-        private bool AdditionalToppingExists(string id)
-        {
-            return _context.AdditionalToppings.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

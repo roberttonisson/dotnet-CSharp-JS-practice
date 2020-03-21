@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,30 +11,30 @@ namespace WebApp.Controllers
     public class PartyOrdersController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IPartyOrderRepository _partyOrderRepository;
 
         public PartyOrdersController(AppDbContext context)
         {
             _context = context;
+            _partyOrderRepository = new PartyOrderRepository(_context);
         }
 
         // GET: PartyOrders
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.PartyOrders.Include(p => p.Owner);
-            return View(await appDbContext.ToListAsync());
+            return View(await _partyOrderRepository.AllAsync());
         }
 
         // GET: PartyOrders/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var partyOrder = await _context.PartyOrders
-                .Include(p => p.Owner)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var partyOrder = await _partyOrderRepository.FindAsync(id);
+
             if (partyOrder == null)
             {
                 return NotFound();
@@ -48,7 +46,6 @@ namespace WebApp.Controllers
         // GET: PartyOrders/Create
         public IActionResult Create()
         {
-            ViewData["OwnerId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -57,32 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Start,End,Address,InviteKey,OwnerId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] PartyOrder partyOrder)
+        public async Task<IActionResult> Create(
+            [Bind("Start,End,Address,InviteKey,OwnerId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            PartyOrder partyOrder)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(partyOrder);
-                await _context.SaveChangesAsync();
+                //partyOrder.Id = Guid.NewGuid();
+                _partyOrderRepository.Add(partyOrder);
+                await _partyOrderRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OwnerId"] = new SelectList(_context.Users, "Id", "Id", partyOrder.OwnerId);
+
             return View(partyOrder);
         }
 
         // GET: PartyOrders/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var partyOrder = await _context.PartyOrders.FindAsync(id);
+            var partyOrder = await _partyOrderRepository.FindAsync(id);
+
             if (partyOrder == null)
             {
                 return NotFound();
             }
-            ViewData["OwnerId"] = new SelectList(_context.Users, "Id", "Id", partyOrder.OwnerId);
+
             return View(partyOrder);
         }
 
@@ -91,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Start,End,Address,InviteKey,OwnerId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] PartyOrder partyOrder)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Start,End,Address,InviteKey,OwnerId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            PartyOrder partyOrder)
         {
             if (id != partyOrder.Id)
             {
@@ -100,39 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(partyOrder);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PartyOrderExists(partyOrder.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _partyOrderRepository.Update(partyOrder);
+                await _partyOrderRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OwnerId"] = new SelectList(_context.Users, "Id", "Id", partyOrder.OwnerId);
+
             return View(partyOrder);
         }
 
         // GET: PartyOrders/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var partyOrder = await _context.PartyOrders
-                .Include(p => p.Owner)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var partyOrder = await _partyOrderRepository.FindAsync(id);
             if (partyOrder == null)
             {
                 return NotFound();
@@ -144,17 +133,12 @@ namespace WebApp.Controllers
         // POST: PartyOrders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var partyOrder = await _context.PartyOrders.FindAsync(id);
-            _context.PartyOrders.Remove(partyOrder);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var partyOrder = _partyOrderRepository.Remove(id);
+            await _partyOrderRepository.SaveChangesAsync();
 
-        private bool PartyOrderExists(string id)
-        {
-            return _context.PartyOrders.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

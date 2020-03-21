@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,31 +11,30 @@ namespace WebApp.Controllers
     public class DefaultToppingsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IDefaultToppingRepository _defaultToppingRepository;
 
         public DefaultToppingsController(AppDbContext context)
         {
             _context = context;
+            _defaultToppingRepository = new DefaultToppingRepository(_context);
         }
 
         // GET: DefaultToppings
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.DefaultToppings.Include(d => d.PizzaType).Include(d => d.Topping);
-            return View(await appDbContext.ToListAsync());
+            return View(await _defaultToppingRepository.AllAsync());
         }
 
         // GET: DefaultToppings/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var defaultTopping = await _context.DefaultToppings
-                .Include(d => d.PizzaType)
-                .Include(d => d.Topping)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var defaultTopping = await _defaultToppingRepository.FindAsync(id);
+
             if (defaultTopping == null)
             {
                 return NotFound();
@@ -49,8 +46,6 @@ namespace WebApp.Controllers
         // GET: DefaultToppings/Create
         public IActionResult Create()
         {
-            ViewData["PizzaTypeId"] = new SelectList(_context.PizzaTypes, "Id", "Id");
-            ViewData["ToppingId"] = new SelectList(_context.Toppings, "Id", "Id");
             return View();
         }
 
@@ -59,34 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ToppingId,PizzaTypeId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] DefaultTopping defaultTopping)
+        public async Task<IActionResult> Create(
+            [Bind("ToppingId,PizzaTypeId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            DefaultTopping defaultTopping)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(defaultTopping);
-                await _context.SaveChangesAsync();
+                //defaultTopping.Id = Guid.NewGuid();
+                _defaultToppingRepository.Add(defaultTopping);
+                await _defaultToppingRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PizzaTypeId"] = new SelectList(_context.PizzaTypes, "Id", "Id", defaultTopping.PizzaTypeId);
-            ViewData["ToppingId"] = new SelectList(_context.Toppings, "Id", "Id", defaultTopping.ToppingId);
+
             return View(defaultTopping);
         }
 
         // GET: DefaultToppings/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var defaultTopping = await _context.DefaultToppings.FindAsync(id);
+            var defaultTopping = await _defaultToppingRepository.FindAsync(id);
+
             if (defaultTopping == null)
             {
                 return NotFound();
             }
-            ViewData["PizzaTypeId"] = new SelectList(_context.PizzaTypes, "Id", "Id", defaultTopping.PizzaTypeId);
-            ViewData["ToppingId"] = new SelectList(_context.Toppings, "Id", "Id", defaultTopping.ToppingId);
+
             return View(defaultTopping);
         }
 
@@ -95,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("ToppingId,PizzaTypeId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] DefaultTopping defaultTopping)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("ToppingId,PizzaTypeId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            DefaultTopping defaultTopping)
         {
             if (id != defaultTopping.Id)
             {
@@ -104,41 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(defaultTopping);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DefaultToppingExists(defaultTopping.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _defaultToppingRepository.Update(defaultTopping);
+                await _defaultToppingRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PizzaTypeId"] = new SelectList(_context.PizzaTypes, "Id", "Id", defaultTopping.PizzaTypeId);
-            ViewData["ToppingId"] = new SelectList(_context.Toppings, "Id", "Id", defaultTopping.ToppingId);
+
             return View(defaultTopping);
         }
 
         // GET: DefaultToppings/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var defaultTopping = await _context.DefaultToppings
-                .Include(d => d.PizzaType)
-                .Include(d => d.Topping)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var defaultTopping = await _defaultToppingRepository.FindAsync(id);
             if (defaultTopping == null)
             {
                 return NotFound();
@@ -150,17 +133,12 @@ namespace WebApp.Controllers
         // POST: DefaultToppings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var defaultTopping = await _context.DefaultToppings.FindAsync(id);
-            _context.DefaultToppings.Remove(defaultTopping);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var defaultTopping = _defaultToppingRepository.Remove(id);
+            await _defaultToppingRepository.SaveChangesAsync();
 
-        private bool DefaultToppingExists(string id)
-        {
-            return _context.DefaultToppings.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

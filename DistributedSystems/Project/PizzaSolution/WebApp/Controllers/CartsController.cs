@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain;
 
 namespace WebApp.Controllers
@@ -13,28 +11,30 @@ namespace WebApp.Controllers
     public class CartsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ICartRepository _cartRepository;
 
         public CartsController(AppDbContext context)
         {
             _context = context;
+            _cartRepository = new CartRepository(_context);
         }
 
         // GET: Carts
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Carts.ToListAsync());
+            return View(await _cartRepository.AllAsync());
         }
 
         // GET: Carts/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var cart = await _context.Carts
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var cart = await _cartRepository.FindAsync(id);
+
             if (cart == null)
             {
                 return NotFound();
@@ -54,30 +54,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] Cart cart)
+        public async Task<IActionResult> Create(
+            [Bind("UserId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            Cart cart)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(cart);
-                await _context.SaveChangesAsync();
+                //cart.Id = Guid.NewGuid();
+                _cartRepository.Add(cart);
+                await _cartRepository.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(cart);
         }
 
         // GET: Carts/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var cart = await _context.Carts.FindAsync(id);
+            var cart = await _cartRepository.FindAsync(id);
+
             if (cart == null)
             {
                 return NotFound();
             }
+
             return View(cart);
         }
 
@@ -86,7 +93,9 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("UserId,CreatedBy,CreatedAt,DeletedBy,DeletedAt,Id")] Cart cart)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("UserId,CreatedBy,CreatedAt,CreatedBy,CreatedAt,Id")]
+            Cart cart)
         {
             if (id != cart.Id)
             {
@@ -95,37 +104,24 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(cart);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CartExists(cart.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _cartRepository.Update(cart);
+                await _cartRepository.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
+
             return View(cart);
         }
 
         // GET: Carts/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var cart = await _context.Carts
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var cart = await _cartRepository.FindAsync(id);
             if (cart == null)
             {
                 return NotFound();
@@ -137,17 +133,12 @@ namespace WebApp.Controllers
         // POST: Carts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var cart = await _context.Carts.FindAsync(id);
-            _context.Carts.Remove(cart);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var cart = _cartRepository.Remove(id);
+            await _cartRepository.SaveChangesAsync();
 
-        private bool CartExists(string id)
-        {
-            return _context.Carts.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

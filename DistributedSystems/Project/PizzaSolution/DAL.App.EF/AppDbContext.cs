@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF
 {
-    public class AppDbContext : IdentityDbContext<AppUser, AppRole, string>
+    public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     {
         public DbSet<AdditionalTopping> AdditionalToppings { get; set; } = default!;
         public DbSet<Cart> Carts { get; set; } = default!;
