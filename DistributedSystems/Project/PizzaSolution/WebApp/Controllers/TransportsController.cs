@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
@@ -11,19 +12,17 @@ namespace WebApp.Controllers
 {
     public class TransportsController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly ITransportRepository _transportRepository;
+        private readonly IAppUnitOfWork _uow;
 
-        public TransportsController(AppDbContext context)
+        public TransportsController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _transportRepository = new TransportRepository(_context);
+            _uow = uow;
         }
 
         // GET: Transports
         public async Task<IActionResult> Index()
         {
-            return View(await _transportRepository.AllAsync());
+            return View(await _uow.Transports.AllAsync());
         }
 
         // GET: Transports/Details/5
@@ -34,7 +33,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var transport = await _transportRepository.FindAsync(id);
+            var transport = await _uow.Transports.FindAsync(id);
 
             if (transport == null)
             {
@@ -61,8 +60,8 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 //crust.Id = Guid.NewGuid();
-                _transportRepository.Add(vm.Transport);
-                await _transportRepository.SaveChangesAsync();
+                _uow.Transports.Add(vm.Transport);
+                await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
@@ -77,7 +76,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.Transport = await _transportRepository.FindAsync(id);
+            vm.Transport = await _uow.Transports.FindAsync(id);
 
             if (vm.Transport == null)
             {
@@ -102,8 +101,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                _transportRepository.Update(vm.Transport);
-                await _transportRepository.SaveChangesAsync();
+                _uow.Transports.Update(vm.Transport);
+                await _uow.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
@@ -119,7 +118,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var transport = await _transportRepository.FindAsync(id);
+            var transport = await _uow.Transports.FindAsync(id);
             if (transport == null)
             {
                 return NotFound();
@@ -133,8 +132,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var transport = _transportRepository.Remove(id);
-            await _transportRepository.SaveChangesAsync();
+            var transport = _uow.Transports.Remove(id);
+            await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

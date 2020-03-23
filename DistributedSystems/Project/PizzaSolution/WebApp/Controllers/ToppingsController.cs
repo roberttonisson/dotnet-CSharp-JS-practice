@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
@@ -11,20 +12,18 @@ namespace WebApp.Controllers
 {
     public class ToppingsController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IToppingRepository _toppingRepository;
+        private readonly IAppUnitOfWork _uow;
 
-        public ToppingsController(AppDbContext context)
+        public ToppingsController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _toppingRepository = new ToppingRepository(_context);
+            _uow = uow;
         }
 
 
         // GET: Toppings
         public async Task<IActionResult> Index()
         {
-            return View(await _toppingRepository.AllAsync());
+            return View(await _uow.Toppings.AllAsync());
         }
 
         // GET: Toppings/Details/5
@@ -35,7 +34,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var topping = await _toppingRepository.FindAsync(id);
+            var topping = await _uow.Toppings.FindAsync(id);
 
             if (topping == null)
             {
@@ -62,8 +61,8 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 //crust.Id = Guid.NewGuid();
-                _toppingRepository.Add(vm.Topping);
-                await _toppingRepository.SaveChangesAsync();
+                _uow.Toppings.Add(vm.Topping);
+                await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
@@ -79,7 +78,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.Topping = await _toppingRepository.FindAsync(id);
+            vm.Topping = await _uow.Toppings.FindAsync(id);
 
             if (vm.Topping == null)
             {
@@ -104,8 +103,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                _toppingRepository.Update(vm.Topping);
-                await _toppingRepository.SaveChangesAsync();
+                _uow.Toppings.Update(vm.Topping);
+                await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
@@ -121,7 +120,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var topping = await _toppingRepository.FindAsync(id);
+            var topping = await _uow.Toppings.FindAsync(id);
             if (topping == null)
             {
                 return NotFound();
@@ -135,8 +134,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var topping = _toppingRepository.Remove(id);
-            await _toppingRepository.SaveChangesAsync();
+            var topping = _uow.Toppings.Remove(id);
+            await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

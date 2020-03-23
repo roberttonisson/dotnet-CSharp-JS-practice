@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
@@ -11,19 +12,17 @@ namespace WebApp.Controllers
 {
     public class SizesController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly ISizeRepository _sizeRepository;
+        private readonly IAppUnitOfWork _uow;
 
-        public SizesController(AppDbContext context)
+        public SizesController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _sizeRepository = new SizeRepository(_context);
+            _uow = uow;
         }
 
         // GET: Sizes
         public async Task<IActionResult> Index()
         {
-            return View(await _sizeRepository.AllAsync());
+            return View(await _uow.Sizes.AllAsync());
         }
 
         // GET: Sizes/Details/5
@@ -34,7 +33,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var size = await _sizeRepository.FindAsync(id);
+            var size = await _uow.Sizes.FindAsync(id);
 
             if (size == null)
             {
@@ -61,8 +60,8 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 //crust.Id = Guid.NewGuid();
-                _sizeRepository.Add(vm.Size);
-                await _sizeRepository.SaveChangesAsync();
+                _uow.Sizes.Add(vm.Size);
+                await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
@@ -77,7 +76,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.Size = await _sizeRepository.FindAsync(id);
+            vm.Size = await _uow.Sizes.FindAsync(id);
 
             if (vm.Size == null)
             {
@@ -102,8 +101,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                _sizeRepository.Update(vm.Size);
-                await _sizeRepository.SaveChangesAsync();
+                _uow.Sizes.Update(vm.Size);
+                await _uow.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
@@ -119,7 +118,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var size = await _sizeRepository.FindAsync(id);
+            var size = await _uow.Sizes.FindAsync(id);
             if (size == null)
             {
                 return NotFound();
@@ -133,8 +132,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var size = _sizeRepository.Remove(id);
-            await _sizeRepository.SaveChangesAsync();
+            var size = _uow.Sizes.Remove(id);
+            await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

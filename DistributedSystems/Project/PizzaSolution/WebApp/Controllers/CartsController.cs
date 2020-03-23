@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
@@ -13,19 +14,17 @@ namespace WebApp.Controllers
 {
     public class CartsController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly ICartRepository _cartRepository;
+        private readonly IAppUnitOfWork _uow;
 
-        public CartsController(AppDbContext context)
+        public CartsController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _cartRepository = new CartRepository(_context);
+            _uow = uow;
         }
 
         // GET: Carts
         public async Task<IActionResult> Index()
         {
-            return View(await _cartRepository.AllAsync());
+            return View(await _uow.Carts.AllAsync());
         }
 
         // GET: Carts/Details/5
@@ -36,7 +35,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var cart = await _cartRepository.FindAsync(id);
+            var cart = await _uow.Carts.FindAsync(id);
 
             if (cart == null)
             {
@@ -50,7 +49,7 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             var vm =  new CartCreateEditViewModel();
-            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
             return View(vm);
         }
 
@@ -64,12 +63,12 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 //cart.Id = Guid.NewGuid();
-                _cartRepository.Add(vm.Cart);
-                await _cartRepository.SaveChangesAsync();
+                _uow.Carts.Add(vm.Cart);
+                await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
             return View(vm);
         }
 
@@ -81,12 +80,12 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.Cart = await _cartRepository.FindAsync(id);
+            vm.Cart = await _uow.Carts.FindAsync(id);
             if (vm.Cart == null)
             {
                 return NotFound();
             }
-            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
 
             return View(vm);
         }
@@ -105,12 +104,12 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                _cartRepository.Update(vm.Cart);
-                await _cartRepository.SaveChangesAsync();
+                _uow.Carts.Update(vm.Cart);
+                await _uow.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
             return View(vm);
         }
 
@@ -122,7 +121,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var cart = await _cartRepository.FindAsync(id);
+            var cart = await _uow.Carts.FindAsync(id);
             if (cart == null)
             {
                 return NotFound();
@@ -136,8 +135,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var cart = _cartRepository.Remove(id);
-            await _cartRepository.SaveChangesAsync();
+            var cart = _uow.Carts.Remove(id);
+            await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

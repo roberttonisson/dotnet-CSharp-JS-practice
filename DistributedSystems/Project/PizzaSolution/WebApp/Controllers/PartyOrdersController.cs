@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
@@ -13,19 +14,17 @@ namespace WebApp.Controllers
 {
     public class PartyOrdersController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IPartyOrderRepository _partyOrderRepository;
+        private readonly IAppUnitOfWork _uow;
 
-        public PartyOrdersController(AppDbContext context)
+        public PartyOrdersController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _partyOrderRepository = new PartyOrderRepository(_context);
+            _uow = uow;
         }
 
         // GET: PartyOrders
         public async Task<IActionResult> Index()
         {
-            return View(await _partyOrderRepository.AllAsync());
+            return View(await _uow.PartyOrders.AllAsync());
         }
 
         // GET: PartyOrders/Details/5
@@ -36,7 +35,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var partyOrder = await _partyOrderRepository.FindAsync(id);
+            var partyOrder = await _uow.PartyOrders.FindAsync(id);
 
             if (partyOrder == null)
             {
@@ -51,7 +50,7 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             var vm =  new PartyOrderCreateEditViewModel();
-            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
             return View(vm);
         }
 
@@ -65,12 +64,12 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 //partyOrder.Id = Guid.NewGuid();
-                _partyOrderRepository.Add(vm.PartyOrder);
-                await _partyOrderRepository.SaveChangesAsync();
+                _uow.PartyOrders.Add(vm.PartyOrder);
+                await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
             return View(vm);
         }
 
@@ -82,12 +81,12 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.PartyOrder = await _partyOrderRepository.FindAsync(id);
+            vm.PartyOrder = await _uow.PartyOrders.FindAsync(id);
             if (vm.PartyOrder == null)
             {
                 return NotFound();
             }
-            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
 
             return View(vm);
         }
@@ -106,12 +105,12 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                _partyOrderRepository.Update(vm.PartyOrder);
-                await _partyOrderRepository.SaveChangesAsync();
+                _uow.PartyOrders.Update(vm.PartyOrder);
+                await _uow.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
             return View(vm);
         }
 
@@ -123,7 +122,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var partyOrder = await _partyOrderRepository.FindAsync(id);
+            var partyOrder = await _uow.PartyOrders.FindAsync(id);
             if (partyOrder == null)
             {
                 return NotFound();
@@ -137,8 +136,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var partyOrder = _partyOrderRepository.Remove(id);
-            await _partyOrderRepository.SaveChangesAsync();
+            var partyOrder = _uow.PartyOrders.Remove(id);
+            await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

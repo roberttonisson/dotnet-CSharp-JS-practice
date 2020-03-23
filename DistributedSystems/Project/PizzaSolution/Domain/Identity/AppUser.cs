@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
+using Contracts.DAL.Base;
+using DAL.Base;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Identity
 {
-    public class AppUser : IdentityUser<Guid>
+    public class AppUser : IdentityUser<Guid>, IDomainEntity
     {
         public override Guid Id { get; set; } = default!;
 
@@ -22,5 +24,10 @@ namespace Domain.Identity
         public ICollection<Invoice>? Invoices { get; set; }
 
         public ICollection<PartyOrder>? PartyOrders { get; set; }
+        
+        public virtual string? CreatedBy { get; set; }
+        public virtual DateTime CreatedAt { get; set; }
+        public virtual string? ChangedBy { get; set; }
+        public virtual DateTime ChangedAt { get; set; }
     }
 }

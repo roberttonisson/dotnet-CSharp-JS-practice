@@ -42,7 +42,11 @@ namespace DAL.App.EF.Migrations
                     AccessFailedCount = table.Column<int>(nullable: false),
                     FirstName = table.Column<string>(maxLength: 128, nullable: false),
                     LastName = table.Column<string>(maxLength: 128, nullable: false),
-                    Address = table.Column<string>(maxLength: 256, nullable: false)
+                    Address = table.Column<string>(maxLength: 256, nullable: false),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ChangedBy = table.Column<string>(nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {

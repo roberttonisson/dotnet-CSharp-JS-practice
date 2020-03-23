@@ -71,16 +71,7 @@ namespace DAL.Base.EF.Repositories
         {
             return Remove(Find(id));
         }
-
-        public virtual int SaveChanges()
-        {
-            return RepoDbContext.SaveChanges();
-        }
-
-        public virtual async Task<int> SaveChangesAsync()
-        {
-            return await RepoDbContext.SaveChangesAsync();
-        }
+        
     }
     
 }

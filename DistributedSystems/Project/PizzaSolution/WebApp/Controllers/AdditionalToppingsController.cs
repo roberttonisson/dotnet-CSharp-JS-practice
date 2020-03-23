@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
@@ -12,19 +13,17 @@ namespace WebApp.Controllers
 {
     public class AdditionalToppingsController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IAdditionalToppingRepository _additionalToppingRepository;
+        private readonly IAppUnitOfWork _uow;
 
-        public AdditionalToppingsController(AppDbContext context)
+        public AdditionalToppingsController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _additionalToppingRepository = new AdditionalToppingRepository(_context);
+            _uow = uow;
         }
 
         // GET: AdditionalToppings
         public async Task<IActionResult> Index()
         {
-            return View(await _additionalToppingRepository.AllAsync());
+            return View(await _uow.AdditionalToppings.AllAsync());
         }
 
         // GET: AdditionalToppings/Details/5
@@ -35,7 +34,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var additionalTopping = await _additionalToppingRepository.FindAsync(id);
+            var additionalTopping = await _uow.AdditionalToppings.FindAsync(id);
 
             if (additionalTopping == null)
             {
@@ -49,8 +48,8 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             var vm =  new AdditionalToppingCreateEditViewModel();
-            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaInCartSelectList = new SelectList(_context.PizzaInCarts, nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaInCartSelectList = new SelectList(_uow.Toppings.All(), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
             return View(vm);
         }
 
@@ -64,13 +63,13 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 //additionalTopping.Id = Guid.NewGuid();
-                _additionalToppingRepository.Add(vm.AdditionalTopping);
-                await _additionalToppingRepository.SaveChangesAsync();
+                _uow.AdditionalToppings.Add(vm.AdditionalTopping);
+                await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaInCartSelectList = new SelectList(_context.PizzaInCarts, nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaInCartSelectList = new SelectList(_uow.Toppings.All(), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
             return View(vm);
         }
 
@@ -82,13 +81,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.AdditionalTopping = await _additionalToppingRepository.FindAsync(id);
+            vm.AdditionalTopping = await _uow.AdditionalToppings.FindAsync(id);
             if (vm.AdditionalTopping == null)
             {
                 return NotFound();
             }
-            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaInCartSelectList = new SelectList(_context.PizzaInCarts, nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaInCartSelectList = new SelectList(_uow.Toppings.All(), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
 
             return View(vm);
         }
@@ -107,13 +106,13 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                _additionalToppingRepository.Update(vm.AdditionalTopping);
-                await _additionalToppingRepository.SaveChangesAsync();
+                _uow.AdditionalToppings.Update(vm.AdditionalTopping);
+                await _uow.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaInCartSelectList = new SelectList(_context.PizzaInCarts, nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaInCartSelectList = new SelectList(_uow.Toppings.All(), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
             return View(vm);
         }
 
@@ -125,7 +124,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var additionalTopping = await _additionalToppingRepository.FindAsync(id);
+            var additionalTopping = await _uow.AdditionalToppings.FindAsync(id);
             if (additionalTopping == null)
             {
                 return NotFound();
@@ -139,8 +138,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var additionalTopping = _additionalToppingRepository.Remove(id);
-            await _additionalToppingRepository.SaveChangesAsync();
+            var additionalTopping = _uow.AdditionalToppings.Remove(id);
+            await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

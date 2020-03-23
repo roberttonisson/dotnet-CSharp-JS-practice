@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
@@ -12,19 +13,17 @@ namespace WebApp.Controllers
 {
     public class PartyOrderInvoicesController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IPartyOrderInvoiceRepository _partyOrderInvoiceRepository;
+        private readonly IAppUnitOfWork _uow;
 
-        public PartyOrderInvoicesController(AppDbContext context)
+        public PartyOrderInvoicesController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _partyOrderInvoiceRepository = new PartyOrderInvoiceRepository(_context);
+            _uow = uow;
         }
 
         // GET: PartyOrderInvoices
         public async Task<IActionResult> Index()
         {
-            return View(await _partyOrderInvoiceRepository.AllAsync());
+            return View(await _uow.PartyOrderInvoices.AllAsync());
         }
 
         // GET: PartyOrderInvoices/Details/5
@@ -35,7 +34,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var partyOrderInvoice = await _partyOrderInvoiceRepository.FindAsync(id);
+            var partyOrderInvoice = await _uow.PartyOrderInvoices.FindAsync(id);
 
             if (partyOrderInvoice == null)
             {
@@ -49,8 +48,8 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             var vm =  new PartyOrderInvoiceCreateEditViewModel();
-            vm.PartyOrderSelectList = new SelectList(_context.PartyOrders, nameof(PartyOrder.Id), nameof(PartyOrder.Id));
-            vm.InvoiceSelectList = new SelectList(_context.Invoices, nameof(Invoice.Id), nameof(Invoice.Id));
+            vm.PartyOrderSelectList = new SelectList(_uow.PartyOrders.All(), nameof(PartyOrder.Id), nameof(PartyOrder.Id));
+            vm.InvoiceSelectList = new SelectList(_uow.Invoices.All(), nameof(Invoice.Id), nameof(Invoice.Id));
             return View(vm);
         }
 
@@ -64,13 +63,13 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 //partyOrderInvoice.Id = Guid.NewGuid();
-                _partyOrderInvoiceRepository.Add(vm.PartyOrderInvoice);
-                await _partyOrderInvoiceRepository.SaveChangesAsync();
+                _uow.PartyOrderInvoices.Add(vm.PartyOrderInvoice);
+                await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            vm.PartyOrderSelectList = new SelectList(_context.PartyOrders, nameof(PartyOrder.Id), nameof(PartyOrder.Id));
-            vm.InvoiceSelectList = new SelectList(_context.Invoices, nameof(Invoice.Id), nameof(Invoice.Id));
+            vm.PartyOrderSelectList = new SelectList(_uow.PartyOrders.All(), nameof(PartyOrder.Id), nameof(PartyOrder.Id));
+            vm.InvoiceSelectList = new SelectList(_uow.Invoices.All(), nameof(Invoice.Id), nameof(Invoice.Id));
             return View(vm);
         }
 
@@ -82,13 +81,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.PartyOrderInvoice = await _partyOrderInvoiceRepository.FindAsync(id);
+            vm.PartyOrderInvoice = await _uow.PartyOrderInvoices.FindAsync(id);
             if (vm.PartyOrderInvoice == null)
             {
                 return NotFound();
             }
-            vm.PartyOrderSelectList = new SelectList(_context.PartyOrders, nameof(PartyOrder.Id), nameof(PartyOrder.Id));
-            vm.InvoiceSelectList = new SelectList(_context.Invoices, nameof(Invoice.Id), nameof(Invoice.Id));
+            vm.PartyOrderSelectList = new SelectList(_uow.PartyOrders.All(), nameof(PartyOrder.Id), nameof(PartyOrder.Id));
+            vm.InvoiceSelectList = new SelectList(_uow.Invoices.All(), nameof(Invoice.Id), nameof(Invoice.Id));
 
             return View(vm);
         }
@@ -107,13 +106,13 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                _partyOrderInvoiceRepository.Update(vm.PartyOrderInvoice);
-                await _partyOrderInvoiceRepository.SaveChangesAsync();
+                _uow.PartyOrderInvoices.Update(vm.PartyOrderInvoice);
+                await _uow.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.PartyOrderSelectList = new SelectList(_context.PartyOrders, nameof(PartyOrder.Id), nameof(PartyOrder.Id));
-            vm.InvoiceSelectList = new SelectList(_context.Invoices, nameof(Invoice.Id), nameof(Invoice.Id));
+            vm.PartyOrderSelectList = new SelectList(_uow.PartyOrders.All(), nameof(PartyOrder.Id), nameof(PartyOrder.Id));
+            vm.InvoiceSelectList = new SelectList(_uow.Invoices.All(), nameof(Invoice.Id), nameof(Invoice.Id));
             return View(vm);
         }
 
@@ -125,7 +124,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var partyOrderInvoice = await _partyOrderInvoiceRepository.FindAsync(id);
+            var partyOrderInvoice = await _uow.PartyOrderInvoices.FindAsync(id);
             if (partyOrderInvoice == null)
             {
                 return NotFound();
@@ -139,8 +138,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var partyOrderInvoice = _partyOrderInvoiceRepository.Remove(id);
-            await _partyOrderInvoiceRepository.SaveChangesAsync();
+            var partyOrderInvoice = _uow.PartyOrderInvoices.Remove(id);
+            await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

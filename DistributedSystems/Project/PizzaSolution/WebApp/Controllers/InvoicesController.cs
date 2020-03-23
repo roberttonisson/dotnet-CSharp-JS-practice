@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
@@ -14,19 +15,17 @@ namespace WebApp.Controllers
 {
     public class InvoicesController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IInvoiceRepository _invoiceRepository;
+        private readonly IAppUnitOfWork _uow;
 
-        public InvoicesController(AppDbContext context)
+        public InvoicesController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _invoiceRepository = new InvoiceRepository(_context);
+            _uow = uow;
         }
 
         // GET: Invoices
         public async Task<IActionResult> Index()
         {
-            return View(await _invoiceRepository.AllAsync());
+            return View(await _uow.Invoices.AllAsync());
         }
 
         // GET: Invoices/Details/5
@@ -37,7 +36,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var invoice = await _invoiceRepository.FindAsync(id);
+            var invoice = await _uow.Invoices.FindAsync(id);
 
             if (invoice == null)
             {
@@ -52,8 +51,8 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             var vm =  new InvoiceCreateEditViewModel();
-            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
-            vm.TransportSelectList = new SelectList(_context.Transports, nameof(Transport.Id), nameof(Transport.Id));
+            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.TransportSelectList = new SelectList(_uow.Transports.All(), nameof(Transport.Id), nameof(Transport.Id));
             return View(vm);
         }
 
@@ -67,13 +66,13 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 //invoice.Id = Guid.NewGuid();
-                _invoiceRepository.Add(vm.Invoice);
-                await _invoiceRepository.SaveChangesAsync();
+                _uow.Invoices.Add(vm.Invoice);
+                await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
-            vm.TransportSelectList = new SelectList(_context.Transports, nameof(Transport.Id), nameof(Transport.Id));
+            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.TransportSelectList = new SelectList(_uow.Transports.All(), nameof(Transport.Id), nameof(Transport.Id));
             return View(vm);
         }
 
@@ -85,13 +84,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.Invoice = await _invoiceRepository.FindAsync(id);
+            vm.Invoice = await _uow.Invoices.FindAsync(id);
             if (vm.Invoice == null)
             {
                 return NotFound();
             }
-            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
-            vm.TransportSelectList = new SelectList(_context.Transports, nameof(Transport.Id), nameof(Transport.Id));
+            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.TransportSelectList = new SelectList(_uow.Transports.All(), nameof(Transport.Id), nameof(Transport.Id));
 
             return View(vm);
         }
@@ -110,13 +109,13 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                _invoiceRepository.Update(vm.Invoice);
-                await _invoiceRepository.SaveChangesAsync();
+                _uow.Invoices.Update(vm.Invoice);
+                await _uow.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.AppUserSelectList = new SelectList(_context.Users, nameof(AppUser.Id), nameof(AppUser.Email));
-            vm.TransportSelectList = new SelectList(_context.Transports, nameof(Transport.Id), nameof(Transport.Id));
+            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
+            vm.TransportSelectList = new SelectList(_uow.Transports.All(), nameof(Transport.Id), nameof(Transport.Id));
             return View(vm);
         }
 
@@ -128,7 +127,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var invoice = await _invoiceRepository.FindAsync(id);
+            var invoice = await _uow.Invoices.FindAsync(id);
             if (invoice == null)
             {
                 return NotFound();
@@ -142,8 +141,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var invoice = _invoiceRepository.Remove(id);
-            await _invoiceRepository.SaveChangesAsync();
+            var invoice = _uow.Invoices.Remove(id);
+            await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

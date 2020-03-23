@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
@@ -12,19 +13,17 @@ namespace WebApp.Controllers
 {
     public class CrustsController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly ICrustRepository _crustRepository;
+        private readonly IAppUnitOfWork _uow;
 
-        public CrustsController(AppDbContext context)
+        public CrustsController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _crustRepository = new CrustRepository(_context);
+            _uow = uow;
         }
 
         // GET: Crusts
         public async Task<IActionResult> Index()
         {
-            return View(await _crustRepository.AllAsync());
+            return View(await _uow.Crusts.AllAsync());
         }
 
         // GET: Crusts/Details/5
@@ -35,7 +34,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var crust = await _crustRepository.FindAsync(id);
+            var crust = await _uow.Crusts.FindAsync(id);
 
             if (crust == null)
             {
@@ -61,8 +60,8 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _crustRepository.Add(vm.Crust);
-                await _crustRepository.SaveChangesAsync();
+                _uow.Crusts.Add(vm.Crust);
+                await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
@@ -77,7 +76,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.Crust = await _crustRepository.FindAsync(id);
+            vm.Crust = await _uow.Crusts.FindAsync(id);
 
             if (vm.Crust == null)
             {
@@ -102,8 +101,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                _crustRepository.Update(vm.Crust);
-                await _crustRepository.SaveChangesAsync();
+                _uow.Crusts.Update(vm.Crust);
+                await _uow.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
@@ -119,7 +118,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var crust = await _crustRepository.FindAsync(id);
+            var crust = await _uow.Crusts.FindAsync(id);
             if (crust == null)
             {
                 return NotFound();
@@ -133,8 +132,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var crust = _crustRepository.Remove(id);
-            await _crustRepository.SaveChangesAsync();
+            var crust = _uow.Crusts.Remove(id);
+            await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

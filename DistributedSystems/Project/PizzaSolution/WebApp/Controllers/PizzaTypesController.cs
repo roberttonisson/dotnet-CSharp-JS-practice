@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
@@ -11,19 +12,17 @@ namespace WebApp.Controllers
 {
     public class PizzaTypesController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IPizzaTypeRepository _pizzaTypeRepository;
+        private readonly IAppUnitOfWork _uow;
 
-        public PizzaTypesController(AppDbContext context)
+        public PizzaTypesController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _pizzaTypeRepository = new PizzaTypeRepository(_context);
+            _uow = uow;
         }
 
         // GET: PizzaTypes
         public async Task<IActionResult> Index()
         {
-            return View(await _pizzaTypeRepository.AllAsync());
+            return View(await _uow.PizzaTypes.AllAsync());
         }
 
         // GET: PizzaTypes/Details/5
@@ -34,7 +33,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var pizzaType = await _pizzaTypeRepository.FindAsync(id);
+            var pizzaType = await _uow.PizzaTypes.FindAsync(id);
 
             if (pizzaType == null)
             {
@@ -61,8 +60,8 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 //crust.Id = Guid.NewGuid();
-                _pizzaTypeRepository.Add(vm.PizzaType);
-                await _pizzaTypeRepository.SaveChangesAsync();
+                _uow.PizzaTypes.Add(vm.PizzaType);
+                await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
@@ -77,7 +76,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.PizzaType = await _pizzaTypeRepository.FindAsync(id);
+            vm.PizzaType = await _uow.PizzaTypes.FindAsync(id);
 
             if (vm.PizzaType == null)
             {
@@ -102,8 +101,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                _pizzaTypeRepository.Update(vm.PizzaType);
-                await _pizzaTypeRepository.SaveChangesAsync();
+                _uow.PizzaTypes.Update(vm.PizzaType);
+                await _uow.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
@@ -119,7 +118,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var pizzaType = await _pizzaTypeRepository.FindAsync(id);
+            var pizzaType = await _uow.PizzaTypes.FindAsync(id);
             if (pizzaType == null)
             {
                 return NotFound();
@@ -133,8 +132,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var pizzaType = _pizzaTypeRepository.Remove(id);
-            await _pizzaTypeRepository.SaveChangesAsync();
+            var pizzaType = _uow.PizzaTypes.Remove(id);
+            await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

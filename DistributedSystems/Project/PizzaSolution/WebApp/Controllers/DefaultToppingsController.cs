@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
@@ -12,19 +13,17 @@ namespace WebApp.Controllers
 {
     public class DefaultToppingsController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IDefaultToppingRepository _defaultToppingRepository;
+        private readonly IAppUnitOfWork _uow;
 
-        public DefaultToppingsController(AppDbContext context)
+        public DefaultToppingsController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _defaultToppingRepository = new DefaultToppingRepository(_context);
+            _uow = uow;
         }
 
         // GET: DefaultToppings
         public async Task<IActionResult> Index()
         {
-            return View(await _defaultToppingRepository.AllAsync());
+            return View(await _uow.DefaultToppings.AllAsync());
         }
 
         // GET: DefaultToppings/Details/5
@@ -35,7 +34,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var defaultTopping = await _defaultToppingRepository.FindAsync(id);
+            var defaultTopping = await _uow.DefaultToppings.FindAsync(id);
 
             if (defaultTopping == null)
             {
@@ -50,8 +49,8 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             var vm =  new DefaultToppingCreateEditViewModel();
-            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaTypeSelectList = new SelectList(_context.PizzaTypes, nameof(PizzaType.Id), nameof(PizzaType.Name));
+            vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaTypeSelectList = new SelectList(_uow.PizzaTypes.All(), nameof(PizzaType.Id), nameof(PizzaType.Name));
             return View(vm);
         }
 
@@ -65,13 +64,13 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 //defaultTopping.Id = Guid.NewGuid();
-                _defaultToppingRepository.Add(vm.DefaultTopping);
-                await _defaultToppingRepository.SaveChangesAsync();
+                _uow.DefaultToppings.Add(vm.DefaultTopping);
+                await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaTypeSelectList = new SelectList(_context.PizzaTypes, nameof(PizzaType.Id), nameof(PizzaType.Name));
+            vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaTypeSelectList = new SelectList(_uow.PizzaTypes.All(), nameof(PizzaType.Id), nameof(PizzaType.Name));
             return View(vm);
         }
 
@@ -83,13 +82,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.DefaultTopping = await _defaultToppingRepository.FindAsync(id);
+            vm.DefaultTopping = await _uow.DefaultToppings.FindAsync(id);
             if (vm.DefaultTopping == null)
             {
                 return NotFound();
             }
-            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaTypeSelectList = new SelectList(_context.PizzaTypes, nameof(PizzaType.Id), nameof(PizzaType.Name));
+            vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaTypeSelectList = new SelectList(_uow.PizzaTypes.All(), nameof(PizzaType.Id), nameof(PizzaType.Name));
 
             return View(vm);
         }
@@ -108,13 +107,13 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                _defaultToppingRepository.Update(vm.DefaultTopping);
-                await _defaultToppingRepository.SaveChangesAsync();
+                _uow.DefaultToppings.Update(vm.DefaultTopping);
+                await _uow.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.ToppingSelectList = new SelectList(_context.Toppings, nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaTypeSelectList = new SelectList(_context.PizzaTypes, nameof(PizzaType.Id), nameof(PizzaType.Name));
+            vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaTypeSelectList = new SelectList(_uow.PizzaTypes.All(), nameof(PizzaType.Id), nameof(PizzaType.Name));
             return View(vm);
         }
 
@@ -126,7 +125,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var defaultTopping = await _defaultToppingRepository.FindAsync(id);
+            var defaultTopping = await _uow.DefaultToppings.FindAsync(id);
             if (defaultTopping == null)
             {
                 return NotFound();
@@ -140,8 +139,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var defaultTopping = _defaultToppingRepository.Remove(id);
-            await _defaultToppingRepository.SaveChangesAsync();
+            var defaultTopping = _uow.DefaultToppings.Remove(id);
+            await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
