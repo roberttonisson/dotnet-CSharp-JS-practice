@@ -36,7 +36,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<SizeDTO>> GetSize(Guid id)
         {
-            var size = await _uow.Sizes.SelectDTO();
+            var size = await _uow.Sizes.SelectDTO(id);
 
             if (size == null)
             {

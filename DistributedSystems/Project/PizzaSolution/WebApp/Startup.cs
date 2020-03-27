@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using Contracts.DAL.App;
 using DAL.App.EF;
 using Domain.Identity;
@@ -14,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 
 namespace WebApp
 {
@@ -40,6 +38,18 @@ namespace WebApp
                 .AddEntityFrameworkStores<AppDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddControllers().AddNewtonsoftJson();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsAllowAll",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin();
+                        builder.AllowAnyHeader();
+                        builder.AllowAnyMethod();
+                    });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,6 +69,8 @@ namespace WebApp
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            
+            app.UseCors("CorsAllowAll");
 
             app.UseRouting();
 

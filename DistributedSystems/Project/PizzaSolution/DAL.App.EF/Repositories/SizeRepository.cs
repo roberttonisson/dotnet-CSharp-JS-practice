@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
@@ -23,12 +24,12 @@ namespace DAL.App.EF.Repositories
             }).ToListAsync();
         }
         
-        public async Task<SizeDTO> SelectDTO()
+        public async Task<SizeDTO> SelectDTO(Guid id)
         {
             return await RepoDbSet.Select(s => new SizeDTO()
             {
                 Id = s.Id, Name = s.Name, Price = s.Price, SizeCm = s.SizeCm
-            }).FirstOrDefaultAsync();
+            }).FirstOrDefaultAsync(t => t.Id == id);
         }
         
     

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Contracts.DAL.Base.Repositories;
 using Domain;
@@ -8,7 +9,7 @@ namespace Contracts.DAL.App.Repositories
 {
     public interface IToppingRepository : IBaseRepository<Topping>
     {
-        Task<ToppingDTO> SelectDTO();
+        Task<ToppingDTO> SelectDTO(Guid id);
         Task<IEnumerable<ToppingDTO>> SelectAllDTO();
     }
 }

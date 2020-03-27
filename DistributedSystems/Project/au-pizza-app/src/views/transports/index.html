@@ -1,0 +1,35 @@
+<template>
+    <h1>Index</h1>
+    <p>
+        <a route-href="route: transports-create; params.bind: {}">Create New</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Cost
+                </th>
+                <th>
+                    Address
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr repeat.for="transport of _transports">
+                <td>
+                    ${transport.cost}
+                </td>
+                <td>
+                    ${transport.address}
+                </td>
+                <td>
+                    <a route-href="route: transports-edit; params.bind: { id: transport.id }">Edit</a> |
+                    <a route-href="route: transports-details; params.bind: { id: transport.id }">Details</a> |
+                    <a route-href="route: transports-delete; params.bind: { id: transport.id }">Delete</a>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</template>

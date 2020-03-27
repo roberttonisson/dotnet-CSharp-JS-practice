@@ -37,7 +37,7 @@ namespace WebApp.ApiControllers
         public async Task<ActionResult<TransportDTO>> GetTransport(Guid id)
         {
             //var transport = await _context.Transports.FindAsync(id);
-            var transport = await _uow.Transports.SelectDTO();
+            var transport = await _uow.Transports.SelectDTO(id);
 
             if (transport == null)
             {
@@ -83,8 +83,13 @@ namespace WebApp.ApiControllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Transport>> PostTransport(Transport transport)
+        public async Task<ActionResult<Transport>> PostTransport(TransportDTO dto)
         {
+            var transport = new Transport()
+            {
+                Address = dto.Address,
+                Cost = dto.Cost,
+            };
             _uow.Transports.Add(transport);
             await _uow.SaveChangesAsync();
 

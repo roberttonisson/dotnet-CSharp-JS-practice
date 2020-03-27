@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
@@ -23,12 +24,12 @@ namespace DAL.App.EF.Repositories
             }).ToListAsync();
         }
         
-        public async Task<ToppingDTO> SelectDTO()
+        public async Task<ToppingDTO> SelectDTO(Guid id)
         {
             return await RepoDbSet.Select(t => new ToppingDTO()
             {
                 Id = t.Id, Name = t.Name, Price = t.Price
-            }).FirstOrDefaultAsync();
+            }).FirstOrDefaultAsync(s => s.Id == id);
         }
     }
 }

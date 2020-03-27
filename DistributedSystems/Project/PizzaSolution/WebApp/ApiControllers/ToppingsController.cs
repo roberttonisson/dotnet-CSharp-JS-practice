@@ -36,7 +36,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ToppingDTO>> GetTopping(Guid id)
         {
-            var topping = await _uow.Toppings.SelectDTO();
+            var topping = await _uow.Toppings.SelectDTO(id);
 
             if (topping == null)
             {
