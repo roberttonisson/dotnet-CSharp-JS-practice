@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Contracts.DAL.Base.Repositories
 {
@@ -28,6 +29,10 @@ namespace Contracts.DAL.Base.Repositories
         TEntity Update(TEntity entity);
         TEntity Remove(TEntity entity);
         TEntity Remove(params object[] id);
+        EntityEntry<TEntity> Entry(TEntity entity);
+        bool Any(params object[] id);
+
+
 
     }
 }

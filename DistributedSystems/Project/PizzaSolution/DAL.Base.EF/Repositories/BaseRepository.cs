@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Contracts.DAL.Base;
 using Contracts.DAL.Base.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DAL.Base.EF.Repositories
 {
@@ -70,6 +71,16 @@ namespace DAL.Base.EF.Repositories
         public virtual TEntity Remove(params object[] id)
         {
             return Remove(Find(id));
+        }
+        
+        public virtual EntityEntry<TEntity> Entry(TEntity entity)
+        {
+            return RepoDbContext.Entry(entity);
+        }
+        
+        public virtual bool Any(params object[] id)
+        {
+            return RepoDbSet.Any(t => Equals(t.Id, id));
         }
         
     }
