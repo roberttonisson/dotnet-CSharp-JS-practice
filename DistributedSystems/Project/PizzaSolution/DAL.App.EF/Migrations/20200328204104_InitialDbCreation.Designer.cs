@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20200323174833_InitialDbCreation")]
+    [Migration("20200328204104_InitialDbCreation")]
     partial class InitialDbCreation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -605,8 +605,8 @@ namespace DAL.App.EF.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(6,2)");
 
-                    b.Property<int>("SizeCm")
-                        .HasColumnType("int");
+                    b.Property<decimal>("SizeCm")
+                        .HasColumnType("decimal(6,2)");
 
                     b.HasKey("Id");
 

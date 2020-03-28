@@ -1,14 +1,14 @@
 import { autoinject } from 'aurelia-framework';
 import { RouteConfig, NavigationInstruction, Router } from 'aurelia-router';
-import { TransportService } from 'service/transport-service';
-import { ITransport } from 'domain/ITransport';
+import { SizeService } from 'service/size-service';
+import { ISize } from 'domain/ISize';
 
 @autoinject
-export class TransportsCreate {
+export class SizesCreate {
 
-    private _transport: ITransport | null = null;
+    private _size: ISize | null = null;
 
-    constructor(private transportService: TransportService, private router: Router) {
+    constructor(private sizeService: SizeService, private router: Router) {
 
     }
 
@@ -21,11 +21,11 @@ export class TransportsCreate {
     }
 
     onSubmit(event: Event) {
-        this.transportService
-            .createTransport(this._transport!)
+        this.sizeService
+            .createSize(this._size!)
             .then((resp) => {
                 console.log('redirect?', resp);
-                this.router.navigateToRoute('transports-index', {});
+                this.router.navigateToRoute('sizes-index', {});
             });
 
         event.preventDefault();

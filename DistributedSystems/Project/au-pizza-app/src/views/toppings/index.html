@@ -1,3 +1,35 @@
 <template>
-    Toppings index
+    <h1>Index</h1>
+    <p>
+        <a route-href="route: toppings-create; params.bind: {}">Create New</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Price
+                </th>
+                <th>
+                    Name
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr repeat.for="topping of _toppings">
+                <td>
+                    ${topping.price}
+                </td>
+                <td>
+                    ${topping.name}
+                </td>
+                <td>
+                    <a route-href="route: toppings-edit; params.bind: { id: topping.id }">Edit</a> |
+                    <a route-href="route: toppings-details; params.bind: { id: topping.id }">Details</a> |
+                    <a route-href="route: toppings-delete; params.bind: { id: topping.id }">Delete</a>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </template>

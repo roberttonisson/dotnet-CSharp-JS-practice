@@ -24,8 +24,16 @@ export class App {
             { route: ['transports/create'], name: 'transports-create', moduleId: PLATFORM.moduleName('views/transports/create'), nav: false, title: 'Transports Create' },
 
             { route: ['toppings', 'toppings/index'], name: 'toppings-index', moduleId: PLATFORM.moduleName('views/toppings/index'), nav: true, title: 'Toppings' },
+            { route: ['toppings/details/:id'], name: 'toppings-details', moduleId: PLATFORM.moduleName('views/toppings/details'), nav: false, title: 'Toppings Details' },
+            { route: ['toppings/edit/:id'], name: 'toppings-edit', moduleId: PLATFORM.moduleName('views/toppings/edit'), nav: false, title: 'Toppings Edit' },
+            { route: ['toppings/delete/:id'], name: 'toppings-delete', moduleId: PLATFORM.moduleName('views/toppings/delete'), nav: false, title: 'Toppings Delete' },
+            { route: ['toppings/create'], name: 'toppings-create', moduleId: PLATFORM.moduleName('views/toppings/create'), nav: false, title: 'Toppings Create' },
 
             { route: ['sizes', 'sizes/index'], name: 'sizes-index', moduleId: PLATFORM.moduleName('views/sizes/index'), nav: true, title: 'Sizes' },
+            { route: ['sizes/details/:id'], name: 'sizes-details', moduleId: PLATFORM.moduleName('views/sizes/details'), nav: false, title: 'Sizes Details' },
+            { route: ['sizes/edit/:id'], name: 'sizes-edit', moduleId: PLATFORM.moduleName('views/sizes/edit'), nav: false, title: 'Sizes Edit' },
+            { route: ['sizes/delete/:id'], name: 'sizes-delete', moduleId: PLATFORM.moduleName('views/sizes/delete'), nav: false, title: 'Sizes Delete' },
+            { route: ['sizes/create'], name: 'sizes-create', moduleId: PLATFORM.moduleName('views/sizes/create'), nav: false, title: 'Sizes Create' },
         ]
         );
 

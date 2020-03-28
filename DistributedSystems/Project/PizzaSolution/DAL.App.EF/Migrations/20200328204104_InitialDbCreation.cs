@@ -116,7 +116,7 @@ namespace DAL.App.EF.Migrations
                     ChangedAt = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(6,2)", nullable: false),
-                    SizeCm = table.Column<int>(nullable: false)
+                    SizeCm = table.Column<decimal>(type: "decimal(6,2)", nullable: false)
                 },
                 constraints: table =>
                 {

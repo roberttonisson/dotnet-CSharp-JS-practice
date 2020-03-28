@@ -603,8 +603,8 @@ namespace DAL.App.EF.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(6,2)");
 
-                    b.Property<int>("SizeCm")
-                        .HasColumnType("int");
+                    b.Property<decimal>("SizeCm")
+                        .HasColumnType("decimal(6,2)");
 
                     b.HasKey("Id");
 

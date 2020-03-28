@@ -11,7 +11,8 @@ namespace Domain
         
         [Column(TypeName = "decimal(6,2)")]
         public decimal Price { get; set; } = default!;
-        public int SizeCm { get; set; } = default!;
+        [Column(TypeName = "decimal(6,2)")]
+        public decimal SizeCm { get; set; } = default!;
         
         public ICollection<PizzaInCart>? PizzaInCarts { get; set; }
     }

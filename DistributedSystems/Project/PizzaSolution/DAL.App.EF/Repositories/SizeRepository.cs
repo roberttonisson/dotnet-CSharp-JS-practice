@@ -28,7 +28,7 @@ namespace DAL.App.EF.Repositories
         {
             return await RepoDbSet.Select(s => new SizeDTO()
             {
-                Id = s.Id, Name = s.Name, Price = s.Price, SizeCm = s.SizeCm
+                Id = s.Id, Name = s.Name, SizeCm = s.SizeCm, Price = s.Price
             }).FirstOrDefaultAsync(t => t.Id == id);
         }
         

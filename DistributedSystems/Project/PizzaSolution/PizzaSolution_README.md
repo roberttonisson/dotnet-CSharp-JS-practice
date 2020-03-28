@@ -1,7 +1,10 @@
 ~~~
-dotnet ef migrations add InitialDbCreation --project DAL.App.EF --startup-project WebApp
-dotnet ef database update --project DAL.App.EF --startup-project WebApp
-dotnet ef database drop --project DAL.App.EF --startup-project WebApp
+dotnet ef migrations add InitialDbCreation --project DAL.App.EF --startup-project WebApp --context AppDbContext
+
+dotnet ef database update --project DAL.App.EF --startup-project WebApp --context AppDbContext
+
+dotnet ef database drop --project DAL.App.EF --startup-project WebApp --context AppDbContext
+
 
 
 server=alpha.akaver.com;database=student2018_rotoni_pizza;user=student2018;password=student2018

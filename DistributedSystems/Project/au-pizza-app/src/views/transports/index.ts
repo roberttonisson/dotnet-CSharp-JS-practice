@@ -3,7 +3,7 @@ import { autoinject } from 'aurelia-framework';
 import { TransportService } from 'service/transport-service';
 
 @autoinject
-export class OwnersIndex {
+export class TransportsIndex {
     private _transports: ITransport[] = [];
 
     constructor(private transportService: TransportService) {

@@ -1,20 +1,20 @@
 import { autoinject } from 'aurelia-framework';
 import { HttpClient } from 'aurelia-fetch-client';
-import { ITransport } from 'domain/ITransport';
+import { ITopping } from 'domain/ITopping';
 
 @autoinject
-export class TransportService {
+export class ToppingService {
     constructor(private httpClient: HttpClient) {
 
     }
 
-    private readonly _baseUrl = 'https://localhost:5001/api/Transports';
+    private readonly _baseUrl = 'https://localhost:5001/api/Toppings';
 
-    getTransports(): Promise<ITransport[]> {
+    getToppings(): Promise<ITopping[]> {
         return this.httpClient
             .fetch(this._baseUrl, { cache: "no-store" })
             .then(response => response.json())
-            .then((data: ITransport[]) => data)
+            .then((data: ITopping[]) => data)
             .catch(reason => {
                 console.error(reason);
                 return [];
@@ -22,24 +22,24 @@ export class TransportService {
 
     }
 
-    getTransport(id: string): Promise<ITransport | null> {
+    getTopping(id: string): Promise<ITopping | null> {
         return this.httpClient
             .fetch(this._baseUrl + '/' + id, { cache: "no-store" })
             .then(response => response.json())
-            .then((data: ITransport) => data)
+            .then((data: ITopping) => data)
             .catch(reason => {
                 console.error(reason);
                 return null;
             });
     }
 
-    createTransport(transport: ITransport): Promise<string> {
-        console.log("-----------------" + JSON.stringify(transport));
-        return this.httpClient.post(this._baseUrl, JSON.stringify(transport), {
+    createTopping(topping: ITopping): Promise<string> {
+        console.log("-----------------" + JSON.stringify(topping));
+        return this.httpClient.post(this._baseUrl, JSON.stringify(topping), {
             cache: 'no-store'
         }).then(
             response => {
-                console.log('createTransport response', response);
+                console.log('createTopping response', response);
                 return response.statusText;
             }
         ).catch(reason => {
@@ -48,12 +48,12 @@ export class TransportService {
         });
     }
 
-    updateTransport(transport: ITransport): Promise<string> {
-        return this.httpClient.put(this._baseUrl + '/' + transport.id, JSON.stringify(transport), {
+    updateTopping(topping: ITopping): Promise<string> {
+        return this.httpClient.put(this._baseUrl + '/' + topping.id, JSON.stringify(topping), {
             cache: 'no-store'
         }).then(
             response => {
-                console.log('updateTransport response', response);
+                console.log('updateTopping response', response);
                 return response.statusText;
             }
         ).catch(reason => {
@@ -62,12 +62,12 @@ export class TransportService {
         });
     }
 
-    deleteTransport(transport: ITransport): Promise<string> {
-        return this.httpClient.delete(this._baseUrl + '/' + transport.id, JSON.stringify(transport), {
+    deleteTopping(topping: ITopping): Promise<string> {
+        return this.httpClient.delete(this._baseUrl + '/' + topping.id, JSON.stringify(topping), {
             cache: 'no-store'
         }).then(
             response => {
-                console.log('deleteTransport response', response);
+                console.log('deleteTopping response', response);
                 return response.statusText;
             }
         ).catch(reason => {

@@ -1,20 +1,20 @@
 import { autoinject } from 'aurelia-framework';
 import { HttpClient } from 'aurelia-fetch-client';
-import { ITransport } from 'domain/ITransport';
+import { ISize } from 'domain/ISize';
 
 @autoinject
-export class TransportService {
+export class SizeService {
     constructor(private httpClient: HttpClient) {
 
     }
 
-    private readonly _baseUrl = 'https://localhost:5001/api/Transports';
+    private readonly _baseUrl = 'https://localhost:5001/api/Sizes';
 
-    getTransports(): Promise<ITransport[]> {
+    getSizes(): Promise<ISize[]> {
         return this.httpClient
             .fetch(this._baseUrl, { cache: "no-store" })
             .then(response => response.json())
-            .then((data: ITransport[]) => data)
+            .then((data: ISize[]) => data)
             .catch(reason => {
                 console.error(reason);
                 return [];
@@ -22,24 +22,24 @@ export class TransportService {
 
     }
 
-    getTransport(id: string): Promise<ITransport | null> {
+    getSize(id: string): Promise<ISize | null> {
         return this.httpClient
             .fetch(this._baseUrl + '/' + id, { cache: "no-store" })
             .then(response => response.json())
-            .then((data: ITransport) => data)
+            .then((data: ISize) => data)
             .catch(reason => {
                 console.error(reason);
                 return null;
             });
     }
 
-    createTransport(transport: ITransport): Promise<string> {
-        console.log("-----------------" + JSON.stringify(transport));
-        return this.httpClient.post(this._baseUrl, JSON.stringify(transport), {
+    createSize(size: ISize): Promise<string> {
+        console.log("-----------------" + JSON.stringify(size));
+        return this.httpClient.post(this._baseUrl, JSON.stringify(size), {
             cache: 'no-store'
         }).then(
             response => {
-                console.log('createTransport response', response);
+                console.log('createSize response', response);
                 return response.statusText;
             }
         ).catch(reason => {
@@ -48,12 +48,12 @@ export class TransportService {
         });
     }
 
-    updateTransport(transport: ITransport): Promise<string> {
-        return this.httpClient.put(this._baseUrl + '/' + transport.id, JSON.stringify(transport), {
+    updateSize(size: ISize): Promise<string> {
+        return this.httpClient.put(this._baseUrl + '/' + size.id, JSON.stringify(size), {
             cache: 'no-store'
         }).then(
             response => {
-                console.log('updateTransport response', response);
+                console.log('updateSize response', response);
                 return response.statusText;
             }
         ).catch(reason => {
@@ -62,12 +62,12 @@ export class TransportService {
         });
     }
 
-    deleteTransport(transport: ITransport): Promise<string> {
-        return this.httpClient.delete(this._baseUrl + '/' + transport.id, JSON.stringify(transport), {
+    deleteSize(size: ISize): Promise<string> {
+        return this.httpClient.delete(this._baseUrl + '/' + size.id, JSON.stringify(size), {
             cache: 'no-store'
         }).then(
             response => {
-                console.log('deleteTransport response', response);
+                console.log('deleteSize response', response);
                 return response.statusText;
             }
         ).catch(reason => {
