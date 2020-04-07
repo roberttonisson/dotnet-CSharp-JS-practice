@@ -16,12 +16,10 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class SizesController : ControllerBase
     {
-        private readonly AppDbContext _context;
         private readonly IAppUnitOfWork _uow;
 
-        public SizesController(AppDbContext context, IAppUnitOfWork uow)
+        public SizesController(IAppUnitOfWork uow)
         {
-            _context = context;
             _uow = uow;
         }
 
@@ -50,14 +48,23 @@ namespace WebApp.ApiControllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSize(Guid id, Size size)
+        public async Task<IActionResult> PutSize(Guid id, SizeDTO dto)
         {
-            if (id != size.Id)
+            if (id != dto.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(size).State = EntityState.Modified;
+            var size = _uow.Sizes.Find(dto.Id);
+            if (size == null)
+            {
+                return BadRequest();
+            }
+            size.Name = dto.Name;
+            size.Price = dto.Price;
+            size.SizeCm = dto.SizeCm;
+
+            _uow.Sizes.Update(size);
 
             try
             {
@@ -108,7 +115,7 @@ namespace WebApp.ApiControllers
 
         private bool SizeExists(Guid id)
         {
-            return _context.Sizes.Any(e => e.Id == id);
+            return _uow.Sizes.Find(id) != null;
         }
     }
 }

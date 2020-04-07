@@ -7,11 +7,13 @@ using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
 using Domain.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class PartyOrdersController : Controller
     {
         private readonly IAppUnitOfWork _uow;

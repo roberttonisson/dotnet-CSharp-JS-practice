@@ -7,9 +7,12 @@ using DAL.Base;
 namespace Domain
 {
     public class PizzaInCart : DomainEntity
+    
     {
+        [Display(Name = nameof(Price), ResourceType = typeof(Resources.Domain.Shared))]
         [NotMapped] public decimal Price { get; set; }
 
+        [Display(Name = nameof(Quantity), ResourceType = typeof(Resources.Domain.Shared))]
         public int Quantity { get; set; } = default;
 
         public Guid PizzaTypeId { get; set; } = default!;

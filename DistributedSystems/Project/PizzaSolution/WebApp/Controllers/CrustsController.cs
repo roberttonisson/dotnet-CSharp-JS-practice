@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
 
@@ -45,6 +47,7 @@ namespace WebApp.Controllers
         }
 
         // GET: Crusts/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             var vm = new CrustCreateEditViewModel();
@@ -56,19 +59,21 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(CrustCreateEditViewModel vm)
         {
-            if (ModelState.IsValid)
-            {
-                _uow.Crusts.Add(vm.Crust);
-                await _uow.SaveChangesAsync();
+            vm.Crust.CreatedAt = DateTime.Now;
+            vm.Crust.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+            vm.Crust.CreatedBy = vm.Crust.ChangedBy;
+            vm.Crust.ChangedAt = DateTime.Now;
+            _uow.Crusts.Add(vm.Crust);
+            await _uow.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index));
-            }
-            return View(vm);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Crusts/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid? id, CrustCreateEditViewModel vm)
         {
             if (id == null)
@@ -91,6 +96,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid id,
             CrustCreateEditViewModel vm)
         {
@@ -111,6 +117,7 @@ namespace WebApp.Controllers
         }
 
         // GET: Crusts/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid? id, CrustCreateEditViewModel vm)
         {
             if (id == null)
@@ -130,6 +137,7 @@ namespace WebApp.Controllers
         // POST: Crusts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var crust = _uow.Crusts.Remove(id);

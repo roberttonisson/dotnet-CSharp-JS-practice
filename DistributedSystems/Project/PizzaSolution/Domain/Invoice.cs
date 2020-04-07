@@ -9,10 +9,13 @@ namespace Domain
 {
     public class Invoice : DomainEntity
     {
+        [Display(Name = nameof(Total), ResourceType = typeof(Resources.Domain.Shared))]
         [NotMapped] public decimal Total { get; set; }
 
+        [Display(Name = nameof(IsPaid), ResourceType = typeof(Resources.Domain.Shared))]
         public bool IsPaid { get; set; } = false;
 
+        [ForeignKey("AppUser")]
         public Guid UserId { get; set; } = default!;
         public AppUser? AppUser { get; set; }
         

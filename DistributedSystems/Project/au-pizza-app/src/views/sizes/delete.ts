@@ -2,10 +2,14 @@ import { autoinject } from 'aurelia-framework';
 import { RouteConfig, NavigationInstruction, Router } from 'aurelia-router';
 import { SizeService } from 'service/size-service';
 import { ISize } from 'domain/ISize';
+import { IAlertData } from 'types/IAlertData';
+import { AlertType } from 'types/AlertType';
 
 @autoinject
 export class SizesDelete {
-    private _size: ISize | null = null;
+    private _alert: IAlertData | null = null;
+
+    private _size?: ISize;
 
     constructor(private sizeService: SizeService, private router: Router) {
 
@@ -19,18 +23,42 @@ export class SizesDelete {
         console.log(params);
         if (params.id && typeof (params.id) == 'string') {
             this.sizeService.getSize(params.id).then(
-                data => this._size = data
+                response => {
+                    if (response.statusCode >= 200 && response.statusCode < 300) {
+                        this._alert = null;
+                        this._size = response.data!;
+                    } else {
+                        // show error message
+                        this._alert = {
+                            message: response.statusCode.toString() + ' - ' + response.errorMessage,
+                            type: AlertType.Danger,
+                            dismissable: true,
+                        };
+                        this._size = undefined;
+                    }
+                }
             );
         }
     }
 
     onSubmit(event: Event) {
         this.sizeService
-            .deleteSize(this._size!)
-            .then((resp) => {
-                console.log('redirect?', resp);
-                this.router.navigateToRoute('sizes-index', {});
-            });
+            .deleteSize(this._size!.id)
+            .then(
+                response => {
+                    if (response.statusCode >= 200 && response.statusCode < 300) {
+                        this._alert = null;
+                        this.router.navigateToRoute('sizes-index', {});
+                    } else {
+                        // show error message
+                        this._alert = {
+                            message: response.statusCode.toString() + ' - ' + response.errorMessage,
+                            type: AlertType.Danger,
+                            dismissable: true,
+                        }
+                    }
+                }
+            );
         event.preventDefault();
     }
 }

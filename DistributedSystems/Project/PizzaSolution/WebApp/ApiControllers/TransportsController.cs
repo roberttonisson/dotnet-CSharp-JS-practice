@@ -8,20 +8,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1;
 
 namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TransportsController : ControllerBase
     {
         private readonly IAppUnitOfWork _uow;
-        private readonly AppDbContext _context;
 
-        public TransportsController(IAppUnitOfWork uow, AppDbContext context)
+        public TransportsController(IAppUnitOfWork uow)
         {
-            _context = context;
             _uow = uow;
         }
 
@@ -51,18 +52,27 @@ namespace WebApp.ApiControllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTransport(Guid id, Transport transport)
+        public async Task<IActionResult> PutTransport(Guid id, TransportDTO dto)
         {
-            if (id != transport.Id)
+            if (id != dto.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(transport).State = EntityState.Modified;
+            var transport = _uow.Transports.Find(dto.Id);
+            if (transport == null)
+            {
+                return BadRequest();
+            }
+            transport.Address = dto.Address;
+            transport.Cost = dto.Cost;
+
+            _uow.Transports.Update(transport);
+
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _uow.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -114,7 +124,7 @@ namespace WebApp.ApiControllers
 
         private bool TransportExists(Guid id)
         {
-            return _context.Transports.Any(e => e.Id == id);
+            return _uow.Transports.Find(id) != null;
         }
     }
 }

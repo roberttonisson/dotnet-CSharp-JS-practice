@@ -8,8 +8,10 @@ namespace Domain
 {
     public class DrinkInCart : DomainEntity
     {
+        [Display(Name = nameof(Quantity), ResourceType = typeof(Resources.Domain.Shared))]
         public int Quantity { get; set; } = default;
 
+        [Display(Name = nameof(Price), ResourceType = typeof(Resources.Domain.Shared))]
         [NotMapped] public decimal Price { get; set; }
 
         public Guid DrinkId { get; set; } = default!;

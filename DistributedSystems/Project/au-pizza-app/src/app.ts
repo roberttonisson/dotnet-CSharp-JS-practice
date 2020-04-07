@@ -1,3 +1,4 @@
+import { AppState } from 'state/app-state';
 import { autoinject, PLATFORM } from 'aurelia-framework';
 import { RouterConfiguration, Router } from 'aurelia-router';
 
@@ -5,7 +6,7 @@ import { RouterConfiguration, Router } from 'aurelia-router';
 export class App {
     router?: Router;
 
-    constructor() {
+    constructor(private appState: AppState) {
 
     }
 
@@ -16,6 +17,10 @@ export class App {
 
         config.map([
             { route: ['', 'home', 'home/index'], name: 'home', moduleId: PLATFORM.moduleName('views/home/index'), nav: true, title: 'Home' },
+
+            { route: ['account/login'], name: 'account-login', moduleId: PLATFORM.moduleName('views/account/login'), nav: false, title: 'Login' },
+            { route: ['account/register'], name: 'account-register', moduleId: PLATFORM.moduleName('views/account/register'), nav: false, title: 'Register' },
+
 
             { route: ['transports', 'transports/index'], name: 'transports-index', moduleId: PLATFORM.moduleName('views/transports/index'), nav: true, title: 'Transports' },
             { route: ['transports/details/:id'], name: 'transports-details', moduleId: PLATFORM.moduleName('views/transports/details'), nav: false, title: 'Transports Details' },
@@ -39,4 +44,10 @@ export class App {
 
         config.mapUnknownRoutes('views/home/index');
     }
+
+    logoutOnClick(){
+        this.appState.jwt = null;
+        this.router!.navigateToRoute('account-login');
+    }
+
 }

@@ -16,13 +16,11 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class ToppingsController : ControllerBase
     {
-        private readonly AppDbContext _context;
         private readonly IAppUnitOfWork _uow;
 
-        public ToppingsController(AppDbContext context, IAppUnitOfWork uow)
+        public ToppingsController(IAppUnitOfWork uow)
         {
             _uow = uow;
-            _context = context;
         }
 
         // GET: api/Toppings
@@ -50,14 +48,22 @@ namespace WebApp.ApiControllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTopping(Guid id, Topping topping)
+        public async Task<IActionResult> PutTopping(Guid id, ToppingDTO dto)
         {
-            if (id != topping.Id)
+            if (id != dto.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(topping).State = EntityState.Modified;
+            var topping = _uow.Toppings.Find(dto.Id);
+            if (topping == null)
+            {
+                return BadRequest();
+            }
+            topping.Name = dto.Name;
+            topping.Price = dto.Price;
+
+            _uow.Toppings.Update(topping);
 
             try
             {
@@ -108,7 +114,7 @@ namespace WebApp.ApiControllers
 
         private bool ToppingExists(Guid id)
         {
-            return _context.Toppings.Any(e => e.Id == id);
+            return _uow.Toppings.Find(id) != null;
         }
     }
 }

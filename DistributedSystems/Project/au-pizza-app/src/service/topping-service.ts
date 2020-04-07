@@ -1,79 +1,167 @@
 import { autoinject } from 'aurelia-framework';
 import { HttpClient } from 'aurelia-fetch-client';
+import { AppState } from 'state/app-state';
+import { IFetchResponse } from 'types/IFetchResponse';
 import { ITopping } from 'domain/ITopping';
 
 @autoinject
 export class ToppingService {
-    constructor(private httpClient: HttpClient) {
-
+    constructor(private appState: AppState, private httpClient: HttpClient) {
+        this.httpClient.baseUrl = this.appState.baseUrl;
     }
 
-    private readonly _baseUrl = 'https://localhost:5001/api/Toppings';
+    private readonly _baseUrl = 'Toppings';
 
-    getToppings(): Promise<ITopping[]> {
-        return this.httpClient
-            .fetch(this._baseUrl, { cache: "no-store" })
-            .then(response => response.json())
-            .then((data: ITopping[]) => data)
-            .catch(reason => {
-                console.error(reason);
-                return [];
+    async getToppings(): Promise<IFetchResponse<ITopping[]>> {
+        try {
+            const response = await this.httpClient
+                .fetch(this._baseUrl, {
+                    cache: "no-store",
+                    headers: {
+                        authorization: "Bearer " + this.appState.jwt
+                    }
+                });
+            // happy case
+            if (response.status >= 200 && response.status < 300) {
+                const data = (await response.json()) as ITopping[];
+                return {
+                    statusCode: response.status,
+                    data: data
+                }
+            }
+
+            // something went wrong
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
+            }
+
+        } catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
+            }
+        }
+    }
+
+    async getTopping(id: string): Promise<IFetchResponse<ITopping>> {
+        try {
+            const response = await this.httpClient
+                .fetch(this._baseUrl + '/' + id, {
+                    cache: "no-store",
+                    headers: {
+                        authorization: "Bearer " + this.appState.jwt
+                    }
+                });
+
+            if (response.status >= 200 && response.status < 300) {
+                const data = (await response.json()) as ITopping;
+                return {
+                    statusCode: response.status,
+                    data: data
+                }
+            }
+
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
+            }
+
+        } catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
+            }
+        }
+    }
+
+    async createTopping(topping: ITopping): Promise<IFetchResponse<string>> {
+        try {
+            const response = await this.httpClient
+                .post(this._baseUrl, JSON.stringify(topping), {
+                    cache: 'no-store',
+                    headers: {
+                        authorization: "Bearer " + this.appState.jwt
+                    }
+                })
+
+            if (response.status >= 200 && response.status < 300) {
+                return {
+                    statusCode: response.status
+                    // no data
+                }
+            }
+
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
+            }
+        }
+        catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
+            }
+        }
+    }
+
+    async updateTopping(topping: ITopping): Promise<IFetchResponse<string>> {
+        try {
+            const response = await this.httpClient
+                .put(this._baseUrl + '/' + topping.id, JSON.stringify(topping), {
+                    cache: 'no-store',
+                    headers: {
+                        authorization: "Bearer " + this.appState.jwt
+                    }
+                });
+
+            if (response.status >= 200 && response.status < 300) {
+                return {
+                    statusCode: response.status
+                    // no data
+                }
+            }
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
+            }
+        }
+        catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
+            }
+        }
+    }
+
+    async deleteTopping(id: string): Promise<IFetchResponse<string>> {
+
+        try {
+            const response = await this.httpClient
+            .delete(this._baseUrl + '/' + id, null, {
+                cache: 'no-store',
+                headers: {
+                    authorization: "Bearer " + this.appState.jwt
+                }
             });
 
-    }
-
-    getTopping(id: string): Promise<ITopping | null> {
-        return this.httpClient
-            .fetch(this._baseUrl + '/' + id, { cache: "no-store" })
-            .then(response => response.json())
-            .then((data: ITopping) => data)
-            .catch(reason => {
-                console.error(reason);
-                return null;
-            });
-    }
-
-    createTopping(topping: ITopping): Promise<string> {
-        console.log("-----------------" + JSON.stringify(topping));
-        return this.httpClient.post(this._baseUrl, JSON.stringify(topping), {
-            cache: 'no-store'
-        }).then(
-            response => {
-                console.log('createTopping response', response);
-                return response.statusText;
+            if (response.status >= 200 && response.status < 300) {
+                return {
+                    statusCode: response.status
+                    // no data
+                }
             }
-        ).catch(reason => {
-            console.error(reason);
-            return JSON.stringify(reason);
-        });
-    }
-
-    updateTopping(topping: ITopping): Promise<string> {
-        return this.httpClient.put(this._baseUrl + '/' + topping.id, JSON.stringify(topping), {
-            cache: 'no-store'
-        }).then(
-            response => {
-                console.log('updateTopping response', response);
-                return response.statusText;
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
             }
-        ).catch(reason => {
-            console.error(reason);
-            return JSON.stringify(reason);
-        });
-    }
-
-    deleteTopping(topping: ITopping): Promise<string> {
-        return this.httpClient.delete(this._baseUrl + '/' + topping.id, JSON.stringify(topping), {
-            cache: 'no-store'
-        }).then(
-            response => {
-                console.log('deleteTopping response', response);
-                return response.statusText;
+        }
+        catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
             }
-        ).catch(reason => {
-            console.error(reason);
-            return JSON.stringify(reason);
-        });
+        }
     }
 
 }

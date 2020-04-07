@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
 
@@ -23,7 +24,7 @@ namespace WebApp.Controllers
         // GET: DefaultToppings
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.DefaultToppings.AllAsync());
+            return View(await _uow.DefaultToppings.GetIncluded());
         }
 
         // GET: DefaultToppings/Details/5
@@ -34,7 +35,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var defaultTopping = await _uow.DefaultToppings.FindAsync(id);
+            var defaultTopping = await _uow.DefaultToppings.FirstOrDefaultAsync(id.Value);
 
             if (defaultTopping == null)
             {
@@ -46,7 +47,8 @@ namespace WebApp.Controllers
 
         // GET: DefaultToppings/Create
            // GET: DefaultToppings/Create
-        public IActionResult Create()
+           [Authorize(Roles = "Admin")]
+           public IActionResult Create()
         {
             var vm =  new DefaultToppingCreateEditViewModel();
             vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
@@ -58,7 +60,7 @@ namespace WebApp.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken][Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(DefaultToppingCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
@@ -75,6 +77,7 @@ namespace WebApp.Controllers
         }
 
         // GET: DefaultToppings/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid? id, DefaultToppingCreateEditViewModel vm)
         {
             if (id == null)
@@ -98,6 +101,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid id, DefaultToppingCreateEditViewModel vm)
         {
             if (id != vm.DefaultTopping.Id)
@@ -118,6 +122,7 @@ namespace WebApp.Controllers
         }
 
         // GET: DefaultToppings/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -125,7 +130,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var defaultTopping = await _uow.DefaultToppings.FindAsync(id);
+            var defaultTopping = await _uow.DefaultToppings.FirstOrDefaultAsync(id.Value);
             if (defaultTopping == null)
             {
                 return NotFound();
@@ -135,11 +140,12 @@ namespace WebApp.Controllers
         }
 
         // POST: DefaultToppings/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var defaultTopping = _uow.DefaultToppings.Remove(id);
+            _uow.DefaultToppings.Remove(id);
             await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

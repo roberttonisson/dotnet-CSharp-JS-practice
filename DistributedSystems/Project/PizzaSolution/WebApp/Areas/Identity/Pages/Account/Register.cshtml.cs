@@ -50,6 +50,15 @@ namespace WebApp.Areas.Identity.Pages.Account
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
+            
+            [Display(Name = "First name")]
+            [MaxLength(128)] [MinLength(1)] public string FirstName { get; set; } = default!;
+
+            [Display(Name = "Last name")]
+            [MaxLength(128)] [MinLength(1)] public string LastName { get; set; } = default!;
+
+            [Display(Name = "Address")]
+            [MaxLength(256)] [MinLength(1)] public string Address { get; set; } = default!;
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -71,11 +80,15 @@ namespace WebApp.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new AppUser { UserName = Input.Email, Email = Input.Email };
+                var user = new AppUser
+                {
+                    UserName = Input.Email, Email = Input.Email , Address = Input.Address, 
+                    FirstName = Input.FirstName, LastName = Input.LastName
+                };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

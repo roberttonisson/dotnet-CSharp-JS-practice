@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Threading
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -11,18 +12,40 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-0">
         <div class="container customHeader">
-
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <div class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">@Resources.Views.Shared._Layout.Home</a>
+            </div>
+            <li class="nav-item dropdown">
+                <a class="dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    PizzaApp
+                </a>
+                <div class="dropdown-menu nav-item" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" asp-area="" asp-controller="AdditionalToppings"    asp-action="Index">AdditionalToppings</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="Carts"                 asp-action="Index">Carts</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="Crusts"                asp-action="Index">Crusts</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="DefaultToppings"       asp-action="Index">DefaultToppings</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="Drinks"                asp-action="Index">Drinks</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="DrinkInCarts"          asp-action="Index">DrinkInCarts</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="InvoiceLines"          asp-action="Index">InvoiceLines</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="Invoices"              asp-action="Index">Invoices</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="PartyOrderInvoices"    asp-action="Index">PartyOrderInvoices</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="PartyOrders"           asp-action="Index">PartyOrders</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="PizzaInCarts"          asp-action="Index">PizzaInCarts</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="PizzaTypes"            asp-action="Index">PizzaTypes</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="Sizes"                 asp-action="Index">Sizes</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="Toppings"              asp-action="Index">Toppings</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="Transports"            asp-action="Index">Transports</a>
+                </div>
+            </li>
             <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                 <partial name="_LoginPartial"/>
                 <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
+
+                    @*<li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="AdditionalToppings" asp-action="Index">AdditionalToppings</a>
                     </li>
                     <li class="nav-item">
@@ -66,7 +89,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Transports" asp-action="Index">Transports</a>
-                    </li>
+                    </li>*@
                 </ul>
             </div>
         </div>
@@ -80,7 +103,7 @@
 
 <footer class="border-top footer text-muted">
     <div class="container">
-        &copy; 2020 - WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        &copy; 2020 - PizzaApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">@Resources.Views.Shared._Layout.Privacy</a>
     </div>
 </footer>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>

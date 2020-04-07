@@ -5,13 +5,18 @@ using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
+using DAL.Base.EF.Repositories;
 using Domain;
 using Domain.Identity;
+using Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class CartsController : Controller
     {
         private readonly IAppUnitOfWork _uow;
@@ -24,7 +29,7 @@ namespace WebApp.Controllers
         // GET: Carts
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Carts.AllAsync());
+            return View(await _uow.Carts.AllAsync(User.UserGuidId()));
         }
 
         // GET: Carts/Details/5
@@ -35,7 +40,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var cart = await _uow.Carts.FindAsync(id);
+            var cart = await _uow.Carts.FindAsync(id, User.UserGuidId());
 
             if (cart == null)
             {
@@ -48,7 +53,7 @@ namespace WebApp.Controllers
         // GET: Carts/Create
         public IActionResult Create()
         {
-            var vm =  new CartCreateEditViewModel();
+            var vm = new CartCreateEditViewModel();
             vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
             return View(vm);
         }
@@ -60,16 +65,18 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CartCreateEditViewModel vm)
         {
-            if (ModelState.IsValid)
-            {
-                //cart.Id = Guid.NewGuid();
-                _uow.Carts.Add(vm.Cart);
-                await _uow.SaveChangesAsync();
+            vm.Cart = new Cart();
+            var id = User.UserGuidId();
+            vm.Cart.UserId = id;
+            vm.Cart.CreatedAt = DateTime.Now;
+            vm.Cart.ChangedBy = _uow.Users.Find(id).UserName;
+            vm.Cart.CreatedBy = vm.Cart.ChangedBy;
+            vm.Cart.ChangedAt = DateTime.Now;
+            _uow.Carts.Add(vm.Cart);
+            await _uow.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index));
-            }
-            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
-            return View(vm);
+            return RedirectToAction(nameof(Index));
+
         }
 
         // GET: Carts/Edit/5
@@ -80,11 +87,12 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.Cart = await _uow.Carts.FindAsync(id);
+            vm.Cart = await _uow.Carts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
             if (vm.Cart == null)
             {
                 return NotFound();
             }
+
             vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
 
             return View(vm);
@@ -101,12 +109,26 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
+            vm.Cart.UserId = User.UserGuidId();
 
             if (ModelState.IsValid)
             {
-                _uow.Carts.Update(vm.Cart);
-                await _uow.SaveChangesAsync();
-                
+                try
+                {
+                    _uow.Carts.Update(vm.Cart);
+                    await _uow.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await _uow.Carts.ExistsAsync(id, User.UserGuidId()))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
             vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
@@ -121,7 +143,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var cart = await _uow.Carts.FindAsync(id);
+            var cart = await _uow.Carts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
             if (cart == null)
             {
                 return NotFound();
@@ -135,7 +157,7 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var cart = _uow.Carts.Remove(id);
+            await _uow.Carts.DeleteAsync(id, User.UserGuidId());
             await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

@@ -2,9 +2,13 @@ import { autoinject } from 'aurelia-framework';
 import { RouteConfig, NavigationInstruction, Router } from 'aurelia-router';
 import { ToppingService } from 'service/topping-service';
 import { ITopping } from 'domain/ITopping';
+import { IAlertData } from 'types/IAlertData';
+import { AlertType } from 'types/AlertType';
 
 @autoinject
 export class ToppingsCreate {
+    private _alert: IAlertData | null = null;
+
 
     private _topping: ITopping | null = null;
 
@@ -21,12 +25,24 @@ export class ToppingsCreate {
     }
 
     onSubmit(event: Event) {
+        console.log(event);
         this.toppingService
             .createTopping(this._topping!)
-            .then((resp) => {
-                console.log('redirect?', resp);
-                this.router.navigateToRoute('toppings-index', {});
-            });
+            .then(
+                response => {
+                    if (response.statusCode >= 200 && response.statusCode < 300) {
+                        this._alert = null;
+                        this.router.navigateToRoute('toppings-index', {});
+                    } else {
+                        // show error message
+                        this._alert = {
+                            message: response.statusCode.toString() + ' - ' + response.errorMessage,
+                            type: AlertType.Danger,
+                            dismissable: true,
+                        }
+                    }
+                }   
+            );
 
         event.preventDefault();
     }

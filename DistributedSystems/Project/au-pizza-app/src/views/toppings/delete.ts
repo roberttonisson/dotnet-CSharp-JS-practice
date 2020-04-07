@@ -2,10 +2,14 @@ import { autoinject } from 'aurelia-framework';
 import { RouteConfig, NavigationInstruction, Router } from 'aurelia-router';
 import { ToppingService } from 'service/topping-service';
 import { ITopping } from 'domain/ITopping';
+import { IAlertData } from 'types/IAlertData';
+import { AlertType } from 'types/AlertType';
 
 @autoinject
 export class ToppingsDelete {
-    private _topping: ITopping | null = null;
+    private _alert: IAlertData | null = null;
+
+    private _topping?: ITopping;
 
     constructor(private toppingService: ToppingService, private router: Router) {
 
@@ -19,18 +23,42 @@ export class ToppingsDelete {
         console.log(params);
         if (params.id && typeof (params.id) == 'string') {
             this.toppingService.getTopping(params.id).then(
-                data => this._topping = data
+                response => {
+                    if (response.statusCode >= 200 && response.statusCode < 300) {
+                        this._alert = null;
+                        this._topping = response.data!;
+                    } else {
+                        // show error message
+                        this._alert = {
+                            message: response.statusCode.toString() + ' - ' + response.errorMessage,
+                            type: AlertType.Danger,
+                            dismissable: true,
+                        };
+                        this._topping = undefined;
+                    }
+                }
             );
         }
     }
 
     onSubmit(event: Event) {
         this.toppingService
-            .deleteTopping(this._topping!)
-            .then((resp) => {
-                console.log('redirect?', resp);
-                this.router.navigateToRoute('toppings-index', {});
-            });
+            .deleteTopping(this._topping!.id)
+            .then(
+                response => {
+                    if (response.statusCode >= 200 && response.statusCode < 300) {
+                        this._alert = null;
+                        this.router.navigateToRoute('toppings-index', {});
+                    } else {
+                        // show error message
+                        this._alert = {
+                            message: response.statusCode.toString() + ' - ' + response.errorMessage,
+                            type: AlertType.Danger,
+                            dismissable: true,
+                        }
+                    }
+                }
+            );
         event.preventDefault();
     }
 }

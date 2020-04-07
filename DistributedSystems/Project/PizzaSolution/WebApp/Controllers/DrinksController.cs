@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
 using WebApp.Models;
 
 namespace WebApp.Controllers
@@ -44,6 +45,7 @@ namespace WebApp.Controllers
         }
 
           // GET: Drinks/Create
+          [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             var vm = new DrinkCreateEditViewModel();
@@ -55,6 +57,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(DrinkCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
@@ -69,6 +72,7 @@ namespace WebApp.Controllers
         }
 
         // GET: Drinks/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid? id, DrinkCreateEditViewModel vm)
         {
             if (id == null)
@@ -91,6 +95,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid id,
             DrinkCreateEditViewModel vm)
         {
@@ -111,6 +116,7 @@ namespace WebApp.Controllers
         }
 
         // GET: Drinks/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -130,6 +136,7 @@ namespace WebApp.Controllers
         // POST: Drinks/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var drink = _uow.Drinks.Remove(id);

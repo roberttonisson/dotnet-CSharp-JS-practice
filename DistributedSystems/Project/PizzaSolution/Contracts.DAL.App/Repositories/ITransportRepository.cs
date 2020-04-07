@@ -11,5 +11,6 @@ namespace Contracts.DAL.App.Repositories
     {
         Task<TransportDTO> SelectDTO(Guid id);
         Task<IEnumerable<TransportDTO>> SelectAllDTO();
+
     }
 }

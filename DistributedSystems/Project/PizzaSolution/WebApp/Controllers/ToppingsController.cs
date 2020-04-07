@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
 using WebApp.Models;
 
 namespace WebApp.Controllers
@@ -45,6 +46,7 @@ namespace WebApp.Controllers
         }
 
         // GET: Toppings/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             var vm = new ToppingCreateEditViewModel();
@@ -56,6 +58,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(ToppingCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
@@ -71,6 +74,7 @@ namespace WebApp.Controllers
         }
 
         // GET: Toppings/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid? id, ToppingCreateEditViewModel vm)
         {
             if (id == null)
@@ -93,6 +97,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid id,
             ToppingCreateEditViewModel vm)
         {
@@ -113,6 +118,7 @@ namespace WebApp.Controllers
         }
 
         // GET: Toppings/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -132,6 +138,7 @@ namespace WebApp.Controllers
         // POST: Toppings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var topping = _uow.Toppings.Remove(id);

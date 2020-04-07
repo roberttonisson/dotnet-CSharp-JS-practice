@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
 
 namespace WebApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class InvoiceLinesController : Controller
     {
         private readonly IAppUnitOfWork _uow;
@@ -23,7 +26,7 @@ namespace WebApp.Controllers
         // GET: InvoiceLines
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.InvoiceLines.AllAsync());
+            return View(await _uow.InvoiceLines.GetIncluded(User.UserGuidId()));
         }
 
         // GET: InvoiceLines/Details/5
@@ -34,7 +37,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var invoiceLine = await _uow.InvoiceLines.FindAsync(id);
+            var invoiceLine = await _uow.InvoiceLines.FirstOrDefaultAsync(id.Value, User.UserGuidId());
 
             if (invoiceLine == null)
             {
@@ -45,12 +48,12 @@ namespace WebApp.Controllers
         }
 
              // GET: InvoiceLines/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var vm =  new InvoiceLineCreateEditViewModel();
-            vm.InvoiceSelectList = new SelectList(_uow.Invoices.All(), nameof(Invoice.Id), nameof(Invoice.Id));
-            vm.DrinkInCartSelectList = new SelectList(_uow.DrinkInCarts.All(), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
-            vm.PizzaInCartSelectList = new SelectList(_uow.PizzaInCarts.All(), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            vm.InvoiceSelectList = new SelectList(await _uow.Invoices.GetIncluded(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
+            vm.DrinkInCartSelectList = new SelectList(await _uow.DrinkInCarts.GetIncluded(User.UserGuidId()), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
+            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
             return View(vm);
         }
 
@@ -69,9 +72,9 @@ namespace WebApp.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            vm.InvoiceSelectList = new SelectList(_uow.Invoices.All(), nameof(Invoice.Id), nameof(Invoice.Id));
-            vm.DrinkInCartSelectList = new SelectList(_uow.DrinkInCarts.All(), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
-            vm.PizzaInCartSelectList = new SelectList(_uow.PizzaInCarts.All(), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            vm.InvoiceSelectList = new SelectList(await _uow.Invoices.GetIncluded(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
+            vm.DrinkInCartSelectList = new SelectList(await _uow.DrinkInCarts.GetIncluded(User.UserGuidId()), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
+            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
             return View(vm);
         }
 
@@ -83,14 +86,14 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.InvoiceLine = await _uow.InvoiceLines.FindAsync(id);
+            vm.InvoiceLine = await _uow.InvoiceLines.FirstOrDefaultAsync(id.Value, User.UserGuidId());
             if (vm.InvoiceLine == null)
             {
                 return NotFound();
             }
-            vm.InvoiceSelectList = new SelectList(_uow.Invoices.All(), nameof(Invoice.Id), nameof(Invoice.Id));
-            vm.DrinkInCartSelectList = new SelectList(_uow.DrinkInCarts.All(), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
-            vm.PizzaInCartSelectList = new SelectList(_uow.PizzaInCarts.All(), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            vm.InvoiceSelectList = new SelectList(await _uow.Invoices.GetIncluded(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
+            vm.DrinkInCartSelectList = new SelectList(await _uow.DrinkInCarts.GetIncluded(User.UserGuidId()), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
+            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
 
             return View(vm);
         }
@@ -114,9 +117,9 @@ namespace WebApp.Controllers
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.InvoiceSelectList = new SelectList(_uow.Invoices.All(), nameof(Invoice.Id), nameof(Invoice.Id));
-            vm.DrinkInCartSelectList = new SelectList(_uow.DrinkInCarts.All(), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
-            vm.PizzaInCartSelectList = new SelectList(_uow.PizzaInCarts.All(), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            vm.InvoiceSelectList = new SelectList(await _uow.Invoices.GetIncluded(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
+            vm.DrinkInCartSelectList = new SelectList(await _uow.DrinkInCarts.GetIncluded(User.UserGuidId()), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
+            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
             return View(vm);
         }
 
@@ -128,7 +131,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var invoiceLine = await _uow.InvoiceLines.FindAsync(id);
+            var invoiceLine = await _uow.InvoiceLines.FirstOrDefaultAsync(id.Value, User.UserGuidId());
             if (invoiceLine == null)
             {
                 return NotFound();
@@ -142,7 +145,7 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var invoiceLine = _uow.InvoiceLines.Remove(id);
+            await _uow.InvoiceLines.DeleteAsync(id, User.UserGuidId());
             await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

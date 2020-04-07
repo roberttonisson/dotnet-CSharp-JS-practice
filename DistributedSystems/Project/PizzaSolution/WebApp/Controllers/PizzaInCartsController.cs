@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class PizzaInCartsController : Controller
     {
         private readonly IAppUnitOfWork _uow;
@@ -23,7 +26,7 @@ namespace WebApp.Controllers
         // GET: PizzaInCarts
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.PizzaInCarts.AllAsync());
+            return View(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()));
         }
 
         // GET: PizzaInCarts/Details/5
@@ -34,7 +37,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var pizzaInCart = await _uow.PizzaInCarts.FindAsync(id);
+            var pizzaInCart = await _uow.PizzaInCarts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
 
             if (pizzaInCart == null)
             {
@@ -45,13 +48,13 @@ namespace WebApp.Controllers
         }
 
                // GET: PizzaInCarts/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var vm =  new PizzaInCartCreateEditViewModel();
-            vm.PizzaTypeSelectList = new SelectList(_uow.PizzaTypes.All(), nameof(PizzaType.Id), nameof(PizzaType.Name));
-            vm.CrustSelectList = new SelectList(_uow.Crusts.All(), nameof(Crust.Id), nameof(Crust.Name));
-            vm.SizeSelectList = new SelectList(_uow.Sizes.All(), nameof(Size.Id), nameof(Size.Name));
-            vm.CartSelectList = new SelectList(_uow.Carts.All(), nameof(Cart.Id), nameof(Cart.Id));
+            vm.PizzaTypeSelectList = new SelectList(await _uow.PizzaTypes.AllAsync(), nameof(PizzaType.Id), nameof(PizzaType.Name));
+            vm.CrustSelectList = new SelectList(await _uow.Crusts.AllAsync(), nameof(Crust.Id), nameof(Crust.Name));
+            vm.SizeSelectList = new SelectList(await _uow.Sizes.AllAsync(), nameof(Size.Id), nameof(Size.Name));
+            vm.CartSelectList = new SelectList(await _uow.Carts.AllAsync(User.UserGuidId()), nameof(Cart.Id), nameof(Cart.Id));
             return View(vm);
         }
 
@@ -64,16 +67,15 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //pizzaInCart.Id = Guid.NewGuid();
                 _uow.PizzaInCarts.Add(vm.PizzaInCart);
                 await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            vm.PizzaTypeSelectList = new SelectList(_uow.PizzaTypes.All(), nameof(PizzaType.Id), nameof(PizzaType.Name));
-            vm.CrustSelectList = new SelectList(_uow.Crusts.All(), nameof(Crust.Id), nameof(Crust.Name));
-            vm.SizeSelectList = new SelectList(_uow.Sizes.All(), nameof(Size.Id), nameof(Size.Name));
-            vm.CartSelectList = new SelectList(_uow.Carts.All(), nameof(Cart.Id), nameof(Cart.Id));
+            vm.PizzaTypeSelectList = new SelectList(await _uow.PizzaTypes.AllAsync(), nameof(PizzaType.Id), nameof(PizzaType.Name));
+            vm.CrustSelectList = new SelectList(await _uow.Crusts.AllAsync(), nameof(Crust.Id), nameof(Crust.Name));
+            vm.SizeSelectList = new SelectList(await _uow.Sizes.AllAsync(), nameof(Size.Id), nameof(Size.Name));
+            vm.CartSelectList = new SelectList(await _uow.Carts.AllAsync(User.UserGuidId()), nameof(Cart.Id), nameof(Cart.Id));
             return View(vm);
         }
 
@@ -85,15 +87,15 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.PizzaInCart = await _uow.PizzaInCarts.FindAsync(id);
+            vm.PizzaInCart = await _uow.PizzaInCarts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
             if (vm.PizzaInCart == null)
             {
                 return NotFound();
             }
-            vm.PizzaTypeSelectList = new SelectList(_uow.PizzaTypes.All(), nameof(PizzaType.Id), nameof(PizzaType.Name));
-            vm.CrustSelectList = new SelectList(_uow.Crusts.All(), nameof(Crust.Id), nameof(Crust.Name));
-            vm.SizeSelectList = new SelectList(_uow.Sizes.All(), nameof(Size.Id), nameof(Size.Name));
-            vm.CartSelectList = new SelectList(_uow.Carts.All(), nameof(Cart.Id), nameof(Cart.Id));
+            vm.PizzaTypeSelectList = new SelectList(await _uow.PizzaTypes.AllAsync(), nameof(PizzaType.Id), nameof(PizzaType.Name));
+            vm.CrustSelectList = new SelectList(await _uow.Crusts.AllAsync(), nameof(Crust.Id), nameof(Crust.Name));
+            vm.SizeSelectList = new SelectList(await _uow.Sizes.AllAsync(), nameof(Size.Id), nameof(Size.Name));
+            vm.CartSelectList = new SelectList(await _uow.Carts.AllAsync(User.UserGuidId()), nameof(Cart.Id), nameof(Cart.Id));
 
             return View(vm);
         }
@@ -117,10 +119,10 @@ namespace WebApp.Controllers
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.PizzaTypeSelectList = new SelectList(_uow.PizzaTypes.All(), nameof(PizzaType.Id), nameof(PizzaType.Name));
-            vm.CrustSelectList = new SelectList(_uow.Crusts.All(), nameof(Crust.Id), nameof(Crust.Name));
-            vm.SizeSelectList = new SelectList(_uow.Sizes.All(), nameof(Size.Id), nameof(Size.Name));
-            vm.CartSelectList = new SelectList(_uow.Carts.All(), nameof(Cart.Id), nameof(Cart.Id));
+            vm.PizzaTypeSelectList = new SelectList(await _uow.PizzaTypes.AllAsync(), nameof(PizzaType.Id), nameof(PizzaType.Name));
+            vm.CrustSelectList = new SelectList(await _uow.Crusts.AllAsync(), nameof(Crust.Id), nameof(Crust.Name));
+            vm.SizeSelectList = new SelectList(await _uow.Sizes.AllAsync(), nameof(Size.Id), nameof(Size.Name));
+            vm.CartSelectList = new SelectList(await _uow.Carts.AllAsync(User.UserGuidId()), nameof(Cart.Id), nameof(Cart.Id));
             return View(vm);
         }
         // GET: PizzaInCarts/Delete/5
@@ -131,7 +133,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var pizzaInCart = await _uow.PizzaInCarts.FindAsync(id);
+            var pizzaInCart = await _uow.PizzaInCarts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
             if (pizzaInCart == null)
             {
                 return NotFound();
@@ -145,7 +147,7 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var pizzaInCart = _uow.PizzaInCarts.Remove(id);
+            await _uow.PizzaInCarts.DeleteAsync(id, User.UserGuidId());
             await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

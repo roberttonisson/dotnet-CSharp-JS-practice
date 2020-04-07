@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
@@ -6,11 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Domain.Identity;
+using Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class DrinkInCartsController : Controller
     {
         private readonly IAppUnitOfWork _uow;
@@ -23,7 +28,7 @@ namespace WebApp.Controllers
         // GET: DrinkInCarts
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.DrinkInCarts.AllAsync());
+            return View(await _uow.DrinkInCarts.GetIncluded(User.UserGuidId()));
         }
 
         // GET: DrinkInCarts/Details/5
@@ -34,7 +39,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var drinkInCart = await _uow.DrinkInCarts.FindAsync(id);
+            var drinkInCart = await _uow.DrinkInCarts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
 
             if (drinkInCart == null)
             {
@@ -45,11 +50,11 @@ namespace WebApp.Controllers
         }
 
            // GET: DrinkInCarts/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var vm =  new DrinkInCartCreateEditViewModel();
-            vm.DrinkSelectList = new SelectList(_uow.Drinks.All(), nameof(Drink.Id), nameof(Drink.Name));
-            vm.CartSelectList = new SelectList(_uow.Carts.All(), nameof(Cart.Id), nameof(Cart.Id));
+            vm.DrinkSelectList = new SelectList(await _uow.Drinks.AllAsync(), nameof(Drink.Id), nameof(Drink.Name));
+            vm.CartSelectList = new SelectList(await _uow.Carts.AllAsync(User.UserGuidId()), nameof(Cart.Id), nameof(Cart.UserId));
             return View(vm);
         }
 
@@ -61,15 +66,14 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Create(DrinkInCartCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
-            {
-                //drinkInCart.Id = Guid.NewGuid();
+            { 
                 _uow.DrinkInCarts.Add(vm.DrinkInCart);
                 await _uow.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            vm.DrinkSelectList = new SelectList(_uow.Drinks.All(), nameof(Drink.Id), nameof(Drink.Name));
-            vm.CartSelectList = new SelectList(_uow.Carts.All(), nameof(Cart.Id), nameof(Cart.Id));
+            vm.DrinkSelectList = new SelectList(await _uow.Drinks.AllAsync(), nameof(Drink.Id), nameof(Drink.Name));
+            vm.CartSelectList = new SelectList(await _uow.Carts.AllAsync(User.UserGuidId()), nameof(Cart.Id), nameof(Cart.UserId));
             return View(vm);
         }
 
@@ -81,13 +85,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.DrinkInCart = await _uow.DrinkInCarts.FindAsync(id);
+            vm.DrinkInCart = await _uow.DrinkInCarts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
             if (vm.DrinkInCart == null)
             {
                 return NotFound();
             }           
-            vm.DrinkSelectList = new SelectList(_uow.Drinks.All(), nameof(Drink.Id), nameof(Drink.Name));
-            vm.CartSelectList = new SelectList(_uow.Carts.All(), nameof(Cart.Id), nameof(Cart.Id));
+            vm.DrinkSelectList = new SelectList(await _uow.Drinks.AllAsync(), nameof(Drink.Id), nameof(Drink.Name));
+            vm.CartSelectList = new SelectList(await _uow.Carts.AllAsync(User.UserGuidId()), nameof(Cart.Id), nameof(Cart.UserId));
 
             return View(vm);
         }
@@ -111,8 +115,8 @@ namespace WebApp.Controllers
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.DrinkSelectList = new SelectList(_uow.Drinks.All(), nameof(Drink.Id), nameof(Drink.Name));
-            vm.CartSelectList = new SelectList(_uow.Carts.All(), nameof(Cart.Id), nameof(Cart.Id));
+            vm.DrinkSelectList = new SelectList(await _uow.Drinks.AllAsync(), nameof(Drink.Id), nameof(Drink.Name));
+            vm.CartSelectList = new SelectList(await _uow.Carts.AllAsync(User.UserGuidId()), nameof(Cart.Id), nameof(Cart.UserId));
             return View(vm);
         }
 
@@ -124,7 +128,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var drinkInCart = await _uow.DrinkInCarts.FindAsync(id);
+            var drinkInCart = await _uow.DrinkInCarts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
             if (drinkInCart == null)
             {
                 return NotFound();
@@ -138,7 +142,7 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var drinkInCart = _uow.DrinkInCarts.Remove(id);
+            await _uow.DrinkInCarts.DeleteAsync(id, User.UserGuidId());
             await _uow.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

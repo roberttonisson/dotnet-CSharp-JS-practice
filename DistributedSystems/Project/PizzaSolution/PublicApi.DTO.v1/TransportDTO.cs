@@ -10,7 +10,7 @@ namespace PublicApi.DTO.v1
         
         [Column(TypeName = "decimal(6,2)")] 
         public decimal Cost { get; set; } = default!;
-        
+
         [MaxLength(256)] [MinLength(1)] public string Address { get; set; } = default!;
         
     }

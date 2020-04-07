@@ -1,10 +1,14 @@
-﻿using Contracts.DAL.Base.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Contracts.DAL.Base.Repositories;
 using Domain;
 
 namespace Contracts.DAL.App.Repositories
 {
     public interface IDefaultToppingRepository : IBaseRepository<DefaultTopping>
     {
-        // add your custom methods here!
+        Task<IEnumerable<DefaultTopping>> GetIncluded();
+        Task<DefaultTopping> FirstOrDefaultAsync(Guid id);
     }
 }

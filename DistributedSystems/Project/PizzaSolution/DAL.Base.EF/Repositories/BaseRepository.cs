@@ -72,7 +72,7 @@ namespace DAL.Base.EF.Repositories
         {
             return Remove(Find(id));
         }
-        
+
         public virtual EntityEntry<TEntity> Entry(TEntity entity)
         {
             return RepoDbContext.Entry(entity);
@@ -82,7 +82,8 @@ namespace DAL.Base.EF.Repositories
         {
             return RepoDbSet.Any(t => Equals(t.Id, id));
         }
-        
+
+
     }
     
 }

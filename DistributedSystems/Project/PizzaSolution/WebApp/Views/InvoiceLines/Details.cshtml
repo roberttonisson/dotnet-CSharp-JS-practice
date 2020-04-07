@@ -4,7 +4,7 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>@Resources.Views.Shared.DetailsShared.Details</h1>
 
 <div>
     <h4>InvoiceLine</h4>
@@ -20,13 +20,13 @@
             @Html.DisplayNameFor(model => model.PizzaInCart)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PizzaInCart.Id)
+            @Html.DisplayFor(model => model.PizzaInCart.PizzaType.Name)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.DrinkInCart)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DrinkInCart.Id)
+            @Html.DisplayFor(model => model.DrinkInCart.Drink.Name)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Invoice)
@@ -61,6 +61,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model.Id">@Resources.Views.Shared.EditShared.Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

@@ -33,6 +33,5 @@ namespace Contracts.DAL.Base.Repositories
         bool Any(params object[] id);
 
 
-
     }
 }

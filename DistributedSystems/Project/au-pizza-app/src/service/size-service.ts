@@ -1,79 +1,167 @@
 import { autoinject } from 'aurelia-framework';
 import { HttpClient } from 'aurelia-fetch-client';
+import { AppState } from 'state/app-state';
+import { IFetchResponse } from 'types/IFetchResponse';
 import { ISize } from 'domain/ISize';
 
 @autoinject
 export class SizeService {
-    constructor(private httpClient: HttpClient) {
-
+    constructor(private appState: AppState, private httpClient: HttpClient) {
+        this.httpClient.baseUrl = this.appState.baseUrl;
     }
 
-    private readonly _baseUrl = 'https://localhost:5001/api/Sizes';
+    private readonly _baseUrl = 'Sizes';
 
-    getSizes(): Promise<ISize[]> {
-        return this.httpClient
-            .fetch(this._baseUrl, { cache: "no-store" })
-            .then(response => response.json())
-            .then((data: ISize[]) => data)
-            .catch(reason => {
-                console.error(reason);
-                return [];
+    async getSizes(): Promise<IFetchResponse<ISize[]>> {
+        try {
+            const response = await this.httpClient
+                .fetch(this._baseUrl, {
+                    cache: "no-store",
+                    headers: {
+                        authorization: "Bearer " + this.appState.jwt
+                    }
+                });
+            // happy case
+            if (response.status >= 200 && response.status < 300) {
+                const data = (await response.json()) as ISize[];
+                return {
+                    statusCode: response.status,
+                    data: data
+                }
+            }
+
+            // something went wrong
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
+            }
+
+        } catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
+            }
+        }
+    }
+
+    async getSize(id: string): Promise<IFetchResponse<ISize>> {
+        try {
+            const response = await this.httpClient
+                .fetch(this._baseUrl + '/' + id, {
+                    cache: "no-store",
+                    headers: {
+                        authorization: "Bearer " + this.appState.jwt
+                    }
+                });
+
+            if (response.status >= 200 && response.status < 300) {
+                const data = (await response.json()) as ISize;
+                return {
+                    statusCode: response.status,
+                    data: data
+                }
+            }
+
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
+            }
+
+        } catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
+            }
+        }
+    }
+
+    async createSize(size: ISize): Promise<IFetchResponse<string>> {
+        try {
+            const response = await this.httpClient
+                .post(this._baseUrl, JSON.stringify(size), {
+                    cache: 'no-store',
+                    headers: {
+                        authorization: "Bearer " + this.appState.jwt
+                    }
+                })
+
+            if (response.status >= 200 && response.status < 300) {
+                return {
+                    statusCode: response.status
+                    // no data
+                }
+            }
+
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
+            }
+        }
+        catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
+            }
+        }
+    }
+
+    async updateSize(size: ISize): Promise<IFetchResponse<string>> {
+        try {
+            const response = await this.httpClient
+                .put(this._baseUrl + '/' + size.id, JSON.stringify(size), {
+                    cache: 'no-store',
+                    headers: {
+                        authorization: "Bearer " + this.appState.jwt
+                    }
+                });
+
+            if (response.status >= 200 && response.status < 300) {
+                return {
+                    statusCode: response.status
+                    // no data
+                }
+            }
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
+            }
+        }
+        catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
+            }
+        }
+    }
+
+    async deleteSize(id: string): Promise<IFetchResponse<string>> {
+
+        try {
+            const response = await this.httpClient
+            .delete(this._baseUrl + '/' + id, null, {
+                cache: 'no-store',
+                headers: {
+                    authorization: "Bearer " + this.appState.jwt
+                }
             });
 
-    }
-
-    getSize(id: string): Promise<ISize | null> {
-        return this.httpClient
-            .fetch(this._baseUrl + '/' + id, { cache: "no-store" })
-            .then(response => response.json())
-            .then((data: ISize) => data)
-            .catch(reason => {
-                console.error(reason);
-                return null;
-            });
-    }
-
-    createSize(size: ISize): Promise<string> {
-        console.log("-----------------" + JSON.stringify(size));
-        return this.httpClient.post(this._baseUrl, JSON.stringify(size), {
-            cache: 'no-store'
-        }).then(
-            response => {
-                console.log('createSize response', response);
-                return response.statusText;
+            if (response.status >= 200 && response.status < 300) {
+                return {
+                    statusCode: response.status
+                    // no data
+                }
             }
-        ).catch(reason => {
-            console.error(reason);
-            return JSON.stringify(reason);
-        });
-    }
-
-    updateSize(size: ISize): Promise<string> {
-        return this.httpClient.put(this._baseUrl + '/' + size.id, JSON.stringify(size), {
-            cache: 'no-store'
-        }).then(
-            response => {
-                console.log('updateSize response', response);
-                return response.statusText;
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
             }
-        ).catch(reason => {
-            console.error(reason);
-            return JSON.stringify(reason);
-        });
-    }
-
-    deleteSize(size: ISize): Promise<string> {
-        return this.httpClient.delete(this._baseUrl + '/' + size.id, JSON.stringify(size), {
-            cache: 'no-store'
-        }).then(
-            response => {
-                console.log('deleteSize response', response);
-                return response.statusText;
+        }
+        catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
             }
-        ).catch(reason => {
-            console.error(reason);
-            return JSON.stringify(reason);
-        });
+        }
     }
 
 }
