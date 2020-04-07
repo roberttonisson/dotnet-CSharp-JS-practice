@@ -51,11 +51,9 @@ namespace WebApp.Controllers
         // GET: AdditionalToppings/Create
         public async Task<IActionResult> Create()
         {
-            var vm = new AdditionalToppingCreateEditViewModel();
-            vm.ToppingSelectList =
-                new SelectList(await _uow.Toppings.AllAsync(), nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()),
-                nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            var vm =  new AdditionalToppingCreateEditViewModel();
+            vm.ToppingSelectList = new SelectList(await _uow.Toppings.AllAsync(), nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
             return View(vm);
         }
 
@@ -66,14 +64,20 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AdditionalToppingCreateEditViewModel vm)
         {
-            vm.AdditionalTopping.CreatedAt = DateTime.Now;
-            vm.AdditionalTopping.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-            vm.AdditionalTopping.CreatedBy = vm.AdditionalTopping.ChangedBy;
-            vm.AdditionalTopping.ChangedAt = DateTime.Now;
-            _uow.AdditionalToppings.Add(vm.AdditionalTopping);
-            await _uow.SaveChangesAsync();
+            if (ModelState.IsValid)
+            {
+                vm.AdditionalTopping.CreatedAt = DateTime.Now;
+                vm.AdditionalTopping.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.AdditionalTopping.CreatedBy = vm.AdditionalTopping.ChangedBy;
+                vm.AdditionalTopping.ChangedAt = DateTime.Now;
+                _uow.AdditionalToppings.Add(vm.AdditionalTopping);
+                await _uow.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index));
+            }
+            vm.ToppingSelectList = new SelectList(await _uow.Toppings.AllAsync(), nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            return View(vm);
         }
 
         // GET: AdditionalToppings/Edit/5
@@ -89,11 +93,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
-            vm.ToppingSelectList =
-                new SelectList(await _uow.Toppings.AllAsync(), nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()),
-                nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            vm.ToppingSelectList = new SelectList(await _uow.Toppings.AllAsync(), nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
 
             return View(vm);
         }
@@ -112,16 +113,16 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                vm.AdditionalTopping.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.AdditionalTopping.ChangedAt = DateTime.Now;
+                
                 _uow.AdditionalToppings.Update(vm.AdditionalTopping);
                 await _uow.SaveChangesAsync();
-
+                
                 return RedirectToAction(nameof(Index));
             }
-
-            vm.ToppingSelectList =
-                new SelectList(await _uow.Toppings.AllAsync(), nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()),
-                nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            vm.ToppingSelectList = new SelectList(await _uow.Toppings.AllAsync(), nameof(Topping.Id), nameof(Topping.Name));
+            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
             return View(vm);
         }
 

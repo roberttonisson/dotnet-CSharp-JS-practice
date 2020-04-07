@@ -43,10 +43,10 @@
                 @Html.DisplayFor(modelItem => item.IsPaid)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.AppUser.Email)
+                @Html.DisplayFor(modelItem => item.AppUser!.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Transport.Address)
+                @Html.DisplayFor(modelItem => item.Transport!.Address)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedBy)

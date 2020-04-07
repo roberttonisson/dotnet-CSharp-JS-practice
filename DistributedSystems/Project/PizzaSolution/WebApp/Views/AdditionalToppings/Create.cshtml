@@ -21,26 +21,6 @@
                 <select asp-for="AdditionalTopping.PizzaInCartId" class ="form-control" asp-items="Model.PizzaInCartSelectList"></select>
             </div>
             <div class="form-group">
-                <label asp-for="AdditionalTopping.CreatedBy" class="control-label"></label>
-                <input asp-for="AdditionalTopping.CreatedBy" class="form-control" />
-                <span asp-validation-for="AdditionalTopping.CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AdditionalTopping.CreatedAt" class="control-label"></label>
-                <input asp-for="AdditionalTopping.CreatedAt" class="form-control" />
-                <span asp-validation-for="AdditionalTopping.CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AdditionalTopping.ChangedBy" class="control-label"></label>
-                <input asp-for="AdditionalTopping.ChangedBy" class="form-control" />
-                <span asp-validation-for="AdditionalTopping.ChangedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AdditionalTopping.ChangedAt" class="control-label"></label>
-                <input asp-for="AdditionalTopping.ChangedAt" class="form-control" />
-                <span asp-validation-for="AdditionalTopping.ChangedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>

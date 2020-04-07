@@ -19,16 +19,16 @@ namespace DAL.App.EF.Repositories
         public async Task<IEnumerable<AdditionalTopping>> GetIncluded(Guid? userId = null)
         {
             var query = RepoDbSet
-                .Include(a => a.PizzaInCart)
-                    .ThenInclude(p => p.Cart)
-                        .ThenInclude(c => c.AppUser)
-                .Include(a => a.PizzaInCart)
-                    .ThenInclude(c => c.PizzaType)
-                .Include(a => a.Topping)
+                .Include(a => a.PizzaInCart!)
+                    .ThenInclude(p => p.Cart!)
+                        .ThenInclude(c => c.AppUser!)
+                .Include(a => a.PizzaInCart!)
+                    .ThenInclude(c => c.PizzaType!)
+                .Include(a => a.Topping!)
                 .AsQueryable();
             if (userId != null)
             {
-                query = query.Where(x => x.PizzaInCart.Cart.AppUser.Id == userId);
+                query = query.Where(x => x.PizzaInCart!.Cart!.AppUser!.Id == userId);
             }
 
             return await query.ToListAsync();
@@ -37,17 +37,17 @@ namespace DAL.App.EF.Repositories
         public async Task<AdditionalTopping> FirstOrDefaultAsync(Guid id, Guid? userId = null)
         {
             var query = RepoDbSet
-                .Include(a => a.PizzaInCart)
-                    .ThenInclude(p => p.Cart)
-                        .ThenInclude(c => c.AppUser)
-                .Include(a => a.PizzaInCart)
-                    .ThenInclude(c => c.PizzaType)
-                .Include(a => a.Topping)
+                .Include(a => a.PizzaInCart!)
+                    .ThenInclude(p => p.Cart!)
+                        .ThenInclude(c => c.AppUser!)
+                .Include(a => a.PizzaInCart!)
+                    .ThenInclude(c => c.PizzaType!)
+                .Include(a => a.Topping!)
                 .Where(x => x.Id == id)
                 .AsQueryable();
             if (userId != null)
             {
-                query = query.Where(a => a.PizzaInCart.Cart.AppUser.Id == userId);
+                query = query.Where(a => a.PizzaInCart!.Cart!.AppUser!.Id == userId);
             }
 
             return await query.FirstOrDefaultAsync();

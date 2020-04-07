@@ -18,16 +18,16 @@
             @Html.DisplayFor(model => model.Quantity)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Drink)
+            @Resources.Domain.Tables.Drink
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Drink.Name)
+            @Html.DisplayFor(model => model.Drink!.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cart)
+            @Resources.Domain.Tables.Cart
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cart.AppUser.Email)
+            @Html.DisplayFor(model => model.Cart!.AppUser!.Email)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.CreatedBy)

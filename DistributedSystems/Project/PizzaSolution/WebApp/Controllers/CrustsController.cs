@@ -62,14 +62,18 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(CrustCreateEditViewModel vm)
         {
-            vm.Crust.CreatedAt = DateTime.Now;
-            vm.Crust.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-            vm.Crust.CreatedBy = vm.Crust.ChangedBy;
-            vm.Crust.ChangedAt = DateTime.Now;
-            _uow.Crusts.Add(vm.Crust);
-            await _uow.SaveChangesAsync();
+            if (ModelState.IsValid)
+            {
+                vm.Crust.CreatedAt = DateTime.Now;
+                vm.Crust.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.Crust.CreatedBy = vm.Crust.ChangedBy;
+                vm.Crust.ChangedAt = DateTime.Now;
+                _uow.Crusts.Add(vm.Crust);
+                await _uow.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index));
+            }
+            return View(vm);
         }
 
         // GET: Crusts/Edit/5
@@ -107,6 +111,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                vm.Crust.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.Crust.ChangedAt = DateTime.Now;
                 _uow.Crusts.Update(vm.Crust);
                 await _uow.SaveChangesAsync();
                 

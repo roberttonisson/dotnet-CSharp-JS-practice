@@ -16,10 +16,10 @@
                 @Html.DisplayNameFor(model => model.Quantity)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Drink)
+                @Resources.Domain.Tables.Drink
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Cart)
+                @Resources.Domain.Tables.Cart
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CreatedBy)
@@ -43,10 +43,10 @@
                 @Html.DisplayFor(modelItem => item.Quantity)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Drink.Name)
+                @Html.DisplayFor(modelItem => item.Drink!.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Cart.AppUser.Email)
+                @Html.DisplayFor(modelItem => item.Cart!.AppUser!.Email)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedBy)

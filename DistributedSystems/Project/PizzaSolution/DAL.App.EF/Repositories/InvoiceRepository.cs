@@ -23,7 +23,7 @@ namespace DAL.App.EF.Repositories
                 .AsQueryable();
             if (userId != null)
             {
-                query = query.Where(i => i.AppUser.Id == userId);
+                query = query.Where(i => i.AppUser!.Id == userId);
             }
 
             return await query.ToListAsync();
@@ -38,7 +38,7 @@ namespace DAL.App.EF.Repositories
                 .AsQueryable();
             if (userId != null)
             {
-                query = query.Where(a => a.AppUser.Id == userId);
+                query = query.Where(a => a.AppUser!.Id == userId);
             }
 
             return await query.FirstOrDefaultAsync();

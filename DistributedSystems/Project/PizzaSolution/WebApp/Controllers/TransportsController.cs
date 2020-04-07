@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Extensions;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.Models;
 
@@ -60,7 +61,10 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //crust.Id = Guid.NewGuid();
+                vm.Transport.CreatedAt = DateTime.Now;
+                vm.Transport.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.Transport.CreatedBy = vm.Transport.ChangedBy;
+                vm.Transport.ChangedAt = DateTime.Now;
                 _uow.Transports.Add(vm.Transport);
                 await _uow.SaveChangesAsync();
 
@@ -102,6 +106,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                vm.Transport.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.Transport.ChangedAt = DateTime.Now;
                 _uow.Transports.Update(vm.Transport);
                 await _uow.SaveChangesAsync();
                 

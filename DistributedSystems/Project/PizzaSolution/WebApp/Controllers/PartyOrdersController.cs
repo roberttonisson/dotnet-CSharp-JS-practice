@@ -7,6 +7,7 @@ using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
 using Domain.Identity;
+using Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
@@ -65,7 +66,10 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //partyOrder.Id = Guid.NewGuid();
+                vm.PartyOrder.CreatedAt = DateTime.Now;
+                vm.PartyOrder.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.PartyOrder.CreatedBy = vm.PartyOrder.ChangedBy;
+                vm.PartyOrder.ChangedAt = DateTime.Now;
                 _uow.PartyOrders.Add(vm.PartyOrder);
                 await _uow.SaveChangesAsync();
 
@@ -107,6 +111,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                vm.PartyOrder.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.PartyOrder.ChangedAt = DateTime.Now;
                 _uow.PartyOrders.Update(vm.PartyOrder);
                 await _uow.SaveChangesAsync();
                 

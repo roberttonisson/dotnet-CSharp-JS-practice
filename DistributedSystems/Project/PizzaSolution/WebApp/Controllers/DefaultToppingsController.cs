@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
@@ -65,7 +66,10 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //defaultTopping.Id = Guid.NewGuid();
+                vm.DefaultTopping.CreatedAt = DateTime.Now;
+                vm.DefaultTopping.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.DefaultTopping.CreatedBy = vm.DefaultTopping.ChangedBy;
+                vm.DefaultTopping.ChangedAt = DateTime.Now;
                 _uow.DefaultToppings.Add(vm.DefaultTopping);
                 await _uow.SaveChangesAsync();
 
@@ -111,6 +115,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                vm.DefaultTopping.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.DefaultTopping.ChangedAt = DateTime.Now;
                 _uow.DefaultToppings.Update(vm.DefaultTopping);
                 await _uow.SaveChangesAsync();
                 

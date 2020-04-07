@@ -17,22 +17,22 @@
             @Html.DisplayFor(model => model.Quantity)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PizzaInCart)
+            @Resources.Domain.Tables.PizzaType
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PizzaInCart.PizzaType.Name)
+            @Html.DisplayFor(model => model.PizzaInCart!.PizzaType!.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DrinkInCart)
+            @Resources.Domain.Tables.Drink
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DrinkInCart.Drink.Name)
+            @Html.DisplayFor(model => model.DrinkInCart!.Drink!.Name)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Invoice)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Invoice.Id)
+            @Html.DisplayFor(model => model.Invoice!.Id)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.CreatedBy)

@@ -17,28 +17,28 @@
             @Html.DisplayFor(model => model.Quantity)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PizzaType)
+            @Resources.Domain.Tables.PizzaType
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PizzaType.Name)
+            @Html.DisplayFor(model => model.PizzaType!.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Crust)
+            @Resources.Domain.Tables.Crust
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Crust.Name)
+            @Html.DisplayFor(model => model.Crust!.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Size)
+            @Resources.Domain.Tables.Size
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Size.Name)
+            @Html.DisplayFor(model => model.Size!.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cart)
+            @Resources.Domain.Tables.Cart
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cart.AppUser.Email)
+            @Html.DisplayFor(model => model.Cart!.AppUser!.Email)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.CreatedBy)

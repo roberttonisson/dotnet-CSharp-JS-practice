@@ -22,29 +22,6 @@
                 <label asp-for="Invoice.TransportId" class="control-label"></label>
                 <select asp-for="Invoice.TransportId" class ="form-control" asp-items="Model.TransportSelectList"></select>
             </div>
-            <div class="form-group">
-                <label asp-for="Invoice.CreatedBy" class="control-label"></label>
-                <input asp-for="Invoice.CreatedBy" class="form-control" />
-                <span asp-validation-for="Invoice.CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Invoice.CreatedAt" class="control-label"></label>
-                <input asp-for="Invoice.CreatedAt" class="form-control" />
-                <span asp-validation-for="Invoice.CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Invoice.ChangedBy" class="control-label"></label>
-                <input asp-for="Invoice.ChangedBy" class="form-control" />
-                <span asp-validation-for="Invoice.ChangedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Invoice.ChangedAt" class="control-label"></label>
-                <input asp-for="Invoice.ChangedAt" class="form-control" />
-                <span asp-validation-for="Invoice.ChangedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
         </form>
     </div>
 </div>

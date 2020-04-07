@@ -24,26 +24,8 @@
                 <span asp-validation-for="Invoice.TransportId" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Invoice.Id"/>
-            <div class="form-group">
-                <label asp-for="Invoice.CreatedBy" class="control-label"></label>
-                <input asp-for="Invoice.CreatedBy" class="form-control"/>
-                <span asp-validation-for="Invoice.CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Invoice.CreatedAt" class="control-label"></label>
-                <input asp-for="Invoice.CreatedAt" class="form-control"/>
-                <span asp-validation-for="Invoice.CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Invoice.ChangedBy" class="control-label"></label>
-                <input asp-for="Invoice.ChangedBy" class="form-control"/>
-                <span asp-validation-for="Invoice.ChangedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Invoice.ChangedAt" class="control-label"></label>
-                <input asp-for="Invoice.ChangedAt" class="form-control"/>
-                <span asp-validation-for="Invoice.ChangedAt" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="Invoice.CreatedAt" />
+            <input type="hidden" asp-for="Invoice.CreatedBy" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary"/>
             </div>

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Extensions;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.Models;
 
@@ -62,7 +63,10 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //crust.Id = Guid.NewGuid();
+                vm.Drink.CreatedAt = DateTime.Now;
+                vm.Drink.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.Drink.CreatedBy = vm.Drink.ChangedBy;
+                vm.Drink.ChangedAt = DateTime.Now;
                 _uow.Drinks.Add(vm.Drink);
                 await _uow.SaveChangesAsync();
 
@@ -106,6 +110,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                vm.Drink.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.Drink.ChangedAt = DateTime.Now;
                 _uow.Drinks.Update(vm.Drink);
                 await _uow.SaveChangesAsync();
                 

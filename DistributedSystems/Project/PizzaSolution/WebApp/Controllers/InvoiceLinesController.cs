@@ -66,7 +66,10 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //invoiceLine.Id = Guid.NewGuid();
+                vm.InvoiceLine.CreatedAt = DateTime.Now;
+                vm.InvoiceLine.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.InvoiceLine.CreatedBy = vm.InvoiceLine.ChangedBy;
+                vm.InvoiceLine.ChangedAt = DateTime.Now;
                 _uow.InvoiceLines.Add(vm.InvoiceLine);
                 await _uow.SaveChangesAsync();
 
@@ -112,6 +115,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                vm.InvoiceLine.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.InvoiceLine.ChangedAt = DateTime.Now;
                 _uow.InvoiceLines.Update(vm.InvoiceLine);
                 await _uow.SaveChangesAsync();
                 

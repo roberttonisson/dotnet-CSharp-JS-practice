@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Extensions;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.Models;
 
@@ -62,7 +63,10 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //crust.Id = Guid.NewGuid();
+                vm.PizzaType.CreatedAt = DateTime.Now;
+                vm.PizzaType.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.PizzaType.CreatedBy = vm.PizzaType.ChangedBy;
+                vm.PizzaType.ChangedAt = DateTime.Now;
                 _uow.PizzaTypes.Add(vm.PizzaType);
                 await _uow.SaveChangesAsync();
 
@@ -106,6 +110,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                vm.PizzaType.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.PizzaType.ChangedAt = DateTime.Now;
                 _uow.PizzaTypes.Update(vm.PizzaType);
                 await _uow.SaveChangesAsync();
                 

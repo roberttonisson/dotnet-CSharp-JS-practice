@@ -15,6 +15,11 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>Size.resx</DependentUpon>
       </Compile>
+      <Compile Update="Domain\Tables.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Tables.resx</DependentUpon>
+      </Compile>
       <Compile Update="Views\Home\Index.Designer.cs">
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
@@ -77,6 +82,13 @@
       <EmbeddedResource Update="Domain\Size.resx">
         <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>Size.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\Tables.et.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\Tables.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Tables.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Update="Views\Home\Index.et.resx">
         <Generator>PublicResXFileCodeGenerator</Generator>

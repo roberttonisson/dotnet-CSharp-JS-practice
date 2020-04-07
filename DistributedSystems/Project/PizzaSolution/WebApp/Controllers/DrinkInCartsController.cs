@@ -67,6 +67,10 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             { 
+                vm.DrinkInCart.CreatedAt = DateTime.Now;
+                vm.DrinkInCart.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.DrinkInCart.CreatedBy = vm.DrinkInCart.ChangedBy;
+                vm.DrinkInCart.ChangedAt = DateTime.Now;
                 _uow.DrinkInCarts.Add(vm.DrinkInCart);
                 await _uow.SaveChangesAsync();
 
@@ -110,6 +114,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                vm.DrinkInCart.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.DrinkInCart.ChangedAt = DateTime.Now;
                 _uow.DrinkInCarts.Update(vm.DrinkInCart);
                 await _uow.SaveChangesAsync();
                 

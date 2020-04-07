@@ -13,7 +13,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.UserId)
+                @Resources.Domain.Tables.User
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CreatedBy)
@@ -34,7 +34,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.UserId)
+                @Html.DisplayFor(modelItem => item.AppUser!.Email)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedBy)

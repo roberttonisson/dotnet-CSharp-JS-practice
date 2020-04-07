@@ -23,26 +23,8 @@
                 <span asp-validation-for="Topping.Price" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Topping.Id" />
-            <div class="form-group">
-                <label asp-for="Topping.CreatedBy" class="control-label"></label>
-                <input asp-for="Topping.CreatedBy" class="form-control" />
-                <span asp-validation-for="Topping.CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Topping.CreatedAt" class="control-label"></label>
-                <input asp-for="Topping.CreatedAt" class="form-control" />
-                <span asp-validation-for="Topping.CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Topping.ChangedBy" class="control-label"></label>
-                <input asp-for="Topping.ChangedBy" class="form-control" />
-                <span asp-validation-for="Topping.ChangedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Topping.ChangedAt" class="control-label"></label>
-                <input asp-for="Topping.ChangedAt" class="form-control" />
-                <span asp-validation-for="Topping.ChangedAt" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="Topping.CreatedAt" />
+            <input type="hidden" asp-for="Topping.CreatedBy" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

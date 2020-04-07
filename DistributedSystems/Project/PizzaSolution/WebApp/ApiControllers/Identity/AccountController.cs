@@ -20,7 +20,7 @@ namespace WebApp.ApiControllers.Identity
         private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<AccountController> _logger;
         private readonly SignInManager<AppUser> _signInManager;
-        private IList<AuthenticationScheme> ExternalLogins { get; set; }
+        private IList<AuthenticationScheme>? ExternalLogins { get; set; }
         private readonly IEmailSender _emailSender;
 
         public AccountController(IConfiguration configuration, UserManager<AppUser> userManager,

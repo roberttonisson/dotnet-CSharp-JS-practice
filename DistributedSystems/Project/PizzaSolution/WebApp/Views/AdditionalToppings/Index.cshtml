@@ -13,10 +13,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Topping)
+               @Resources.Domain.Tables.AdditionalTopping
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PizzaInCart)
+                @Resources.Domain.Tables.PizzaType
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CreatedBy)
@@ -37,10 +37,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Topping.Name)
+                @Html.DisplayFor(modelItem => item.Topping!.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PizzaInCart.PizzaType.Name)
+                @Html.DisplayFor(modelItem => item.PizzaInCart!.PizzaType!.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedBy)

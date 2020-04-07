@@ -29,7 +29,7 @@ namespace WebApp.Controllers
         // GET: Carts
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Carts.AllAsync(User.UserGuidId()));
+            return View(await _uow.Carts.Include(User.UserGuidId()));
         }
 
         // GET: Carts/Details/5
@@ -40,7 +40,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var cart = await _uow.Carts.FindAsync(id, User.UserGuidId());
+            var cart = await _uow.Carts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
 
             if (cart == null)
             {
@@ -115,6 +115,8 @@ namespace WebApp.Controllers
             {
                 try
                 {
+                    vm.Cart.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                    vm.Cart.ChangedAt = DateTime.Now;
                     _uow.Carts.Update(vm.Cart);
                     await _uow.SaveChangesAsync();
                 }

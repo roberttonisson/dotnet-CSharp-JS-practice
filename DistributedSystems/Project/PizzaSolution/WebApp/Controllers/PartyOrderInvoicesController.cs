@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain;
+using Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
@@ -64,7 +65,10 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //partyOrderInvoice.Id = Guid.NewGuid();
+                vm.PartyOrderInvoice.CreatedAt = DateTime.Now;
+                vm.PartyOrderInvoice.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.PartyOrderInvoice.CreatedBy = vm.PartyOrderInvoice.ChangedBy;
+                vm.PartyOrderInvoice.ChangedAt = DateTime.Now;
                 _uow.PartyOrderInvoices.Add(vm.PartyOrderInvoice);
                 await _uow.SaveChangesAsync();
 
@@ -108,6 +112,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                vm.PartyOrderInvoice.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.PartyOrderInvoice.ChangedAt = DateTime.Now;
                 _uow.PartyOrderInvoices.Update(vm.PartyOrderInvoice);
                 await _uow.SaveChangesAsync();
                 

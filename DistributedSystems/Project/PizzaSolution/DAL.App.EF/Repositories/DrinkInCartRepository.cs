@@ -18,13 +18,13 @@ namespace DAL.App.EF.Repositories
         public async Task<IEnumerable<DrinkInCart>> GetIncluded(Guid? userId = null)
         {
             var query = RepoDbSet
-                .Include(d => d.Cart)
-                .ThenInclude(c => c.AppUser)
-                .Include(t => t.Drink)
+                .Include(d => d.Cart!)
+                    .ThenInclude(c => c.AppUser!)
+                .Include(t => t.Drink!)
                 .AsQueryable();
             if (userId != null)
             {
-                query = query.Where(x => x.Cart.AppUser.Id == userId);
+                query = query.Where(x => x.Cart!.AppUser!.Id == userId);
             }
 
             return await query.ToListAsync();
@@ -33,14 +33,14 @@ namespace DAL.App.EF.Repositories
         public async Task<DrinkInCart> FirstOrDefaultAsync(Guid id, Guid? userId = null)
         {
             var query = RepoDbSet
-                .Include(d => d.Cart)
-                    .ThenInclude(c => c.AppUser)
-                .Include(t => t.Drink)
+                .Include(d => d.Cart!)
+                    .ThenInclude(c => c.AppUser!)
+                .Include(t => t.Drink!)
                 .Where(x => x.Id == id)
                 .AsQueryable();
             if (userId != null)
             {
-                query = query.Where(a => a.Cart.AppUser.Id == userId);
+                query = query.Where(a => a.Cart!.AppUser!.Id == userId);
             }
 
             return await query.FirstOrDefaultAsync();

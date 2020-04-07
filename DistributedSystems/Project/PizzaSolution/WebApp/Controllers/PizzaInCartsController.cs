@@ -67,6 +67,10 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                vm.PizzaInCart.CreatedAt = DateTime.Now;
+                vm.PizzaInCart.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.PizzaInCart.CreatedBy = vm.PizzaInCart.ChangedBy;
+                vm.PizzaInCart.ChangedAt = DateTime.Now;
                 _uow.PizzaInCarts.Add(vm.PizzaInCart);
                 await _uow.SaveChangesAsync();
 
@@ -114,6 +118,8 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                vm.PizzaInCart.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
+                vm.PizzaInCart.ChangedAt = DateTime.Now;
                 _uow.PizzaInCarts.Update(vm.PizzaInCart);
                 await _uow.SaveChangesAsync();
                 

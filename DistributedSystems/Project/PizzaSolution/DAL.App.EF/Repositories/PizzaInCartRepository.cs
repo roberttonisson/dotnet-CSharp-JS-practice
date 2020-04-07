@@ -18,15 +18,15 @@ namespace DAL.App.EF.Repositories
         public async Task<IEnumerable<PizzaInCart>> GetIncluded(Guid? userId = null)
         {
             var query = RepoDbSet
-                .Include(d => d.Cart)
-                    .ThenInclude(u => u.AppUser)
-                .Include(p => p.PizzaType)
-                .Include(c => c.Crust)
-                .Include(s => s.Size)
+                .Include(d => d.Cart!)
+                    .ThenInclude(u => u.AppUser!)
+                .Include(p => p.PizzaType!)
+                .Include(c => c.Crust!)
+                .Include(s => s.Size!)
                 .AsQueryable();
             if (userId != null)
             {
-                query = query.Where(x => x.Cart.AppUser.Id == userId);
+                query = query.Where(x => x.Cart!.AppUser!.Id == userId);
             }
 
             return await query.ToListAsync();
@@ -35,16 +35,16 @@ namespace DAL.App.EF.Repositories
         public async Task<PizzaInCart> FirstOrDefaultAsync(Guid id, Guid? userId = null)
         {
             var query = RepoDbSet
-                .Include(d => d.Cart)
-                    .ThenInclude(u => u.AppUser)
-                .Include(p => p.PizzaType)
-                .Include(c => c.Crust)
-                .Include(s => s.Size)
+                .Include(d => d.Cart!)
+                    .ThenInclude(u => u.AppUser!)
+                .Include(p => p.PizzaType!)
+                .Include(c => c.Crust!)
+                .Include(s => s.Size!)
                 .Where(x => x.Id == id)
                 .AsQueryable();
             if (userId != null)
             {
-                query = query.Where(a => a.Cart.AppUser.Id == userId);
+                query = query.Where(a => a.Cart!.AppUser!.Id == userId);
             }
 
             return await query.FirstOrDefaultAsync();
