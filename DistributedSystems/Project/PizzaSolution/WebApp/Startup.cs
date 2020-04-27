@@ -55,7 +55,7 @@ namespace WebApp
             // makes httpcontext injectable - needed to resolve username in dal layer
             services.AddHttpContextAccessor();
 
-            //services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers().AddNewtonsoftJson();
             
             services.AddCors(options =>
             {

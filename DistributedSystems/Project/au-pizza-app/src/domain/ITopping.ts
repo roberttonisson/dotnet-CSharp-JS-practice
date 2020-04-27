@@ -5,3 +5,7 @@ export interface ITopping {
     name: string;
     price: number;
 }
+export interface IToppingCreate {
+    name: string;
+    price: number;
+}

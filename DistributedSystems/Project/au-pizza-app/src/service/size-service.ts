@@ -2,7 +2,7 @@ import { autoinject } from 'aurelia-framework';
 import { HttpClient } from 'aurelia-fetch-client';
 import { AppState } from 'state/app-state';
 import { IFetchResponse } from 'types/IFetchResponse';
-import { ISize } from 'domain/ISize';
+import { ISize, ISizeCreate } from 'domain/ISize';
 
 @autoinject
 export class SizeService {
@@ -75,7 +75,7 @@ export class SizeService {
         }
     }
 
-    async createSize(size: ISize): Promise<IFetchResponse<string>> {
+    async createSize(size: ISizeCreate): Promise<IFetchResponse<string>> {
         try {
             const response = await this.httpClient
                 .post(this._baseUrl, JSON.stringify(size), {

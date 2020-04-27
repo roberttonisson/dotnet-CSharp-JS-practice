@@ -2,7 +2,7 @@ import { autoinject } from 'aurelia-framework';
 import { HttpClient } from 'aurelia-fetch-client';
 import { AppState } from 'state/app-state';
 import { IFetchResponse } from 'types/IFetchResponse';
-import { ITopping } from 'domain/ITopping';
+import { ITopping, IToppingCreate } from 'domain/ITopping';
 
 @autoinject
 export class ToppingService {
@@ -75,7 +75,7 @@ export class ToppingService {
         }
     }
 
-    async createTopping(topping: ITopping): Promise<IFetchResponse<string>> {
+    async createTopping(topping: IToppingCreate): Promise<IFetchResponse<string>> {
         try {
             const response = await this.httpClient
                 .post(this._baseUrl, JSON.stringify(topping), {

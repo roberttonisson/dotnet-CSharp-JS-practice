@@ -41,7 +41,7 @@ export class ToppingsEdit {
     onSubmit(event: Event) {
         console.log(event);
         this.toppingService
-            .updateTopping(this._topping!)
+            .updateTopping({name: this._topping!.name, price: Number(this._topping!.price), id: this._topping!.id})
             .then(
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {

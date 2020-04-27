@@ -27,7 +27,7 @@ export class ToppingsCreate {
     onSubmit(event: Event) {
         console.log(event);
         this.toppingService
-            .createTopping(this._topping!)
+            .createTopping({name: this._topping!.name, price: Number(this._topping!.price)})
             .then(
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {

@@ -6,3 +6,9 @@ export interface ISize {
     sizeCm: number;
     price: number;
 }
+
+export interface ISizeCreate {
+    name: string;
+    sizeCm: number;
+    price: number;
+}

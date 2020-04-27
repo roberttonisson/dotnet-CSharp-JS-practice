@@ -41,7 +41,7 @@ export class TransportsEdit {
     onSubmit(event: Event) {
         console.log(event);
         this.transportService
-            .updateTransport(this._transport!)
+            .updateTransport({address: this._transport!.address, cost: Number(this._transport!.cost), id: this._transport!.id})
             .then(
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {
