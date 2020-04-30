@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -8,24 +9,26 @@ using DAL.App.EF.Repositories;
 using Domain;
 using Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
+using Topping = BLL.App.DTO.Topping;
 
 namespace WebApp.Controllers
+
 {
     public class ToppingsController : Controller
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public ToppingsController(IAppUnitOfWork uow)
+        public ToppingsController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
-
 
         // GET: Toppings
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Toppings.AllAsync());
+            return View(await _bll.Toppings.GetAllAsync(null));
         }
 
         // GET: Toppings/Details/5
@@ -36,7 +39,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var topping = await _uow.Toppings.FindAsync(id);
+            var topping = await _bll.Toppings.FirstOrDefaultAsync(id.Value);
 
             if (topping == null)
             {
@@ -48,10 +51,10 @@ namespace WebApp.Controllers
 
         // GET: Toppings/Create
         [Authorize(Roles = "Admin")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var vm = new ToppingCreateEditViewModel();
-            return View(vm);
+            var topping = new Topping();
+            return View(topping);
         }
 
         // POST: Toppings/Create
@@ -60,40 +63,34 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create(ToppingCreateEditViewModel vm)
+        public async Task<IActionResult> Create(BLL.App.DTO.Topping topping)
         {
             if (ModelState.IsValid)
             {
-                vm.Topping.CreatedAt = DateTime.Now;
-                vm.Topping.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.Topping.CreatedBy = vm.Topping.ChangedBy;
-                vm.Topping.ChangedAt = DateTime.Now;
-                _uow.Toppings.Add(vm.Topping);
-                await _uow.SaveChangesAsync();
+                _bll.Toppings.Add(topping);
+                await _bll.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(vm);
+            return View(topping);
         }
 
         // GET: Toppings/Edit/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid? id, ToppingCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            vm.Topping = await _uow.Toppings.FindAsync(id);
-
-            if (vm.Topping == null)
+            var topping = await _bll.Toppings.FirstOrDefaultAsync(id.Value);
+            
+            if (topping == null)
             {
                 return NotFound();
             }
 
-            return View(vm);
+            return View(topping);
         }
 
         // POST: Toppings/Edit/5
@@ -102,25 +99,21 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid id,
-            ToppingCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, Topping topping)
         {
-            if (id != vm.Topping.Id)
+            if (id != topping.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                vm.Topping.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.Topping.ChangedAt = DateTime.Now;
-                _uow.Toppings.Update(vm.Topping);
-                await _uow.SaveChangesAsync();
-
+                await _bll.Toppings.UpdateAsync(topping);
+                await _bll.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(vm);
+            return View(topping);
         }
 
         // GET: Toppings/Delete/5
@@ -132,7 +125,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var topping = await _uow.Toppings.FindAsync(id);
+            var topping = await _bll.Toppings.FirstOrDefaultAsync(id.Value);
             if (topping == null)
             {
                 return NotFound();
@@ -147,8 +140,8 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var topping = _uow.Toppings.Remove(id);
-            await _uow.SaveChangesAsync();
+            await _bll.Toppings.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

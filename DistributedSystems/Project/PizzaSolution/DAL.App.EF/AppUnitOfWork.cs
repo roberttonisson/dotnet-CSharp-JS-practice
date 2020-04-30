@@ -13,12 +13,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF
 {
-    public class AppUnitOfWork : EFBaseUnitOfWork<AppDbContext>, IAppUnitOfWork
+    public class AppUnitOfOfWork : EFBaseUnitOfWork<Guid, AppDbContext>, IAppUnitOfWork
     {
-        public AppUnitOfWork(AppDbContext uowDbContext) : base(uowDbContext)
+        public AppUnitOfOfWork(AppDbContext uowDbContext) : base(uowDbContext)
         {
         }
-
+        
         public IAdditionalToppingRepository AdditionalToppings =>
             GetRepository<IAdditionalToppingRepository>(() => new AdditionalToppingRepository(UOWDbContext));
         
@@ -64,7 +64,7 @@ namespace DAL.App.EF
         public ITransportRepository Transports =>
             GetRepository<ITransportRepository>(() => new TransportRepository(UOWDbContext));
         
-        public IUserRepository Users =>
-            GetRepository<IUserRepository>(() => new UserRepository(UOWDbContext));
+        public IAppUserRepository AppUsers =>
+            GetRepository<IAppUserRepository>(() => new AppUserRepository(UOWDbContext));
     }
 }

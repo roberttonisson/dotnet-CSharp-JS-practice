@@ -3,53 +3,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
+using Contracts.DAL.Base.Mappers;
 using DAL.Base.EF.Repositories;
+using DAL.Base.Mappers;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class DrinkInCartRepository : BaseRepository<DrinkInCart>, IDrinkInCartRepository
+    public class DrinkInCartRepository :
+        EFBaseRepository<AppDbContext, Domain.Identity.AppUser, Domain.DrinkInCart, DAL.App.DTO.DrinkInCart>,
+        IDrinkInCartRepository
     {
-        public DrinkInCartRepository(DbContext dbContext) : base(dbContext)
+        public DrinkInCartRepository(AppDbContext repoDbContext) : base(repoDbContext,
+            new BaseMapper<DrinkInCart, DTO.DrinkInCart>())
         {
-            
         }
-        public async Task<IEnumerable<DrinkInCart>> GetIncluded(Guid? userId = null)
-        {
-            var query = RepoDbSet
-                .Include(d => d.Cart!)
-                    .ThenInclude(c => c.AppUser!)
-                .Include(t => t.Drink!)
-                .AsQueryable();
-            if (userId != null)
-            {
-                query = query.Where(x => x.Cart!.AppUser!.Id == userId);
-            }
 
-            return await query.ToListAsync();
-        }
-        
-        public async Task<DrinkInCart> FirstOrDefaultAsync(Guid id, Guid? userId = null)
+        public virtual async Task<IEnumerable<DTO.DrinkInCart>> GetAllAsync(Guid? userId = null, bool noTracking = true)
         {
-            var query = RepoDbSet
+            var query = PrepareQuery(userId, noTracking);
+            query = query
                 .Include(d => d.Cart!)
                     .ThenInclude(c => c.AppUser!)
-                .Include(t => t.Drink!)
-                .Where(x => x.Id == id)
-                .AsQueryable();
+                .Include(t => t.Drink!);
             if (userId != null)
             {
                 query = query.Where(a => a.Cart!.AppUser!.Id == userId);
             }
-
-            return await query.FirstOrDefaultAsync();
+            var domainEntities = await query.ToListAsync();
+            var result = domainEntities.Select(e => Mapper.Map(e));
+            return result;
         }
-        
-        public async Task DeleteAsync(Guid id, Guid? userId = null)
+
+        public virtual async Task<DTO.DrinkInCart> FirstOrDefaultAsync(Guid Id, Guid? userId = null, bool noTracking = true)
         {
-            var drinkInCart = await FirstOrDefaultAsync(id, userId);
-            base.Remove(drinkInCart);
+            var query = PrepareQuery(userId, noTracking);
+            query = query
+                .Include(d => d.Cart!)
+                    .ThenInclude(c => c.AppUser!)
+                .Include(t => t.Drink!)
+                .Where(x => x.Id == Id);
+            if (userId != null)
+            {
+                query = query.Where(a => a.Cart!.AppUser!.Id == userId);
+            }
+            var domainEntity = await query.FirstOrDefaultAsync();
+            return Mapper.Map(domainEntity);
+
         }
     }
 }

@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography;
 using Contracts.DAL.Base;
-using DAL.Base;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Identity
 {
-    public class AppUser : IdentityUser<Guid>, IDomainEntity
+    public class AppUser : IdentityUser<Guid>, IDomainEntityId
     {
-        public override Guid Id { get; set; } = default!;
+
 
         // add your own fields
         [MaxLength(128)] [MinLength(1)] public string FirstName { get; set; } = default!;

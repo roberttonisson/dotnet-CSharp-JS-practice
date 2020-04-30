@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -10,22 +11,24 @@ using Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
+using DefaultTopping = BLL.App.DTO.DefaultTopping;
 
 namespace WebApp.Controllers
+
 {
     public class DefaultToppingsController : Controller
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public DefaultToppingsController(IAppUnitOfWork uow)
+        public DefaultToppingsController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: DefaultToppings
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.DefaultToppings.GetIncluded());
+            return View(await _bll.DefaultToppings.GetAllAsync(null));
         }
 
         // GET: DefaultToppings/Details/5
@@ -36,7 +39,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var defaultTopping = await _uow.DefaultToppings.FirstOrDefaultAsync(id.Value);
+            var defaultTopping = await _bll.DefaultToppings.FirstOrDefaultAsync(id.Value);
 
             if (defaultTopping == null)
             {
@@ -47,57 +50,53 @@ namespace WebApp.Controllers
         }
 
         // GET: DefaultToppings/Create
-           // GET: DefaultToppings/Create
-           [Authorize(Roles = "Admin")]
-           public IActionResult Create()
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create()
         {
-            var vm =  new DefaultToppingCreateEditViewModel();
-            vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaTypeSelectList = new SelectList(_uow.PizzaTypes.All(), nameof(PizzaType.Id), nameof(PizzaType.Name));
-            return View(vm);
+            var defaultTopping = new DefaultTopping();
+            defaultTopping.ToppingSelectList = new SelectList(await _bll.Toppings.GetAllAsync(), nameof(Topping.Id), nameof(Topping.Name));
+            defaultTopping.PizzaTypeSelectList = new SelectList(await _bll.PizzaTypes.GetAllAsync(), nameof(PizzaType.Id), nameof(PizzaType.Name));
+            return View(defaultTopping);
         }
 
         // POST: DefaultToppings/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken][Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create(DefaultToppingCreateEditViewModel vm)
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create(BLL.App.DTO.DefaultTopping defaultTopping)
         {
             if (ModelState.IsValid)
             {
-                vm.DefaultTopping.CreatedAt = DateTime.Now;
-                vm.DefaultTopping.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.DefaultTopping.CreatedBy = vm.DefaultTopping.ChangedBy;
-                vm.DefaultTopping.ChangedAt = DateTime.Now;
-                _uow.DefaultToppings.Add(vm.DefaultTopping);
-                await _uow.SaveChangesAsync();
+                _bll.DefaultToppings.Add(defaultTopping);
+                await _bll.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaTypeSelectList = new SelectList(_uow.PizzaTypes.All(), nameof(PizzaType.Id), nameof(PizzaType.Name));
-            return View(vm);
+            defaultTopping.ToppingSelectList = new SelectList(await _bll.Toppings.GetAllAsync(), nameof(Topping.Id), nameof(Topping.Name));
+            defaultTopping.PizzaTypeSelectList = new SelectList(await _bll.PizzaTypes.GetAllAsync(), nameof(PizzaType.Id), nameof(PizzaType.Name));
+            return View(defaultTopping);
         }
 
         // GET: DefaultToppings/Edit/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid? id, DefaultToppingCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            vm.DefaultTopping = await _uow.DefaultToppings.FindAsync(id);
-            if (vm.DefaultTopping == null)
+            var defaultTopping = await _bll.DefaultToppings.FirstOrDefaultAsync(id.Value);
+            
+            if (defaultTopping == null)
             {
                 return NotFound();
             }
-            vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaTypeSelectList = new SelectList(_uow.PizzaTypes.All(), nameof(PizzaType.Id), nameof(PizzaType.Name));
+            defaultTopping.ToppingSelectList = new SelectList(await _bll.Toppings.GetAllAsync(), nameof(Topping.Id), nameof(Topping.Name));
+            defaultTopping.PizzaTypeSelectList = new SelectList(await _bll.PizzaTypes.GetAllAsync(), nameof(PizzaType.Id), nameof(PizzaType.Name));
 
-            return View(vm);
+            return View(defaultTopping);
         }
 
         // POST: DefaultToppings/Edit/5
@@ -106,25 +105,23 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid id, DefaultToppingCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, DefaultTopping defaultTopping)
         {
-            if (id != vm.DefaultTopping.Id)
+            if (id != defaultTopping.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                vm.DefaultTopping.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.DefaultTopping.ChangedAt = DateTime.Now;
-                _uow.DefaultToppings.Update(vm.DefaultTopping);
-                await _uow.SaveChangesAsync();
+                await _bll.DefaultToppings.UpdateAsync(defaultTopping);
+                await _bll.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.ToppingSelectList = new SelectList(_uow.Toppings.All(), nameof(Topping.Id), nameof(Topping.Name));
-            vm.PizzaTypeSelectList = new SelectList(_uow.PizzaTypes.All(), nameof(PizzaType.Id), nameof(PizzaType.Name));
-            return View(vm);
+            defaultTopping.ToppingSelectList = new SelectList(await _bll.Toppings.GetAllAsync(), nameof(Topping.Id), nameof(Topping.Name));
+            defaultTopping.PizzaTypeSelectList = new SelectList(await _bll.PizzaTypes.GetAllAsync(), nameof(PizzaType.Id), nameof(PizzaType.Name));
+            return View(defaultTopping);
         }
 
         // GET: DefaultToppings/Delete/5
@@ -136,7 +133,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var defaultTopping = await _uow.DefaultToppings.FirstOrDefaultAsync(id.Value);
+            var defaultTopping = await _bll.DefaultToppings.FirstOrDefaultAsync(id.Value);
             if (defaultTopping == null)
             {
                 return NotFound();
@@ -146,13 +143,13 @@ namespace WebApp.Controllers
         }
 
         // POST: DefaultToppings/Delete/5
-        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            _uow.DefaultToppings.Remove(id);
-            await _uow.SaveChangesAsync();
+            await _bll.DefaultToppings.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

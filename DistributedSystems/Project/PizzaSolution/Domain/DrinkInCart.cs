@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Contracts.DAL.Base;
 using DAL.Base;
 
 namespace Domain
 {
-    public class DrinkInCart : DomainEntity
+    
+    public class DrinkInCart : DomainEntityIdMetadata
     {
         [Display(Name = nameof(Quantity), ResourceType = typeof(Resources.Domain.Shared))]
         public int Quantity { get; set; } = default;
 
         [Display(Name = nameof(Price), ResourceType = typeof(Resources.Domain.Shared))]
-        [NotMapped] public decimal Price { get; set; }
+        [NotMapped] public decimal? Price { get; set; }
 
         public Guid DrinkId { get; set; } = default!;
         public Drink? Drink { get; set; }

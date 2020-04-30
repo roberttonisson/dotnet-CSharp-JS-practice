@@ -1,14 +1,24 @@
-﻿using Contracts.DAL.App.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
+using Contracts.DAL.Base.Mappers;
 using DAL.Base.EF.Repositories;
+using DAL.Base.Mappers;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class CrustRepository : BaseRepository<Crust>, ICrustRepository
+    public class CrustRepository :
+        EFBaseRepository<AppDbContext, Domain.Identity.AppUser, Domain.Crust, DAL.App.DTO.Crust>,
+        ICrustRepository
     {
-        public CrustRepository(DbContext dbContext) : base(dbContext)
+        public CrustRepository(AppDbContext repoDbContext) : base(repoDbContext,
+            new BaseMapper<Crust, DTO.Crust>())
         {
         }
+        
     }
 }

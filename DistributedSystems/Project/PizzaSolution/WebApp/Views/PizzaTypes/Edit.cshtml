@@ -1,4 +1,4 @@
-@model PizzaTypeCreateEditViewModel
+@model BLL.App.DTO.PizzaType
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,18 +13,16 @@
         <form asp-action="Edit">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="PizzaType.Name" class="control-label"></label>
-                <input asp-for="PizzaType.Name" class="form-control" />
-                <span asp-validation-for="PizzaType.Name" class="text-danger"></span>
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PizzaType.Price" class="control-label"></label>
-                <input asp-for="PizzaType.Price" class="form-control" />
-                <span asp-validation-for="PizzaType.Price" class="text-danger"></span>
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="PizzaType.Id" />
-            <input type="hidden" asp-for="PizzaType.CreatedAt" />
-            <input type="hidden" asp-for="PizzaType.CreatedBy" />
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

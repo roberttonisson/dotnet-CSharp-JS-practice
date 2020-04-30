@@ -1,4 +1,4 @@
-@model IEnumerable<Domain.Size>
+@model IEnumerable<BLL.App.DTO.Size>
 
 @{
     ViewData["Title"] = "Index";
@@ -21,18 +21,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.SizeCm)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedBy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ChangedBy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ChangedAt)
-            </th>
+
             <th></th>
         </tr>
     </thead>
@@ -48,18 +37,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.SizeCm)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChangedBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChangedAt)
-            </td>
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">@Resources.Views.Shared.EditShared.Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">@Resources.Views.Shared.DetailsShared.Details</a> |

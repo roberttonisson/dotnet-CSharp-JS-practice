@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -8,23 +9,26 @@ using DAL.App.EF.Repositories;
 using Domain;
 using Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
+using PizzaType = BLL.App.DTO.PizzaType;
 
 namespace WebApp.Controllers
+
 {
     public class PizzaTypesController : Controller
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public PizzaTypesController(IAppUnitOfWork uow)
+        public PizzaTypesController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: PizzaTypes
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.PizzaTypes.AllAsync());
+            return View(await _bll.PizzaTypes.GetAllAsync(null));
         }
 
         // GET: PizzaTypes/Details/5
@@ -35,7 +39,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var pizzaType = await _uow.PizzaTypes.FindAsync(id);
+            var pizzaType = await _bll.PizzaTypes.FirstOrDefaultAsync(id.Value);
 
             if (pizzaType == null)
             {
@@ -47,10 +51,10 @@ namespace WebApp.Controllers
 
         // GET: PizzaTypes/Create
         [Authorize(Roles = "Admin")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var vm = new PizzaTypeCreateEditViewModel();
-            return View(vm);
+            var pizzaType = new PizzaType();
+            return View(pizzaType);
         }
 
         // POST: PizzaTypes/Create
@@ -59,39 +63,34 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create(PizzaTypeCreateEditViewModel vm)
+        public async Task<IActionResult> Create(BLL.App.DTO.PizzaType pizzaType)
         {
             if (ModelState.IsValid)
             {
-                vm.PizzaType.CreatedAt = DateTime.Now;
-                vm.PizzaType.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.PizzaType.CreatedBy = vm.PizzaType.ChangedBy;
-                vm.PizzaType.ChangedAt = DateTime.Now;
-                _uow.PizzaTypes.Add(vm.PizzaType);
-                await _uow.SaveChangesAsync();
+                _bll.PizzaTypes.Add(pizzaType);
+                await _bll.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            return View(vm);
+            return View(pizzaType);
         }
 
         // GET: PizzaTypes/Edit/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid? id, PizzaTypeCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            vm.PizzaType = await _uow.PizzaTypes.FindAsync(id);
-
-            if (vm.PizzaType == null)
+            var pizzaType = await _bll.PizzaTypes.FirstOrDefaultAsync(id.Value);
+            
+            if (pizzaType == null)
             {
                 return NotFound();
             }
 
-            return View(vm);
+            return View(pizzaType);
         }
 
         // POST: PizzaTypes/Edit/5
@@ -100,25 +99,21 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid id,
-            PizzaTypeCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, PizzaType pizzaType)
         {
-            if (id != vm.PizzaType.Id)
+            if (id != pizzaType.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                vm.PizzaType.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.PizzaType.ChangedAt = DateTime.Now;
-                _uow.PizzaTypes.Update(vm.PizzaType);
-                await _uow.SaveChangesAsync();
+                await _bll.PizzaTypes.UpdateAsync(pizzaType);
+                await _bll.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(vm);
+            return View(pizzaType);
         }
 
         // GET: PizzaTypes/Delete/5
@@ -130,7 +125,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var pizzaType = await _uow.PizzaTypes.FindAsync(id);
+            var pizzaType = await _bll.PizzaTypes.FirstOrDefaultAsync(id.Value);
             if (pizzaType == null)
             {
                 return NotFound();
@@ -145,8 +140,8 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var pizzaType = _uow.PizzaTypes.Remove(id);
-            await _uow.SaveChangesAsync();
+            await _bll.PizzaTypes.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

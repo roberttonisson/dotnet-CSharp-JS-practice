@@ -1,4 +1,4 @@
-@model IEnumerable<Domain.Cart>
+@model IEnumerable<BLL.App.DTO.Cart>
 
 @{
     ViewData["Title"] = "Index";
@@ -15,18 +15,6 @@
             <th>
                 @Resources.Domain.Tables.User
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedBy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ChangedBy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ChangedAt)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -35,18 +23,6 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.AppUser!.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChangedBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChangedAt)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">@Resources.Views.Shared.EditShared.Edit</a> |

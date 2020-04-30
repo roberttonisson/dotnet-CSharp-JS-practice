@@ -41,6 +41,7 @@ namespace Extensions
         {
             return user.UserId<Guid>();
         }
+        
 
         public static string GenerateJWT(IEnumerable<Claim> claims, string signingKey, string issuer, int expiresInDays)
         {

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -8,23 +9,26 @@ using DAL.App.EF.Repositories;
 using Domain;
 using Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
+using Drink = BLL.App.DTO.Drink;
 
 namespace WebApp.Controllers
+
 {
     public class DrinksController : Controller
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public DrinksController(IAppUnitOfWork uow)
+        public DrinksController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: Drinks
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Drinks.AllAsync());
+            return View(await _bll.Drinks.GetAllAsync(null));
         }
 
         // GET: Drinks/Details/5
@@ -35,7 +39,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var drink = await _uow.Drinks.FindAsync(id);
+            var drink = await _bll.Drinks.FirstOrDefaultAsync(id.Value);
 
             if (drink == null)
             {
@@ -45,12 +49,12 @@ namespace WebApp.Controllers
             return View(drink);
         }
 
-          // GET: Drinks/Create
-          [Authorize(Roles = "Admin")]
-        public IActionResult Create()
+        // GET: Drinks/Create
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create()
         {
-            var vm = new DrinkCreateEditViewModel();
-            return View(vm);
+            var drink = new Drink();
+            return View(drink);
         }
 
         // POST: Drinks/Create
@@ -59,39 +63,34 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create(DrinkCreateEditViewModel vm)
+        public async Task<IActionResult> Create(BLL.App.DTO.Drink drink)
         {
             if (ModelState.IsValid)
             {
-                vm.Drink.CreatedAt = DateTime.Now;
-                vm.Drink.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.Drink.CreatedBy = vm.Drink.ChangedBy;
-                vm.Drink.ChangedAt = DateTime.Now;
-                _uow.Drinks.Add(vm.Drink);
-                await _uow.SaveChangesAsync();
+                _bll.Drinks.Add(drink);
+                await _bll.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            return View(vm);
+            return View(drink);
         }
 
         // GET: Drinks/Edit/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid? id, DrinkCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            vm.Drink = await _uow.Drinks.FindAsync(id);
-
-            if (vm.Drink == null)
+            var drink = await _bll.Drinks.FirstOrDefaultAsync(id.Value);
+            
+            if (drink == null)
             {
                 return NotFound();
             }
 
-            return View(vm);
+            return View(drink);
         }
 
         // POST: Drinks/Edit/5
@@ -100,25 +99,21 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid id,
-            DrinkCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, Drink drink)
         {
-            if (id != vm.Drink.Id)
+            if (id != drink.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                vm.Drink.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.Drink.ChangedAt = DateTime.Now;
-                _uow.Drinks.Update(vm.Drink);
-                await _uow.SaveChangesAsync();
+                await _bll.Drinks.UpdateAsync(drink);
+                await _bll.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(vm);
+            return View(drink);
         }
 
         // GET: Drinks/Delete/5
@@ -130,7 +125,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var drink = await _uow.Drinks.FindAsync(id);
+            var drink = await _bll.Drinks.FirstOrDefaultAsync(id.Value);
             if (drink == null)
             {
                 return NotFound();
@@ -145,8 +140,8 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var drink = _uow.Drinks.Remove(id);
-            await _uow.SaveChangesAsync();
+            await _bll.Drinks.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

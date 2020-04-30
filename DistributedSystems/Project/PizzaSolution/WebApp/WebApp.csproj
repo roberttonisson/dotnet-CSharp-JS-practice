@@ -15,11 +15,14 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.3" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.3" />
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.2" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.3.3" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.5.0" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\BLL.App\BLL.App.csproj" />
+      <ProjectReference Include="..\Contracts.BLL.App\Contracts.BLL.App.csproj" />
       <ProjectReference Include="..\DAL.App.EF\DAL.App.EF.csproj" />
       <ProjectReference Include="..\Extensions\Extensions.csproj" />
       <ProjectReference Include="..\PublicApi.DTO.v1\PublicApi.DTO.v1.csproj" />
@@ -121,5 +124,7 @@
       <UpToDateCheckInput Remove="Views\PizzaRestaurants\Edit.cshtml" />
       <UpToDateCheckInput Remove="Views\PizzaRestaurants\Index.cshtml" />
     </ItemGroup>
+
+
 
 </Project>

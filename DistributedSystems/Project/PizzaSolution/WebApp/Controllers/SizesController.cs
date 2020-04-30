@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -8,23 +9,26 @@ using DAL.App.EF.Repositories;
 using Domain;
 using Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
+using Size = BLL.App.DTO.Size;
 
 namespace WebApp.Controllers
+
 {
     public class SizesController : Controller
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public SizesController(IAppUnitOfWork uow)
+        public SizesController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: Sizes
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Sizes.AllAsync());
+            return View(await _bll.Sizes.GetAllAsync(null));
         }
 
         // GET: Sizes/Details/5
@@ -35,7 +39,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var size = await _uow.Sizes.FindAsync(id);
+            var size = await _bll.Sizes.FirstOrDefaultAsync(id.Value);
 
             if (size == null)
             {
@@ -45,12 +49,12 @@ namespace WebApp.Controllers
             return View(size);
         }
 
-      // GET: Sizes/Create
-      [Authorize(Roles = "Admin")]
-        public IActionResult Create()
+        // GET: Sizes/Create
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create()
         {
-            var vm = new SizeCreateEditViewModel();
-            return View(vm);
+            var size = new Size();
+            return View(size);
         }
 
         // POST: Sizes/Create
@@ -59,39 +63,34 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create(SizeCreateEditViewModel vm)
+        public async Task<IActionResult> Create(BLL.App.DTO.Size size)
         {
             if (ModelState.IsValid)
             {
-                vm.Size.CreatedAt = DateTime.Now;
-                vm.Size.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.Size.CreatedBy = vm.Size.ChangedBy;
-                vm.Size.ChangedAt = DateTime.Now;
-                _uow.Sizes.Add(vm.Size);
-                await _uow.SaveChangesAsync();
+                _bll.Sizes.Add(size);
+                await _bll.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            return View(vm);
+            return View(size);
         }
 
         // GET: Sizes/Edit/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid? id, SizeCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            vm.Size = await _uow.Sizes.FindAsync(id);
-
-            if (vm.Size == null)
+            var size = await _bll.Sizes.FirstOrDefaultAsync(id.Value);
+            
+            if (size == null)
             {
                 return NotFound();
             }
 
-            return View(vm);
+            return View(size);
         }
 
         // POST: Sizes/Edit/5
@@ -100,25 +99,21 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid id,
-            SizeCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, Size size)
         {
-            if (id != vm.Size.Id)
+            if (id != size.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                vm.Size.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.Size.ChangedAt = DateTime.Now;
-                _uow.Sizes.Update(vm.Size);
-                await _uow.SaveChangesAsync();
+                await _bll.Sizes.UpdateAsync(size);
+                await _bll.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(vm);
+            return View(size);
         }
 
         // GET: Sizes/Delete/5
@@ -130,7 +125,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var size = await _uow.Sizes.FindAsync(id);
+            var size = await _bll.Sizes.FirstOrDefaultAsync(id.Value);
             if (size == null)
             {
                 return NotFound();
@@ -145,8 +140,8 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var size = _uow.Sizes.Remove(id);
-            await _uow.SaveChangesAsync();
+            await _bll.Sizes.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

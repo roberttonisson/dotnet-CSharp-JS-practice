@@ -2,11 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain;
+using Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using PublicApi.DTO.v1;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
@@ -14,97 +20,86 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class PizzaTypesController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PizzaTypeDTOMapper _mapper = new PizzaTypeDTOMapper();
 
-        public PizzaTypesController(AppDbContext context)
+        public PizzaTypesController(IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
         }
-
+        
         // GET: api/PizzaTypes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PizzaType>>> GetPizzaTypes()
+        public async Task<ActionResult<IEnumerable<PizzaTypeDTO>>> GetPizzaTypes()
         {
-            return await _context.PizzaTypes.ToListAsync();
+            var pizzaTypes = (await _bll.PizzaTypes.GetAllAsync(null))
+                .Select(bllEntity => _mapper.Map(bllEntity));
+            
+            return Ok(pizzaTypes);
         }
 
-        // GET: api/PizzaTypes/5
+     // GET: api/PizzaTypes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<PizzaType>> GetPizzaType(Guid id)
+        public async Task<ActionResult<PizzaTypeDTO>> GetPizzaType(Guid id)
         {
-            var pizzaType = await _context.PizzaTypes.FindAsync(id);
+            var pizzaType = await _bll.PizzaTypes.FirstOrDefaultAsync(id);
 
             if (pizzaType == null)
             {
                 return NotFound();
             }
 
-            return pizzaType;
+            return Ok(_mapper.Map(pizzaType));
         }
 
         // PUT: api/PizzaTypes/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPizzaType(Guid id, PizzaType pizzaType)
+        public async Task<IActionResult> PutPizzaType(Guid id, PizzaTypeDTO pizzaTypeDTO)
         {
-            if (id != pizzaType.Id)
+            if (id != pizzaTypeDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(pizzaType).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PizzaTypeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _bll.PizzaTypes.UpdateAsync(_mapper.Map(pizzaTypeDTO));
+            await _bll.SaveChangesAsync();
 
             return NoContent();
+
         }
 
         // POST: api/PizzaTypes
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<PizzaType>> PostPizzaType(PizzaType pizzaType)
+        public async Task<ActionResult<PizzaTypeDTO>> PostPizzaType(PizzaTypeDTO pizzaTypeDTO)
         {
-            _context.PizzaTypes.Add(pizzaType);
-            await _context.SaveChangesAsync();
+            var bllEntity = _mapper.Map(pizzaTypeDTO);
+            _bll.PizzaTypes.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetPizzaType", new { id = pizzaType.Id }, pizzaType);
+            pizzaTypeDTO.Id = bllEntity.Id;
+
+            return Ok(pizzaTypeDTO);
         }
 
         // DELETE: api/PizzaTypes/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<PizzaType>> DeletePizzaType(Guid id)
+        public async Task<ActionResult<PizzaTypeDTO>> DeletePizzaType(Guid id)
         {
-            var pizzaType = await _context.PizzaTypes.FindAsync(id);
+            var pizzaType = await _bll.PizzaTypes.FirstOrDefaultAsync(id);
             if (pizzaType == null)
             {
                 return NotFound();
             }
 
-            _context.PizzaTypes.Remove(pizzaType);
-            await _context.SaveChangesAsync();
+            await _bll.PizzaTypes.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
-            return pizzaType;
+            return Ok(_mapper.Map(pizzaType));
         }
-
-        private bool PizzaTypeExists(Guid id)
-        {
-            return _context.PizzaTypes.Any(e => e.Id == id);
-        }
+        
     }
 }

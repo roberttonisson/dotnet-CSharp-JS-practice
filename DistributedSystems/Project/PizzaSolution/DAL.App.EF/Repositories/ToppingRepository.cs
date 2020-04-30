@@ -3,33 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
+using Contracts.DAL.Base.Mappers;
 using DAL.Base.EF.Repositories;
+using DAL.Base.Mappers;
 using Domain;
 using Microsoft.EntityFrameworkCore;
-using PublicApi.DTO.v1;
 
 namespace DAL.App.EF.Repositories
 {
-    public class ToppingRepository : BaseRepository<Topping>, IToppingRepository
+    public class ToppingRepository :
+        EFBaseRepository<AppDbContext, Domain.Identity.AppUser, Domain.Topping, DAL.App.DTO.Topping>,
+        IToppingRepository
     {
-        public ToppingRepository(DbContext dbContext) : base(dbContext)
+        public ToppingRepository(AppDbContext repoDbContext) : base(repoDbContext,
+            new BaseMapper<Topping, DTO.Topping>())
         {
         }
         
-        public async Task<IEnumerable<ToppingDTO>> SelectAllDTO()
-        {
-            return await RepoDbSet.Select(t => new ToppingDTO()
-            {
-                Id = t.Id, Name = t.Name, Price = t.Price
-            }).ToListAsync();
-        }
-        
-        public async Task<ToppingDTO> SelectDTO(Guid id)
-        {
-            return await RepoDbSet.Select(t => new ToppingDTO()
-            {
-                Id = t.Id, Name = t.Name, Price = t.Price
-            }).FirstOrDefaultAsync(s => s.Id == id);
-        }
     }
 }

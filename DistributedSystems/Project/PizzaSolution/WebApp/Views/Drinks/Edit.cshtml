@@ -1,4 +1,4 @@
-@model DrinkCreateEditViewModel
+@model BLL.App.DTO.Drink
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,23 +13,21 @@
         <form asp-action="Edit">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Drink.Name" class="control-label"></label>
-                <input asp-for="Drink.Name" class="form-control" />
-                <span asp-validation-for="Drink.Name" class="text-danger"></span>
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Drink.Price" class="control-label"></label>
-                <input asp-for="Drink.Price" class="form-control" />
-                <span asp-validation-for="Drink.Price" class="text-danger"></span>
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Drink.Size" class="control-label"></label>
-                <input asp-for="Drink.Size" class="form-control" />
-                <span asp-validation-for="Drink.Size" class="text-danger"></span>
+                <label asp-for="Size" class="control-label"></label>
+                <input asp-for="Size" class="form-control" />
+                <span asp-validation-for="Size" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Drink.Id" />
-            <input type="hidden" asp-for="Drink.CreatedAt" />
-            <input type="hidden" asp-for="Drink.CreatedBy" />
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

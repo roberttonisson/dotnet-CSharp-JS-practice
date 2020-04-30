@@ -1,11 +1,14 @@
-﻿﻿using System.Collections.Generic;
+﻿﻿using System;
+ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DAL.Base;
+ using Contracts.DAL.Base;
+ using DAL.Base;
 
 namespace Domain
 {
-    public class Transport : DomainEntity
+    
+    public class Transport : DomainEntityIdMetadata
     {
         [Display(Name = nameof(Cost), ResourceType = typeof(Resources.Domain.Shared))]
         [Column(TypeName = "decimal(6,2)")] 

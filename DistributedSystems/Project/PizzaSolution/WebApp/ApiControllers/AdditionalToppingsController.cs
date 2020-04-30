@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain;
+using Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using PublicApi.DTO.v1;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
@@ -17,97 +21,86 @@ namespace WebApp.ApiControllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AdditionalToppingsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly AdditionalToppingDTOMapper _mapper = new AdditionalToppingDTOMapper();
 
-        public AdditionalToppingsController(AppDbContext context)
+        public AdditionalToppingsController(IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
         }
-
+        
         // GET: api/AdditionalToppings
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AdditionalTopping>>> GetAdditionalToppings()
+        public async Task<ActionResult<IEnumerable<AdditionalToppingDTO>>> GetAdditionalToppings()
         {
-            return await _context.AdditionalToppings.ToListAsync();
+            var additionalToppings = (await _bll.AdditionalToppings.GetAllAsync(User.UserGuidId()))
+                .Select(bllEntity => _mapper.GetDTO(bllEntity));
+            
+            return Ok(additionalToppings);
         }
 
-        // GET: api/AdditionalToppings/5
+     // GET: api/AdditionalToppings/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<AdditionalTopping>> GetAdditionalTopping(Guid id)
+        public async Task<ActionResult<AdditionalToppingDTO>> GetAdditionalTopping(Guid id)
         {
-            var additionalTopping = await _context.AdditionalToppings.FindAsync(id);
+            var additionalTopping = await _bll.AdditionalToppings.FirstOrDefaultAsync(id, User.UserGuidId());
 
             if (additionalTopping == null)
             {
                 return NotFound();
             }
 
-            return additionalTopping;
+            return Ok(_mapper.GetDTO(additionalTopping));
         }
 
         // PUT: api/AdditionalToppings/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAdditionalTopping(Guid id, AdditionalTopping additionalTopping)
+        public async Task<IActionResult> PutAdditionalTopping(Guid id, AdditionalToppingDTO additionalToppingDTO)
         {
-            if (id != additionalTopping.Id)
+            if (id != additionalToppingDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(additionalTopping).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AdditionalToppingExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _bll.AdditionalToppings.UpdateAsync(_mapper.GetBLL(additionalToppingDTO));
+            await _bll.SaveChangesAsync();
 
             return NoContent();
+
         }
 
         // POST: api/AdditionalToppings
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<AdditionalTopping>> PostAdditionalTopping(AdditionalTopping additionalTopping)
+        public async Task<ActionResult<AdditionalToppingDTO>> PostAdditionalTopping(AdditionalToppingDTO additionalToppingDTO)
         {
-            _context.AdditionalToppings.Add(additionalTopping);
-            await _context.SaveChangesAsync();
+            var bllEntity = _mapper.GetBLL(additionalToppingDTO);
+            _bll.AdditionalToppings.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetAdditionalTopping", new { id = additionalTopping.Id }, additionalTopping);
+            additionalToppingDTO.Id = bllEntity.Id;
+
+            return Ok(additionalToppingDTO);
         }
 
         // DELETE: api/AdditionalToppings/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<AdditionalTopping>> DeleteAdditionalTopping(Guid id)
+        public async Task<ActionResult<AdditionalToppingDTO>> DeleteAdditionalTopping(Guid id)
         {
-            var additionalTopping = await _context.AdditionalToppings.FindAsync(id);
+            var additionalTopping = await _bll.AdditionalToppings.FirstOrDefaultAsync(id, User.UserGuidId());
             if (additionalTopping == null)
             {
                 return NotFound();
             }
 
-            _context.AdditionalToppings.Remove(additionalTopping);
-            await _context.SaveChangesAsync();
+            await _bll.AdditionalToppings.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
-            return additionalTopping;
+            return Ok(_mapper.GetDTO(additionalTopping));
         }
-
-        private bool AdditionalToppingExists(Guid id)
-        {
-            return _context.AdditionalToppings.Any(e => e.Id == id);
-        }
+        
     }
 }

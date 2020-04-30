@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using BLL.App.DTO;
+using Contracts.BLL.App;
 using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -13,23 +15,24 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
+using Cart = BLL.App.DTO.Cart;
 
 namespace WebApp.Controllers
 {
     [Authorize]
     public class CartsController : Controller
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public CartsController(IAppUnitOfWork uow)
+        public CartsController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: Carts
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Carts.Include(User.UserGuidId()));
+            return View(await _bll.Carts.GetAllAsync(User.UserGuidId()));
         }
 
         // GET: Carts/Details/5
@@ -40,7 +43,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var cart = await _uow.Carts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
+            var cart = await _bll.Carts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
 
             if (cart == null)
             {
@@ -51,11 +54,11 @@ namespace WebApp.Controllers
         }
 
         // GET: Carts/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var vm = new CartCreateEditViewModel();
-            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
-            return View(vm);
+            var cart = new BLL.App.DTO.Cart();
+            cart.AppUserSelectList = new SelectList(await _bll.AppUsers.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.Email));
+            return View(cart);
         }
 
         // POST: Carts/Create
@@ -63,20 +66,19 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CartCreateEditViewModel vm)
+        public async Task<IActionResult> Create(BLL.App.DTO.Cart cart)
         {
-            vm.Cart = new Cart();
-            var id = User.UserGuidId();
-            vm.Cart.UserId = id;
-            vm.Cart.CreatedAt = DateTime.Now;
-            vm.Cart.ChangedBy = _uow.Users.Find(id).UserName;
-            vm.Cart.CreatedBy = vm.Cart.ChangedBy;
-            vm.Cart.ChangedAt = DateTime.Now;
-            _uow.Carts.Add(vm.Cart);
-            await _uow.SaveChangesAsync();
+            cart.AppUserId = User.UserGuidId();
 
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                _bll.Carts.Add(cart);
+                await _bll.SaveChangesAsync();
 
+                return RedirectToAction(nameof(Index));
+            }
+            cart.AppUserSelectList = new SelectList(await _bll.AppUsers.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.Email));
+            return View(cart);
         }
 
         // GET: Carts/Edit/5
@@ -87,15 +89,16 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            vm.Cart = await _uow.Carts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
-            if (vm.Cart == null)
+            var cart = await _bll.Carts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
+
+            if (cart == null)
             {
                 return NotFound();
             }
 
-            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
+            cart.AppUserSelectList = new SelectList(await _bll.AppUsers.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.Email));
 
-            return View(vm);
+            return View(cart);
         }
 
         // POST: Carts/Edit/5
@@ -103,38 +106,23 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, CartCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, Cart cart)
         {
-            if (id != vm.Cart.Id)
+            if (id != cart.Id)
             {
                 return NotFound();
             }
-            vm.Cart.UserId = User.UserGuidId();
+            cart.AppUserId = User.UserGuidId();
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    vm.Cart.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                    vm.Cart.ChangedAt = DateTime.Now;
-                    _uow.Carts.Update(vm.Cart);
-                    await _uow.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!await _uow.Carts.ExistsAsync(id, User.UserGuidId()))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _bll.Carts.UpdateAsync(cart);
+                await _bll.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
             }
-            vm.AppUserSelectList = new SelectList(_uow.Users.All(), nameof(AppUser.Id), nameof(AppUser.Email));
-            return View(vm);
+            cart.AppUserSelectList = new SelectList(await _bll.AppUsers.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.Email));
+            return View(cart);
         }
 
         // GET: Carts/Delete/5
@@ -145,7 +133,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var cart = await _uow.Carts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
+            var cart = await _bll.Carts.FirstOrDefaultAsync(id.Value, User.UserGuidId());
             if (cart == null)
             {
                 return NotFound();
@@ -159,8 +147,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _uow.Carts.DeleteAsync(id, User.UserGuidId());
-            await _uow.SaveChangesAsync();
+            await _bll.Carts.RemoveAsync(id, User.UserGuidId());
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain;
+using Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using PublicApi.DTO.v1;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
@@ -17,97 +21,86 @@ namespace WebApp.ApiControllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CartsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly CartDTOMapper _mapper = new CartDTOMapper();
 
-        public CartsController(AppDbContext context)
+        public CartsController(IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
         }
-
+        
         // GET: api/Carts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cart>>> GetCarts()
+        public async Task<ActionResult<IEnumerable<CartDTO>>> GetCarts()
         {
-            return await _context.Carts.ToListAsync();
+            var carts = (await _bll.Carts.GetAllAsync(User.UserGuidId()))
+                .Select(bllEntity => _mapper.GetDTO(bllEntity));
+            
+            return Ok(carts);
         }
 
-        // GET: api/Carts/5
+     // GET: api/Carts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cart>> GetCart(Guid id)
+        public async Task<ActionResult<CartDTO>> GetCart(Guid id)
         {
-            var cart = await _context.Carts.FindAsync(id);
+            var cart = await _bll.Carts.FirstOrDefaultAsync(id, User.UserGuidId());
 
             if (cart == null)
             {
                 return NotFound();
             }
 
-            return cart;
+            return Ok(_mapper.GetDTO(cart));
         }
 
         // PUT: api/Carts/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCart(Guid id, Cart cart)
+        public async Task<IActionResult> PutCart(Guid id, CartDTO cartDTO)
         {
-            if (id != cart.Id)
+            if (id != cartDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(cart).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CartExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _bll.Carts.UpdateAsync(_mapper.GetBLL(cartDTO));
+            await _bll.SaveChangesAsync();
 
             return NoContent();
+
         }
 
         // POST: api/Carts
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Cart>> PostCart(Cart cart)
+        public async Task<ActionResult<CartDTO>> PostCart(CartDTO cartDTO)
         {
-            _context.Carts.Add(cart);
-            await _context.SaveChangesAsync();
+            var bllEntity = _mapper.GetBLL(cartDTO);
+            _bll.Carts.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetCart", new { id = cart.Id }, cart);
+            cartDTO.Id = bllEntity.Id;
+
+            return Ok(cartDTO);
         }
 
         // DELETE: api/Carts/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Cart>> DeleteCart(Guid id)
+        public async Task<ActionResult<CartDTO>> DeleteCart(Guid id)
         {
-            var cart = await _context.Carts.FindAsync(id);
+            var cart = await _bll.Carts.FirstOrDefaultAsync(id, User.UserGuidId());
             if (cart == null)
             {
                 return NotFound();
             }
 
-            _context.Carts.Remove(cart);
-            await _context.SaveChangesAsync();
+            await _bll.Carts.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
-            return cart;
+            return Ok(_mapper.GetDTO(cart));
         }
-
-        private bool CartExists(Guid id)
-        {
-            return _context.Carts.Any(e => e.Id == id);
-        }
+        
     }
 }

@@ -1,4 +1,4 @@
-@model PartyOrderInvoiceCreateEditViewModel
+@model BLL.App.DTO.PartyOrderInvoice
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,18 +13,17 @@
         <form asp-action="Edit">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="PartyOrderInvoice.PartyOrderId" class="control-label"></label>
-                <select asp-for="PartyOrderInvoice.PartyOrderId" class="form-control" asp-items="Model.PartyOrderSelectList"></select>
-                <span asp-validation-for="PartyOrderInvoice.PartyOrderId" class="text-danger"></span>
+                <label asp-for="PartyOrderId" class="control-label"></label>
+                <select asp-for="PartyOrderId" class="form-control" asp-items="Model.PartyOrderSelectList"></select>
+                <span asp-validation-for="PartyOrderId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PartyOrderInvoice.InvoiceId" class="control-label"></label>
-                <select asp-for="PartyOrderInvoice.InvoiceId" class="form-control" asp-items="Model.InvoiceSelectList"></select>
-                <span asp-validation-for="PartyOrderInvoice.InvoiceId" class="text-danger"></span>
+                <label asp-for="InvoiceId" class="control-label"></label>
+                <select asp-for="InvoiceId" class="form-control" asp-items="Model.InvoiceSelectList"></select>
+                <span asp-validation-for="InvoiceId" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="PartyOrderInvoice.Id" />
-            <input type="hidden" asp-for="PartyOrderInvoice.CreatedAt" />
-            <input type="hidden" asp-for="PartyOrderInvoice.CreatedBy" />
+            <input type="hidden" asp-for="Id" />
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

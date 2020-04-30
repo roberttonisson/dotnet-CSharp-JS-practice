@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Contracts.DAL.Base;
 using DAL.Base;
 
 namespace Domain
 {
-    public class InvoiceLine : DomainEntity
+    public class InvoiceLine : DomainEntityIdMetadata
     {
         [Display(Name = nameof(Total), ResourceType = typeof(Resources.Domain.Shared))]
-        [NotMapped] public decimal Total { get; set; }
+        [NotMapped] public decimal? Total { get; set; }
 
         [Display(Name = nameof(Quantity), ResourceType = typeof(Resources.Domain.Shared))]
         public int Quantity { get; set; } = default;

@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Contracts.DAL.App;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain;
+using Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
@@ -16,105 +20,86 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class ToppingsController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
+        private readonly ToppingDTOMapper _mapper = new ToppingDTOMapper();
 
-        public ToppingsController(IAppUnitOfWork uow)
+        public ToppingsController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
-
+        
         // GET: api/Toppings
         [HttpGet]
-        public async Task<IEnumerable<ToppingDTO>> GetToppings()
+        public async Task<ActionResult<IEnumerable<ToppingDTO>>> GetToppings()
         {
-            return await _uow.Toppings.SelectAllDTO();
+            var toppings = (await _bll.Toppings.GetAllAsync(null))
+                .Select(bllEntity => _mapper.Map(bllEntity));
+            
+            return Ok(toppings);
         }
 
-        // GET: api/Toppings/5
+     // GET: api/Toppings/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ToppingDTO>> GetTopping(Guid id)
         {
-            var topping = await _uow.Toppings.SelectDTO(id);
+            var topping = await _bll.Toppings.FirstOrDefaultAsync(id);
 
             if (topping == null)
             {
                 return NotFound();
             }
 
-            return topping;
+            return Ok(_mapper.Map(topping));
         }
 
         // PUT: api/Toppings/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTopping(Guid id, ToppingDTO dto)
+        public async Task<IActionResult> PutTopping(Guid id, ToppingDTO toppingDTO)
         {
-            if (id != dto.Id)
+            if (id != toppingDTO.Id)
             {
                 return BadRequest();
             }
 
-            var topping = _uow.Toppings.Find(dto.Id);
-            if (topping == null)
-            {
-                return BadRequest();
-            }
-            topping.Name = dto.Name;
-            topping.Price = dto.Price;
-
-            _uow.Toppings.Update(topping);
-
-            try
-            {
-                await _uow.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ToppingExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _bll.Toppings.UpdateAsync(_mapper.Map(toppingDTO));
+            await _bll.SaveChangesAsync();
 
             return NoContent();
+
         }
 
         // POST: api/Toppings
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Topping>> PostTopping(Topping topping)
+        public async Task<ActionResult<ToppingDTO>> PostTopping(ToppingDTO toppingDTO)
         {
-            _uow.Toppings.Add(topping);
-            await _uow.SaveChangesAsync();
+            var bllEntity = _mapper.Map(toppingDTO);
+            _bll.Toppings.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetTopping", new { id = topping.Id }, topping);
+            toppingDTO.Id = bllEntity.Id;
+
+            return Ok(toppingDTO);
         }
 
         // DELETE: api/Toppings/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Topping>> DeleteTopping(Guid id)
+        public async Task<ActionResult<ToppingDTO>> DeleteTopping(Guid id)
         {
-            var topping = await _uow.Toppings.FindAsync(id);
+            var topping = await _bll.Toppings.FirstOrDefaultAsync(id);
             if (topping == null)
             {
                 return NotFound();
             }
 
-            _uow.Toppings.Remove(topping);
-            await _uow.SaveChangesAsync();
+            await _bll.Toppings.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
-            return topping;
+            return Ok(_mapper.Map(topping));
         }
-
-        private bool ToppingExists(Guid id)
-        {
-            return _uow.Toppings.Find(id) != null;
-        }
+        
     }
 }

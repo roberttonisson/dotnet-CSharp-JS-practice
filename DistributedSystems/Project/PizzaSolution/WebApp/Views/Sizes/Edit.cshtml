@@ -1,4 +1,4 @@
-@model SizeCreateEditViewModel
+@model BLL.App.DTO.Size
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,23 +13,21 @@
         <form asp-action="Edit">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Size.Name" class="control-label"></label>
-                <input asp-for="Size.Name" class="form-control" />
-                <span asp-validation-for="Size.Name" class="text-danger"></span>
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Size.Price" class="control-label"></label>
-                <input asp-for="Size.Price" class="form-control" />
-                <span asp-validation-for="Size.Price" class="text-danger"></span>
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Size.SizeCm" class="control-label"></label>
-                <input asp-for="Size.SizeCm" class="form-control" />
-                <span asp-validation-for="Size.SizeCm" class="text-danger"></span>
+                <label asp-for="SizeCm" class="control-label"></label>
+                <input asp-for="SizeCm" class="form-control" />
+                <span asp-validation-for="SizeCm" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Size.Id" />
-            <input type="hidden" asp-for="Size.CreatedAt" />
-            <input type="hidden" asp-for="Size.CreatedBy" />
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

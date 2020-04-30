@@ -1,10 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Contracts.DAL.Base;
 
 namespace PublicApi.DTO.v1
 {
-    public class TransportDTO
+    public class TransportDTO : IDomainEntityId
     {
         public Guid Id { get; set; }
         

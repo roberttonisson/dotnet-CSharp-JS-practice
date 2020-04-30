@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain;
+using Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using PublicApi.DTO.v1;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
@@ -17,97 +21,86 @@ namespace WebApp.ApiControllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class InvoiceLinesController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly InvoiceLineDTOMapper _mapper = new InvoiceLineDTOMapper();
 
-        public InvoiceLinesController(AppDbContext context)
+        public InvoiceLinesController(IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
         }
-
+        
         // GET: api/InvoiceLines
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<InvoiceLine>>> GetInvoiceLines()
+        public async Task<ActionResult<IEnumerable<InvoiceLineDTO>>> GetInvoiceLines()
         {
-            return await _context.InvoiceLines.ToListAsync();
+            var invoiceLines = (await _bll.InvoiceLines.GetAllAsync(User.UserGuidId()))
+                .Select(bllEntity => _mapper.GetDTO(bllEntity));
+            
+            return Ok(invoiceLines);
         }
 
-        // GET: api/InvoiceLines/5
+     // GET: api/InvoiceLines/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<InvoiceLine>> GetInvoiceLine(Guid id)
+        public async Task<ActionResult<InvoiceLineDTO>> GetInvoiceLine(Guid id)
         {
-            var invoiceLine = await _context.InvoiceLines.FindAsync(id);
+            var invoiceLine = await _bll.InvoiceLines.FirstOrDefaultAsync(id, User.UserGuidId());
 
             if (invoiceLine == null)
             {
                 return NotFound();
             }
 
-            return invoiceLine;
+            return Ok(_mapper.GetDTO(invoiceLine));
         }
 
         // PUT: api/InvoiceLines/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutInvoiceLine(Guid id, InvoiceLine invoiceLine)
+        public async Task<IActionResult> PutInvoiceLine(Guid id, InvoiceLineDTO invoiceLineDTO)
         {
-            if (id != invoiceLine.Id)
+            if (id != invoiceLineDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(invoiceLine).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!InvoiceLineExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _bll.InvoiceLines.UpdateAsync(_mapper.GetBLL(invoiceLineDTO));
+            await _bll.SaveChangesAsync();
 
             return NoContent();
+
         }
 
         // POST: api/InvoiceLines
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<InvoiceLine>> PostInvoiceLine(InvoiceLine invoiceLine)
+        public async Task<ActionResult<InvoiceLineDTO>> PostInvoiceLine(InvoiceLineDTO invoiceLineDTO)
         {
-            _context.InvoiceLines.Add(invoiceLine);
-            await _context.SaveChangesAsync();
+            var bllEntity = _mapper.GetBLL(invoiceLineDTO);
+            _bll.InvoiceLines.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetInvoiceLine", new { id = invoiceLine.Id }, invoiceLine);
+            invoiceLineDTO.Id = bllEntity.Id;
+
+            return Ok(invoiceLineDTO);
         }
 
         // DELETE: api/InvoiceLines/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<InvoiceLine>> DeleteInvoiceLine(Guid id)
+        public async Task<ActionResult<InvoiceLineDTO>> DeleteInvoiceLine(Guid id)
         {
-            var invoiceLine = await _context.InvoiceLines.FindAsync(id);
+            var invoiceLine = await _bll.InvoiceLines.FirstOrDefaultAsync(id, User.UserGuidId());
             if (invoiceLine == null)
             {
                 return NotFound();
             }
 
-            _context.InvoiceLines.Remove(invoiceLine);
-            await _context.SaveChangesAsync();
+            await _bll.InvoiceLines.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
-            return invoiceLine;
+            return Ok(_mapper.GetDTO(invoiceLine));
         }
-
-        private bool InvoiceLineExists(Guid id)
-        {
-            return _context.InvoiceLines.Any(e => e.Id == id);
-        }
+        
     }
 }

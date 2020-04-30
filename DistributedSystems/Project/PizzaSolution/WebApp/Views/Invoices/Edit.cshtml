@@ -1,5 +1,5 @@
 @using Domain
-@model InvoiceCreateEditViewModel
+@model BLL.App.DTO.Invoice
 
 @{
     ViewData["Title"] = "Edit";
@@ -15,17 +15,15 @@
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Invoice.IsPaid"/> @nameof(Invoice.IsPaid)
+                    <input class="form-check-input" asp-for="IsPaid"/> @nameof(Invoice.IsPaid)
                 </label>
             </div>
             <div class="form-group">
-                <label asp-for="Invoice.TransportId" class="control-label"></label>
-                <select asp-for="Invoice.TransportId" class="form-control" asp-items="Model.TransportSelectList"></select>
-                <span asp-validation-for="Invoice.TransportId" class="text-danger"></span>
+                <label asp-for="TransportId" class="control-label"></label>
+                <select asp-for="TransportId" class="form-control" asp-items="Model.TransportSelectList"></select>
+                <span asp-validation-for="TransportId" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Invoice.Id"/>
-            <input type="hidden" asp-for="Invoice.CreatedAt" />
-            <input type="hidden" asp-for="Invoice.CreatedBy" />
+            <input type="hidden" asp-for="Id"/>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary"/>
             </div>

@@ -1,10 +1,10 @@
 ﻿using Contracts.DAL.Base.Repositories;
-using Domain;
+using DAL.App.DTO;
 
 namespace Contracts.DAL.App.Repositories
 {
-    public interface IDrinkRepository : IBaseRepository<Drink>
+    public interface IDrinkRepository  : IBaseRepository<Drink>, IDrinkRepositoryCustom
     {
-        // add your custom methods here!
+        
     }
 }

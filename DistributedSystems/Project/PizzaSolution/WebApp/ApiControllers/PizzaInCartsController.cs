@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain;
+using Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using PublicApi.DTO.v1;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
@@ -17,97 +21,86 @@ namespace WebApp.ApiControllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PizzaInCartsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PizzaInCartDTOMapper _mapper = new PizzaInCartDTOMapper();
 
-        public PizzaInCartsController(AppDbContext context)
+        public PizzaInCartsController(IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
         }
-
+        
         // GET: api/PizzaInCarts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PizzaInCart>>> GetPizzaInCarts()
+        public async Task<ActionResult<IEnumerable<PizzaInCartDTO>>> GetPizzaInCarts()
         {
-            return await _context.PizzaInCarts.ToListAsync();
+            var pizzaInCarts = (await _bll.PizzaInCarts.GetAllAsync(User.UserGuidId()))
+                .Select(bllEntity => _mapper.GetDTO(bllEntity));
+            
+            return Ok(pizzaInCarts);
         }
 
-        // GET: api/PizzaInCarts/5
+     // GET: api/PizzaInCarts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<PizzaInCart>> GetPizzaInCart(Guid id)
+        public async Task<ActionResult<PizzaInCartDTO>> GetPizzaInCart(Guid id)
         {
-            var pizzaInCart = await _context.PizzaInCarts.FindAsync(id);
+            var pizzaInCart = await _bll.PizzaInCarts.FirstOrDefaultAsync(id, User.UserGuidId());
 
             if (pizzaInCart == null)
             {
                 return NotFound();
             }
 
-            return pizzaInCart;
+            return Ok(_mapper.GetDTO(pizzaInCart));
         }
 
         // PUT: api/PizzaInCarts/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPizzaInCart(Guid id, PizzaInCart pizzaInCart)
+        public async Task<IActionResult> PutPizzaInCart(Guid id, PizzaInCartDTO pizzaInCartDTO)
         {
-            if (id != pizzaInCart.Id)
+            if (id != pizzaInCartDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(pizzaInCart).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PizzaInCartExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _bll.PizzaInCarts.UpdateAsync(_mapper.GetBLL(pizzaInCartDTO));
+            await _bll.SaveChangesAsync();
 
             return NoContent();
+
         }
 
         // POST: api/PizzaInCarts
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<PizzaInCart>> PostPizzaInCart(PizzaInCart pizzaInCart)
+        public async Task<ActionResult<PizzaInCartDTO>> PostPizzaInCart(PizzaInCartDTO pizzaInCartDTO)
         {
-            _context.PizzaInCarts.Add(pizzaInCart);
-            await _context.SaveChangesAsync();
+            var bllEntity = _mapper.GetBLL(pizzaInCartDTO);
+            _bll.PizzaInCarts.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetPizzaInCart", new { id = pizzaInCart.Id }, pizzaInCart);
+            pizzaInCartDTO.Id = bllEntity.Id;
+
+            return Ok(pizzaInCartDTO);
         }
 
         // DELETE: api/PizzaInCarts/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<PizzaInCart>> DeletePizzaInCart(Guid id)
+        public async Task<ActionResult<PizzaInCartDTO>> DeletePizzaInCart(Guid id)
         {
-            var pizzaInCart = await _context.PizzaInCarts.FindAsync(id);
+            var pizzaInCart = await _bll.PizzaInCarts.FirstOrDefaultAsync(id, User.UserGuidId());
             if (pizzaInCart == null)
             {
                 return NotFound();
             }
 
-            _context.PizzaInCarts.Remove(pizzaInCart);
-            await _context.SaveChangesAsync();
+            await _bll.PizzaInCarts.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
-            return pizzaInCart;
+            return Ok(_mapper.GetDTO(pizzaInCart));
         }
-
-        private bool PizzaInCartExists(Guid id)
-        {
-            return _context.PizzaInCarts.Any(e => e.Id == id);
-        }
+        
     }
 }

@@ -1,4 +1,4 @@
-@model ToppingCreateEditViewModel
+@model BLL.App.DTO.Topping
 
 @{
     ViewData["Title"] = "Create";
@@ -13,14 +13,14 @@
         <form asp-action="Create">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Topping.Name" class="control-label"></label>
-                <input asp-for="Topping.Name" class="form-control" />
-                <span asp-validation-for="Topping.Name" class="text-danger"></span>
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Topping.Price" class="control-label"></label>
-                <input asp-for="Topping.Price" class="form-control" />
-                <span asp-validation-for="Topping.Price" class="text-danger"></span>
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

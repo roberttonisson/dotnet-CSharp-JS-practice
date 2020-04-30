@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -10,22 +11,24 @@ using Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
+using Crust = BLL.App.DTO.Crust;
 
 namespace WebApp.Controllers
+
 {
     public class CrustsController : Controller
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public CrustsController(IAppUnitOfWork uow)
+        public CrustsController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: Crusts
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Crusts.AllAsync());
+            return View(await _bll.Crusts.GetAllAsync(null));
         }
 
         // GET: Crusts/Details/5
@@ -36,7 +39,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var crust = await _uow.Crusts.FindAsync(id);
+            var crust = await _bll.Crusts.FirstOrDefaultAsync(id.Value);
 
             if (crust == null)
             {
@@ -48,10 +51,10 @@ namespace WebApp.Controllers
 
         // GET: Crusts/Create
         [Authorize(Roles = "Admin")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var vm = new CrustCreateEditViewModel();
-            return View(vm);
+            var crust = new Crust();
+            return View(crust);
         }
 
         // POST: Crusts/Create
@@ -60,39 +63,34 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create(CrustCreateEditViewModel vm)
+        public async Task<IActionResult> Create(BLL.App.DTO.Crust crust)
         {
             if (ModelState.IsValid)
             {
-                vm.Crust.CreatedAt = DateTime.Now;
-                vm.Crust.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.Crust.CreatedBy = vm.Crust.ChangedBy;
-                vm.Crust.ChangedAt = DateTime.Now;
-                _uow.Crusts.Add(vm.Crust);
-                await _uow.SaveChangesAsync();
+                _bll.Crusts.Add(crust);
+                await _bll.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            return View(vm);
+            return View(crust);
         }
 
         // GET: Crusts/Edit/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid? id, CrustCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            vm.Crust = await _uow.Crusts.FindAsync(id);
-
-            if (vm.Crust == null)
+            var crust = await _bll.Crusts.FirstOrDefaultAsync(id.Value);
+            
+            if (crust == null)
             {
                 return NotFound();
             }
 
-            return View(vm);
+            return View(crust);
         }
 
         // POST: Crusts/Edit/5
@@ -101,37 +99,33 @@ namespace WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid id,
-            CrustCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, Crust crust)
         {
-            if (id != vm.Crust.Id)
+            if (id != crust.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                vm.Crust.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.Crust.ChangedAt = DateTime.Now;
-                _uow.Crusts.Update(vm.Crust);
-                await _uow.SaveChangesAsync();
+                await _bll.Crusts.UpdateAsync(crust);
+                await _bll.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(vm);
+            return View(crust);
         }
 
         // GET: Crusts/Delete/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(Guid? id, CrustCreateEditViewModel vm)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var crust = await _uow.Crusts.FindAsync(id);
+            var crust = await _bll.Crusts.FirstOrDefaultAsync(id.Value);
             if (crust == null)
             {
                 return NotFound();
@@ -146,8 +140,8 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var crust = _uow.Crusts.Remove(id);
-            await _uow.SaveChangesAsync();
+            await _bll.Crusts.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

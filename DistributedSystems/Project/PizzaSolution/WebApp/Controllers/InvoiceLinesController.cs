@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -10,23 +11,25 @@ using Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
+using InvoiceLine = BLL.App.DTO.InvoiceLine;
 
 namespace WebApp.Controllers
+
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class InvoiceLinesController : Controller
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public InvoiceLinesController(IAppUnitOfWork uow)
+        public InvoiceLinesController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: InvoiceLines
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.InvoiceLines.GetIncluded(User.UserGuidId()));
+            return View(await _bll.InvoiceLines.GetAllAsync(User.UserGuidId()));
         }
 
         // GET: InvoiceLines/Details/5
@@ -37,7 +40,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var invoiceLine = await _uow.InvoiceLines.FirstOrDefaultAsync(id.Value, User.UserGuidId());
+            var invoiceLine = await _bll.InvoiceLines.FirstOrDefaultAsync(id.Value, User.UserGuidId());
 
             if (invoiceLine == null)
             {
@@ -47,14 +50,14 @@ namespace WebApp.Controllers
             return View(invoiceLine);
         }
 
-             // GET: InvoiceLines/Create
+        // GET: InvoiceLines/Create
         public async Task<IActionResult> Create()
         {
-            var vm =  new InvoiceLineCreateEditViewModel();
-            vm.InvoiceSelectList = new SelectList(await _uow.Invoices.GetIncluded(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
-            vm.DrinkInCartSelectList = new SelectList(await _uow.DrinkInCarts.GetIncluded(User.UserGuidId()), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
-            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
-            return View(vm);
+            var invoiceLine = new InvoiceLine();
+            invoiceLine.InvoiceSelectList = new SelectList(await _bll.Invoices.GetAllAsync(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
+            invoiceLine.DrinkInCartSelectList = new SelectList(await _bll.DrinkInCarts.GetAllAsync(User.UserGuidId()), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
+            invoiceLine.PizzaInCartSelectList = new SelectList(await _bll.PizzaInCarts.GetAllAsync(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            return View(invoiceLine);
         }
 
         // POST: InvoiceLines/Create
@@ -62,43 +65,38 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(InvoiceLineCreateEditViewModel vm)
+        public async Task<IActionResult> Create(BLL.App.DTO.InvoiceLine invoiceLine)
         {
             if (ModelState.IsValid)
             {
-                vm.InvoiceLine.CreatedAt = DateTime.Now;
-                vm.InvoiceLine.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.InvoiceLine.CreatedBy = vm.InvoiceLine.ChangedBy;
-                vm.InvoiceLine.ChangedAt = DateTime.Now;
-                _uow.InvoiceLines.Add(vm.InvoiceLine);
-                await _uow.SaveChangesAsync();
+                _bll.InvoiceLines.Add(invoiceLine);
+                await _bll.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            vm.InvoiceSelectList = new SelectList(await _uow.Invoices.GetIncluded(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
-            vm.DrinkInCartSelectList = new SelectList(await _uow.DrinkInCarts.GetIncluded(User.UserGuidId()), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
-            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
-            return View(vm);
+            invoiceLine.InvoiceSelectList = new SelectList(await _bll.Invoices.GetAllAsync(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
+            invoiceLine.DrinkInCartSelectList = new SelectList(await _bll.DrinkInCarts.GetAllAsync(User.UserGuidId()), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
+            invoiceLine.PizzaInCartSelectList = new SelectList(await _bll.PizzaInCarts.GetAllAsync(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            return View(invoiceLine);
         }
 
         // GET: InvoiceLines/Edit/5
-        public async Task<IActionResult> Edit(Guid? id, InvoiceLineCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            vm.InvoiceLine = await _uow.InvoiceLines.FirstOrDefaultAsync(id.Value, User.UserGuidId());
-            if (vm.InvoiceLine == null)
+            var invoiceLine = await _bll.InvoiceLines.FirstOrDefaultAsync(id.Value, User.UserGuidId());
+            
+            if (invoiceLine == null)
             {
                 return NotFound();
             }
-            vm.InvoiceSelectList = new SelectList(await _uow.Invoices.GetIncluded(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
-            vm.DrinkInCartSelectList = new SelectList(await _uow.DrinkInCarts.GetIncluded(User.UserGuidId()), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
-            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
-
-            return View(vm);
+            invoiceLine.InvoiceSelectList = new SelectList(await _bll.Invoices.GetAllAsync(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
+            invoiceLine.DrinkInCartSelectList = new SelectList(await _bll.DrinkInCarts.GetAllAsync(User.UserGuidId()), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
+            invoiceLine.PizzaInCartSelectList = new SelectList(await _bll.PizzaInCarts.GetAllAsync(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            return View(invoiceLine);
         }
 
         // POST: InvoiceLines/Edit/5
@@ -106,26 +104,24 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, InvoiceLineCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, InvoiceLine invoiceLine)
         {
-            if (id != vm.InvoiceLine.Id)
+            if (id != invoiceLine.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                vm.InvoiceLine.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.InvoiceLine.ChangedAt = DateTime.Now;
-                _uow.InvoiceLines.Update(vm.InvoiceLine);
-                await _uow.SaveChangesAsync();
+                await _bll.InvoiceLines.UpdateAsync(invoiceLine);
+                await _bll.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.InvoiceSelectList = new SelectList(await _uow.Invoices.GetIncluded(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
-            vm.DrinkInCartSelectList = new SelectList(await _uow.DrinkInCarts.GetIncluded(User.UserGuidId()), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
-            vm.PizzaInCartSelectList = new SelectList(await _uow.PizzaInCarts.GetIncluded(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
-            return View(vm);
+            invoiceLine.InvoiceSelectList = new SelectList(await _bll.Invoices.GetAllAsync(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
+            invoiceLine.DrinkInCartSelectList = new SelectList(await _bll.DrinkInCarts.GetAllAsync(User.UserGuidId()), nameof(DrinkInCart.Id), nameof(DrinkInCart.Id));
+            invoiceLine.PizzaInCartSelectList = new SelectList(await _bll.PizzaInCarts.GetAllAsync(User.UserGuidId()), nameof(PizzaInCart.Id), nameof(PizzaInCart.Id));
+            return View(invoiceLine);
         }
 
         // GET: InvoiceLines/Delete/5
@@ -136,7 +132,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var invoiceLine = await _uow.InvoiceLines.FirstOrDefaultAsync(id.Value, User.UserGuidId());
+            var invoiceLine = await _bll.InvoiceLines.FirstOrDefaultAsync(id.Value, User.UserGuidId());
             if (invoiceLine == null)
             {
                 return NotFound();
@@ -150,8 +146,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _uow.InvoiceLines.DeleteAsync(id, User.UserGuidId());
-            await _uow.SaveChangesAsync();
+            await _bll.InvoiceLines.RemoveAsync(id, User.UserGuidId());
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

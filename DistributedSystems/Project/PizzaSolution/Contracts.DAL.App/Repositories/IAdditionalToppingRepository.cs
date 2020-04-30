@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Contracts.DAL.Base.Repositories;
-using Domain;
+﻿using Contracts.DAL.Base.Repositories;
+using DAL.App.DTO;
 
 namespace Contracts.DAL.App.Repositories
 {
-    public interface IAdditionalToppingRepository : IBaseRepository<AdditionalTopping>
+    public interface IAdditionalToppingRepository  : IBaseRepository<AdditionalTopping>, IAdditionalToppingRepositoryCustom
     {
-        Task<IEnumerable<AdditionalTopping>> GetIncluded(Guid? userId = null);
-        Task<AdditionalTopping> FirstOrDefaultAsync(Guid id, Guid? userId = null);
-        Task DeleteAsync(Guid id, Guid? userId = null);
+        
     }
 }

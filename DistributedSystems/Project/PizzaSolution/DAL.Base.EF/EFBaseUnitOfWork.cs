@@ -6,26 +6,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Base.EF
 {
-    public class EFBaseUnitOfWork<TDbContext> : BaseUnitOfWork, IBaseUnitOfWork
-        where TDbContext : DbContext
+    public class EFBaseUnitOfWork<TKey, TDbContext> : BaseUnitOfWork<TKey>
+        where TDbContext : DbContext 
+        where TKey : IEquatable<TKey>
+
     {
-        protected TDbContext UOWDbContext;
+        protected readonly TDbContext UOWDbContext;
+        
 
         public EFBaseUnitOfWork(TDbContext uowDbContext)
         {
             UOWDbContext = uowDbContext;
         }
 
-        public int SaveChanges()
+        public override async Task<int> SaveChangesAsync()
         {
-            return UOWDbContext.SaveChanges();
+            var result = await UOWDbContext.SaveChangesAsync();
+             
+            UpdateTrackedEntities();
+             
+            return result;
         }
 
-        public async Task<int> SaveChangesAsync()
-        {
-            return await UOWDbContext.SaveChangesAsync();
-        }
         
-
     }
 }

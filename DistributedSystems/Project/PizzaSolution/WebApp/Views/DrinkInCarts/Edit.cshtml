@@ -1,4 +1,4 @@
-@model DrinkInCartCreateEditViewModel
+@model BLL.App.DTO.DrinkInCart
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,23 +13,21 @@
         <form asp-action="Edit">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="DrinkInCart.Quantity" class="control-label"></label>
-                <input asp-for="DrinkInCart.Quantity" class="form-control" />
-                <span asp-validation-for="DrinkInCart.Quantity" class="text-danger"></span>
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DrinkInCart.DrinkId" class="control-label"></label>
-                <select asp-for="DrinkInCart.DrinkId" class="form-control" asp-items="Model.DrinkSelectList"></select>
-                <span asp-validation-for="DrinkInCart.DrinkId" class="text-danger"></span>
+                <label asp-for="DrinkId" class="control-label"></label>
+                <select asp-for="DrinkId" class="form-control" asp-items="Model.DrinkSelectList"></select>
+                <span asp-validation-for="DrinkId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DrinkInCart.CartId" class="control-label"></label>
-                <select asp-for="DrinkInCart.CartId" class="form-control" asp-items="Model.CartSelectList"></select>
-                <span asp-validation-for="DrinkInCart.CartId" class="text-danger"></span>
+                <label asp-for="CartId" class="control-label"></label>
+                <select asp-for="CartId" class="form-control" asp-items="Model.CartSelectList"></select>
+                <span asp-validation-for="CartId" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="DrinkInCart.Id" />
-            <input type="hidden" asp-for="DrinkInCart.CreatedAt" />
-            <input type="hidden" asp-for="DrinkInCart.CreatedBy" />
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

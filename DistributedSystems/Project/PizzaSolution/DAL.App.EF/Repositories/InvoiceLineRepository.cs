@@ -3,59 +3,92 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
+using Contracts.DAL.Base.Mappers;
 using DAL.Base.EF.Repositories;
+using DAL.Base.Mappers;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class InvoiceLineRepository : BaseRepository<InvoiceLine>, IInvoiceLineRepository
+    public class InvoiceLineRepository :
+        EFBaseRepository<AppDbContext, Domain.Identity.AppUser, Domain.InvoiceLine, DAL.App.DTO.InvoiceLine>,
+        IInvoiceLineRepository
     {
-        public InvoiceLineRepository(DbContext dbContext) : base(dbContext)
+        public InvoiceLineRepository(AppDbContext repoDbContext) : base(repoDbContext,
+            new BaseMapper<InvoiceLine, DTO.InvoiceLine>())
         {
         }
-        
-        public async Task<IEnumerable<InvoiceLine>> GetIncluded(Guid? userId = null)
-        {
-            var query = RepoDbSet
-                .Include(i => i.Invoice!)
-                    .ThenInclude(c => c.AppUser!)
-                .Include(i => i.DrinkInCart!)
-                    .ThenInclude(d => d.Drink!)
-                .Include(i => i.PizzaInCart!)
-                    .ThenInclude(p => p.PizzaType!)
-                .AsQueryable();
-            if (userId != null)
-            {
-                query = query.Where(x => x.Invoice!.AppUser!.Id == userId);
-            }
 
-            return await query.ToListAsync();
-        }
-        
-        public async Task<InvoiceLine> FirstOrDefaultAsync(Guid id, Guid? userId = null)
+        public virtual async Task<IEnumerable<DTO.InvoiceLine>> GetAllAsync(Guid? userId = null, bool noTracking = true)
         {
-            var query = RepoDbSet
+            var query = PrepareQuery(userId, noTracking);
+            query = query
                 .Include(i => i.Invoice!)
                     .ThenInclude(c => c.AppUser!)
+                .Include(i => i.Invoice!)
+                    .ThenInclude(c => c.Transport!)
+                
                 .Include(i => i.DrinkInCart!)
                     .ThenInclude(d => d.Drink!)
+                .Include(i => i.DrinkInCart!)
+                    .ThenInclude(d => d.Cart!)
+                        .ThenInclude(d => d.AppUser)
+                .Include(i => i.DrinkInCart!)
+                    .ThenInclude(d => d.Drink!)
+                
                 .Include(i => i.PizzaInCart!)
                     .ThenInclude(p => p.PizzaType!)
-                .Where(x => x.Id == id)
-                .AsQueryable();
+                .Include(i => i.PizzaInCart!)
+                    .ThenInclude(p => p.Crust!)
+                .Include(i => i.PizzaInCart!)
+                    .ThenInclude(p => p.Size!)
+                .Include(i => i.PizzaInCart!)
+                    .ThenInclude(p => p.Cart!)
+                        .ThenInclude(p => p.AppUser);
             if (userId != null)
             {
                 query = query.Where(a => a.Invoice!.AppUser!.Id == userId);
             }
-
-            return await query.FirstOrDefaultAsync();
+            var domainEntities = await query.ToListAsync();
+            var result = domainEntities.Select(e => Mapper.Map(e));
+            return result;
         }
-        
-        public async Task DeleteAsync(Guid id, Guid? userId = null)
+
+        public virtual async Task<DTO.InvoiceLine> FirstOrDefaultAsync(Guid Id, Guid? userId = null, bool noTracking = true)
         {
-            var invoiceLine = await FirstOrDefaultAsync(id, userId);
-            base.Remove(invoiceLine);
+            var query = PrepareQuery(userId, noTracking);
+            query = query
+                .Include(i => i.Invoice!)
+                    .ThenInclude(c => c.AppUser!)
+                .Include(i => i.Invoice!)
+                    .ThenInclude(c => c.Transport!)
+                
+                .Include(i => i.DrinkInCart!)
+                    .ThenInclude(d => d.Drink!)
+                .Include(i => i.DrinkInCart!)
+                    .ThenInclude(d => d.Cart!)
+                        .ThenInclude(d => d.AppUser)
+                .Include(i => i.DrinkInCart!)
+                    .ThenInclude(d => d.Drink!)
+                
+                .Include(i => i.PizzaInCart!)
+                    .ThenInclude(p => p.PizzaType!)
+                .Include(i => i.PizzaInCart!)
+                    .ThenInclude(p => p.Crust!)
+                .Include(i => i.PizzaInCart!)
+                    .ThenInclude(p => p.Size!)
+                .Include(i => i.PizzaInCart!)
+                    .ThenInclude(p => p.Cart!)
+                        .ThenInclude(p => p.AppUser)
+                .Where(x => x.Id == Id);
+            if (userId != null)
+            {
+                query = query.Where(a => a.Invoice!.AppUser!.Id == userId);
+            }
+            var domainEntity = await query.FirstOrDefaultAsync();
+            return Mapper.Map(domainEntity);
+
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -10,23 +11,25 @@ using Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
+using PartyOrderInvoice = BLL.App.DTO.PartyOrderInvoice;
 
 namespace WebApp.Controllers
+
 {
     [Authorize]
     public class PartyOrderInvoicesController : Controller
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public PartyOrderInvoicesController(IAppUnitOfWork uow)
+        public PartyOrderInvoicesController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: PartyOrderInvoices
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.PartyOrderInvoices.AllAsync());
+            return View(await _bll.PartyOrderInvoices.GetAllAsync(User.UserGuidId()));
         }
 
         // GET: PartyOrderInvoices/Details/5
@@ -37,7 +40,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var partyOrderInvoice = await _uow.PartyOrderInvoices.FindAsync(id);
+            var partyOrderInvoice = await _bll.PartyOrderInvoices.FirstOrDefaultAsync(id.Value, User.UserGuidId());
 
             if (partyOrderInvoice == null)
             {
@@ -47,13 +50,13 @@ namespace WebApp.Controllers
             return View(partyOrderInvoice);
         }
 
-          // GET: PartyOrderInvoices/Create
-        public IActionResult Create()
+        // GET: PartyOrderInvoices/Create
+        public async Task<IActionResult> Create()
         {
-            var vm =  new PartyOrderInvoiceCreateEditViewModel();
-            vm.PartyOrderSelectList = new SelectList(_uow.PartyOrders.All(), nameof(PartyOrder.Id), nameof(PartyOrder.Id));
-            vm.InvoiceSelectList = new SelectList(_uow.Invoices.All(), nameof(Invoice.Id), nameof(Invoice.Id));
-            return View(vm);
+            var partyOrderInvoice = new PartyOrderInvoice();
+            partyOrderInvoice.PartyOrderSelectList = new SelectList(await _bll.PartyOrders.GetAllAsync(User.UserGuidId()), nameof(PartyOrder.Id), nameof(PartyOrder.Id));
+            partyOrderInvoice.InvoiceSelectList = new SelectList(await _bll.Invoices.GetAllAsync(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
+            return View(partyOrderInvoice);
         }
 
         // POST: PartyOrderInvoices/Create
@@ -61,41 +64,37 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PartyOrderInvoiceCreateEditViewModel vm)
+        public async Task<IActionResult> Create(BLL.App.DTO.PartyOrderInvoice partyOrderInvoice)
         {
             if (ModelState.IsValid)
             {
-                vm.PartyOrderInvoice.CreatedAt = DateTime.Now;
-                vm.PartyOrderInvoice.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.PartyOrderInvoice.CreatedBy = vm.PartyOrderInvoice.ChangedBy;
-                vm.PartyOrderInvoice.ChangedAt = DateTime.Now;
-                _uow.PartyOrderInvoices.Add(vm.PartyOrderInvoice);
-                await _uow.SaveChangesAsync();
+                _bll.PartyOrderInvoices.Add(partyOrderInvoice);
+                await _bll.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            vm.PartyOrderSelectList = new SelectList(_uow.PartyOrders.All(), nameof(PartyOrder.Id), nameof(PartyOrder.Id));
-            vm.InvoiceSelectList = new SelectList(_uow.Invoices.All(), nameof(Invoice.Id), nameof(Invoice.Id));
-            return View(vm);
+            partyOrderInvoice.PartyOrderSelectList = new SelectList(await _bll.PartyOrders.GetAllAsync(User.UserGuidId()), nameof(PartyOrder.Id), nameof(PartyOrder.Id));
+            partyOrderInvoice.InvoiceSelectList = new SelectList(await _bll.Invoices.GetAllAsync(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
+            return View(partyOrderInvoice);
         }
 
         // GET: PartyOrderInvoices/Edit/5
-        public async Task<IActionResult> Edit(Guid? id, PartyOrderInvoiceCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            vm.PartyOrderInvoice = await _uow.PartyOrderInvoices.FindAsync(id);
-            if (vm.PartyOrderInvoice == null)
+            var partyOrderInvoice = await _bll.PartyOrderInvoices.FirstOrDefaultAsync(id.Value, User.UserGuidId());
+            
+            if (partyOrderInvoice == null)
             {
                 return NotFound();
             }
-            vm.PartyOrderSelectList = new SelectList(_uow.PartyOrders.All(), nameof(PartyOrder.Id), nameof(PartyOrder.Id));
-            vm.InvoiceSelectList = new SelectList(_uow.Invoices.All(), nameof(Invoice.Id), nameof(Invoice.Id));
+            partyOrderInvoice.PartyOrderSelectList = new SelectList(await _bll.PartyOrders.GetAllAsync(User.UserGuidId()), nameof(PartyOrder.Id), nameof(PartyOrder.Id));
+            partyOrderInvoice.InvoiceSelectList = new SelectList(await _bll.Invoices.GetAllAsync(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
 
-            return View(vm);
+            return View(partyOrderInvoice);
         }
 
         // POST: PartyOrderInvoices/Edit/5
@@ -103,25 +102,23 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, PartyOrderInvoiceCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, PartyOrderInvoice partyOrderInvoice)
         {
-            if (id != vm.PartyOrderInvoice.Id)
+            if (id != partyOrderInvoice.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                vm.PartyOrderInvoice.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.PartyOrderInvoice.ChangedAt = DateTime.Now;
-                _uow.PartyOrderInvoices.Update(vm.PartyOrderInvoice);
-                await _uow.SaveChangesAsync();
+                await _bll.PartyOrderInvoices.UpdateAsync(partyOrderInvoice);
+                await _bll.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.PartyOrderSelectList = new SelectList(_uow.PartyOrders.All(), nameof(PartyOrder.Id), nameof(PartyOrder.Id));
-            vm.InvoiceSelectList = new SelectList(_uow.Invoices.All(), nameof(Invoice.Id), nameof(Invoice.Id));
-            return View(vm);
+            partyOrderInvoice.PartyOrderSelectList = new SelectList(await _bll.PartyOrders.GetAllAsync(User.UserGuidId()), nameof(PartyOrder.Id), nameof(PartyOrder.Id));
+            partyOrderInvoice.InvoiceSelectList = new SelectList(await _bll.Invoices.GetAllAsync(User.UserGuidId()), nameof(Invoice.Id), nameof(Invoice.Id));
+            return View(partyOrderInvoice);
         }
 
         // GET: PartyOrderInvoices/Delete/5
@@ -132,7 +129,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var partyOrderInvoice = await _uow.PartyOrderInvoices.FindAsync(id);
+            var partyOrderInvoice = await _bll.PartyOrderInvoices.FirstOrDefaultAsync(id.Value, User.UserGuidId());
             if (partyOrderInvoice == null)
             {
                 return NotFound();
@@ -146,8 +143,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var partyOrderInvoice = _uow.PartyOrderInvoices.Remove(id);
-            await _uow.SaveChangesAsync();
+            await _bll.PartyOrderInvoices.RemoveAsync(id, User.UserGuidId());
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

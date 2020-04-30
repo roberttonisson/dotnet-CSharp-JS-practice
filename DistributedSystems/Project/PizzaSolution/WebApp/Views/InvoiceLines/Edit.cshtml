@@ -1,4 +1,4 @@
-@model InvoiceLineCreateEditViewModel
+@model BLL.App.DTO.InvoiceLine
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,28 +13,26 @@
         <form asp-action="Edit">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="InvoiceLine.Quantity" class="control-label"></label>
-                <input asp-for="InvoiceLine.Quantity" class="form-control" />
-                <span asp-validation-for="InvoiceLine.Quantity" class="text-danger"></span>
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="InvoiceLine.PizzaInCartId" class="control-label"></label>
-                <select asp-for="InvoiceLine.PizzaInCartId" class="form-control" asp-items="Model.PizzaInCartSelectList"></select>
-                <span asp-validation-for="InvoiceLine.PizzaInCartId" class="text-danger"></span>
+                <label asp-for="PizzaInCartId" class="control-label"></label>
+                <select asp-for="PizzaInCartId" class="form-control" asp-items="Model.PizzaInCartSelectList"></select>
+                <span asp-validation-for="PizzaInCartId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="InvoiceLine.DrinkInCartId" class="control-label"></label>
-                <select asp-for="InvoiceLine.DrinkInCartId" class="form-control" asp-items="Model.DrinkInCartSelectList"></select>
-                <span asp-validation-for="InvoiceLine.DrinkInCartId" class="text-danger"></span>
+                <label asp-for="DrinkInCartId" class="control-label"></label>
+                <select asp-for="DrinkInCartId" class="form-control" asp-items="Model.DrinkInCartSelectList"></select>
+                <span asp-validation-for="DrinkInCartId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="InvoiceLine.InvoiceId" class="control-label"></label>
-                <select asp-for="InvoiceLine.InvoiceId" class="form-control" asp-items="Model.InvoiceSelectList"></select>
-                <span asp-validation-for="InvoiceLine.InvoiceId" class="text-danger"></span>
+                <label asp-for="InvoiceId" class="control-label"></label>
+                <select asp-for="InvoiceId" class="form-control" asp-items="Model.InvoiceSelectList"></select>
+                <span asp-validation-for="InvoiceId" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="InvoiceLine.Id" />
-            <input type="hidden" asp-for="InvoiceLine.CreatedAt" />
-            <input type="hidden" asp-for="InvoiceLine.CreatedBy" />
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

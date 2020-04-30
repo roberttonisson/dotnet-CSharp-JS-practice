@@ -2,11 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain;
+using Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using PublicApi.DTO.v1;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
@@ -14,97 +20,86 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class CrustsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly CrustDTOMapper _mapper = new CrustDTOMapper();
 
-        public CrustsController(AppDbContext context)
+        public CrustsController(IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
         }
-
+        
         // GET: api/Crusts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Crust>>> GetCrusts()
+        public async Task<ActionResult<IEnumerable<CrustDTO>>> GetCrusts()
         {
-            return await _context.Crusts.ToListAsync();
+            var crusts = (await _bll.Crusts.GetAllAsync(null))
+                .Select(bllEntity => _mapper.Map(bllEntity));
+            
+            return Ok(crusts);
         }
 
-        // GET: api/Crusts/5
+     // GET: api/Crusts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Crust>> GetCrust(Guid id)
+        public async Task<ActionResult<CrustDTO>> GetCrust(Guid id)
         {
-            var crust = await _context.Crusts.FindAsync(id);
+            var crust = await _bll.Crusts.FirstOrDefaultAsync(id);
 
             if (crust == null)
             {
                 return NotFound();
             }
 
-            return crust;
+            return Ok(_mapper.Map(crust));
         }
 
         // PUT: api/Crusts/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCrust(Guid id, Crust crust)
+        public async Task<IActionResult> PutCrust(Guid id, CrustDTO crustDTO)
         {
-            if (id != crust.Id)
+            if (id != crustDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(crust).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CrustExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _bll.Crusts.UpdateAsync(_mapper.Map(crustDTO));
+            await _bll.SaveChangesAsync();
 
             return NoContent();
+
         }
 
         // POST: api/Crusts
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Crust>> PostCrust(Crust crust)
+        public async Task<ActionResult<CrustDTO>> PostCrust(CrustDTO crustDTO)
         {
-            _context.Crusts.Add(crust);
-            await _context.SaveChangesAsync();
+            var bllEntity = _mapper.Map(crustDTO);
+            _bll.Crusts.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetCrust", new { id = crust.Id }, crust);
+            crustDTO.Id = bllEntity.Id;
+
+            return Ok(crustDTO);
         }
 
         // DELETE: api/Crusts/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Crust>> DeleteCrust(Guid id)
+        public async Task<ActionResult<CrustDTO>> DeleteCrust(Guid id)
         {
-            var crust = await _context.Crusts.FindAsync(id);
+            var crust = await _bll.Crusts.FirstOrDefaultAsync(id);
             if (crust == null)
             {
                 return NotFound();
             }
 
-            _context.Crusts.Remove(crust);
-            await _context.SaveChangesAsync();
+            await _bll.Crusts.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
-            return crust;
+            return Ok(_mapper.Map(crust));
         }
-
-        private bool CrustExists(Guid id)
-        {
-            return _context.Crusts.Any(e => e.Id == id);
-        }
+        
     }
 }

@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain;
+using Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using PublicApi.DTO.v1;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
@@ -17,97 +21,86 @@ namespace WebApp.ApiControllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PartyOrdersController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PartyOrderDTOMapper _mapper = new PartyOrderDTOMapper();
 
-        public PartyOrdersController(AppDbContext context)
+        public PartyOrdersController(IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
         }
-
+        
         // GET: api/PartyOrders
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PartyOrder>>> GetPartyOrders()
+        public async Task<ActionResult<IEnumerable<PartyOrderDTO>>> GetPartyOrders()
         {
-            return await _context.PartyOrders.ToListAsync();
+            var partyOrders = (await _bll.PartyOrders.GetAllAsync(User.UserGuidId()))
+                .Select(bllEntity => _mapper.GetDTO(bllEntity));
+            
+            return Ok(partyOrders);
         }
 
-        // GET: api/PartyOrders/5
+     // GET: api/PartyOrders/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<PartyOrder>> GetPartyOrder(Guid id)
+        public async Task<ActionResult<PartyOrderDTO>> GetPartyOrder(Guid id)
         {
-            var partyOrder = await _context.PartyOrders.FindAsync(id);
+            var partyOrder = await _bll.PartyOrders.FirstOrDefaultAsync(id, User.UserGuidId());
 
             if (partyOrder == null)
             {
                 return NotFound();
             }
 
-            return partyOrder;
+            return Ok(_mapper.GetDTO(partyOrder));
         }
 
         // PUT: api/PartyOrders/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPartyOrder(Guid id, PartyOrder partyOrder)
+        public async Task<IActionResult> PutPartyOrder(Guid id, PartyOrderDTO partyOrderDTO)
         {
-            if (id != partyOrder.Id)
+            if (id != partyOrderDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(partyOrder).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PartyOrderExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _bll.PartyOrders.UpdateAsync(_mapper.GetBLL(partyOrderDTO));
+            await _bll.SaveChangesAsync();
 
             return NoContent();
+
         }
 
         // POST: api/PartyOrders
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<PartyOrder>> PostPartyOrder(PartyOrder partyOrder)
+        public async Task<ActionResult<PartyOrderDTO>> PostPartyOrder(PartyOrderDTO partyOrderDTO)
         {
-            _context.PartyOrders.Add(partyOrder);
-            await _context.SaveChangesAsync();
+            var bllEntity = _mapper.GetBLL(partyOrderDTO);
+            _bll.PartyOrders.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetPartyOrder", new { id = partyOrder.Id }, partyOrder);
+            partyOrderDTO.Id = bllEntity.Id;
+
+            return Ok(partyOrderDTO);
         }
 
         // DELETE: api/PartyOrders/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<PartyOrder>> DeletePartyOrder(Guid id)
+        public async Task<ActionResult<PartyOrderDTO>> DeletePartyOrder(Guid id)
         {
-            var partyOrder = await _context.PartyOrders.FindAsync(id);
+            var partyOrder = await _bll.PartyOrders.FirstOrDefaultAsync(id, User.UserGuidId());
             if (partyOrder == null)
             {
                 return NotFound();
             }
 
-            _context.PartyOrders.Remove(partyOrder);
-            await _context.SaveChangesAsync();
+            await _bll.PartyOrders.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
-            return partyOrder;
+            return Ok(_mapper.GetDTO(partyOrder));
         }
-
-        private bool PartyOrderExists(Guid id)
-        {
-            return _context.PartyOrders.Any(e => e.Id == id);
-        }
+        
     }
 }

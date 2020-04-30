@@ -3,57 +3,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
+using Contracts.DAL.Base.Mappers;
 using DAL.Base.EF.Repositories;
+using DAL.Base.Mappers;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class PizzaInCartRepository : BaseRepository<PizzaInCart>, IPizzaInCartRepository
+    public class PizzaInCartRepository :
+        EFBaseRepository<AppDbContext, Domain.Identity.AppUser, Domain.PizzaInCart, DAL.App.DTO.PizzaInCart>,
+        IPizzaInCartRepository
     {
-        public PizzaInCartRepository(DbContext dbContext) : base(dbContext)
+        public PizzaInCartRepository(AppDbContext repoDbContext) : base(repoDbContext,
+            new BaseMapper<PizzaInCart, DTO.PizzaInCart>())
         {
-            
         }
-        public async Task<IEnumerable<PizzaInCart>> GetIncluded(Guid? userId = null)
-        {
-            var query = RepoDbSet
-                .Include(d => d.Cart!)
-                    .ThenInclude(u => u.AppUser!)
-                .Include(p => p.PizzaType!)
-                .Include(c => c.Crust!)
-                .Include(s => s.Size!)
-                .AsQueryable();
-            if (userId != null)
-            {
-                query = query.Where(x => x.Cart!.AppUser!.Id == userId);
-            }
 
-            return await query.ToListAsync();
-        }
-        
-        public async Task<PizzaInCart> FirstOrDefaultAsync(Guid id, Guid? userId = null)
+        public virtual async Task<IEnumerable<DTO.PizzaInCart>> GetAllAsync(Guid? userId = null, bool noTracking = true)
         {
-            var query = RepoDbSet
+            var query = PrepareQuery(userId, noTracking);
+            query = query
                 .Include(d => d.Cart!)
                     .ThenInclude(u => u.AppUser!)
                 .Include(p => p.PizzaType!)
                 .Include(c => c.Crust!)
-                .Include(s => s.Size!)
-                .Where(x => x.Id == id)
-                .AsQueryable();
+                .Include(s => s.Size!);
             if (userId != null)
             {
                 query = query.Where(a => a.Cart!.AppUser!.Id == userId);
             }
-
-            return await query.FirstOrDefaultAsync();
+            var domainEntities = await query.ToListAsync();
+            var result = domainEntities.Select(e => Mapper.Map(e));
+            return result;
         }
-        
-        public async Task DeleteAsync(Guid id, Guid? userId = null)
+
+        public virtual async Task<DTO.PizzaInCart> FirstOrDefaultAsync(Guid Id, Guid? userId = null, bool noTracking = true)
         {
-            var pizzaInCart = await FirstOrDefaultAsync(id, userId);
-            base.Remove(pizzaInCart);
+            var query = PrepareQuery(userId, noTracking);
+            query = query
+                .Include(d => d.Cart!)
+                    .ThenInclude(u => u.AppUser!)
+                .Include(p => p.PizzaType!)
+                .Include(c => c.Crust!)
+                .Include(s => s.Size!)
+                .Where(x => x.Id == Id);
+            if (userId != null)
+            {
+                query = query.Where(a => a.Cart!.AppUser!.Id == userId);
+            }
+            var domainEntity = await query.FirstOrDefaultAsync();
+            return Mapper.Map(domainEntity);
+
         }
     }
 }

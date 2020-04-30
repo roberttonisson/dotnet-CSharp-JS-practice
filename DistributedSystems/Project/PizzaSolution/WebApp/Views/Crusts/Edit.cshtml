@@ -1,4 +1,4 @@
-@model CrustCreateEditViewModel
+@model BLL.App.DTO.Crust
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,18 +13,16 @@
         <form asp-action="Edit">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Crust.Name" class="control-label"></label>
-                <input asp-for="Crust.Name" class="form-control" />
-                <span asp-validation-for="Crust.Name" class="text-danger"></span>
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Crust.Price" class="control-label"></label>
-                <input asp-for="Crust.Price" class="form-control" />
-                <span asp-validation-for="Crust.Price" class="text-danger"></span>
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Crust.Id" />
-            <input type="hidden" asp-for="Crust.CreatedAt" />
-            <input type="hidden" asp-for="Crust.CreatedBy" />
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

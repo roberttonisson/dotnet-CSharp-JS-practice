@@ -19,51 +19,61 @@ namespace DAL.App.EF.Helpers
         public static void SeedIdentity(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
         {
             
-            var roleNames = new string[] {"User", "Admin"};
-            foreach (var roleName in roleNames)
+            var roles = new (string roleName, string roleDisplayName)[]
+            {
+                ("User", "User"),
+                ("Admin", "Admin")
+            };
+
+            foreach (var (roleName, roleDisplayName) in roles)
             {
                 var role = roleManager.FindByNameAsync(roleName).Result;
                 if (role == null)
                 {
-                    role = new AppRole();
-                    role.Name = roleName;
+                    role = new AppRole()
+                    {
+                        Name = roleName,
+                        DisplayName = roleDisplayName
+                    };
+
                     var result = roleManager.CreateAsync(role).Result;
                     if (!result.Succeeded)
                     {
                         throw new ApplicationException("Role creation failed!");
                     }
                 }
-                
+
+            }
+            var users = new (string name, string password, string firstName, string lastName, string address)[]
+            {
+                ("rotoni@rotoni.ee", "Abc123@", "Robert", "Tõnisson", "MyAdress"),
+            };
+
+            foreach (var userInfo in users)
+            {
+                var user = userManager.FindByEmailAsync(userInfo.name).Result;
+                if (user == null)
+                {
+                    user = new AppUser()
+                    {
+                        Email = userInfo.name,
+                        UserName = userInfo.name,
+                        FirstName = userInfo.firstName,
+                        LastName = userInfo.lastName,
+                        Address = userInfo.lastName,
+                        EmailConfirmed = true
+                    };
+                    var result = userManager.CreateAsync(user, userInfo.password).Result;
+                    if (!result.Succeeded)
+                    {
+                        throw new ApplicationException("User creation failed!");
+                    }
+                }
+
+                var roleResult = userManager.AddToRoleAsync(user, "admin").Result;
+                roleResult  = userManager.AddToRoleAsync(user, "user").Result;
             }
             
-
-            var userName = "rotoni@rotoni.ee";
-            var passWord = "Abc123@";
-            var firstName = "Robert";
-            var lastName = "Tõnisson";
-            var address = "Saarde vald, Sillaotsa";
-
-            var user = userManager.FindByNameAsync(userName).Result;
-            if (user == null)
-            {
-                user = new AppUser();
-                user.Email = userName;
-                user.UserName = userName;
-                user.FirstName = firstName;
-                user.LastName = lastName;
-                user.Address = address;
-                
-                var result = userManager.CreateAsync(user, passWord).Result;
-                if (!result.Succeeded)
-                {
-                    throw new ApplicationException("User creation failed!");
-
-                }
-            }
-
-
-            var roleResult = userManager.AddToRoleAsync(user, "Admin").Result;
-            roleResult = userManager.AddToRoleAsync(user, "User").Result;
 
         }
         

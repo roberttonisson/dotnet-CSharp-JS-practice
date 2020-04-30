@@ -2,129 +2,104 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Contracts.DAL.App;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain;
+using Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TransportsController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
+        private readonly TransportDTOMapper _mapper = new TransportDTOMapper();
 
-        public TransportsController(IAppUnitOfWork uow)
+        public TransportsController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
-
+        
         // GET: api/Transports
         [HttpGet]
-        public async Task<IEnumerable<TransportDTO>> GetTransports()
+        public async Task<ActionResult<IEnumerable<TransportDTO>>> GetTransports()
         {
-            return await _uow.Transports.SelectAllDTO();
+            var transports = (await _bll.Transports.GetAllAsync(null))
+                .Select(bllEntity => _mapper.Map(bllEntity));
+            
+            return Ok(transports);
         }
 
-        // GET: api/Transports/5
+     // GET: api/Transports/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TransportDTO>> GetTransport(Guid id)
         {
-            //var transport = await _context.Transports.FindAsync(id);
-            var transport = await _uow.Transports.SelectDTO(id);
+            var transport = await _bll.Transports.FirstOrDefaultAsync(id);
 
             if (transport == null)
             {
                 return NotFound();
             }
 
-            return transport;
+            return Ok(_mapper.Map(transport));
         }
 
         // PUT: api/Transports/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTransport(Guid id, TransportDTO dto)
+        public async Task<IActionResult> PutTransport(Guid id, TransportDTO transportDTO)
         {
-            if (id != dto.Id)
+            if (id != transportDTO.Id)
             {
                 return BadRequest();
             }
 
-            var transport = _uow.Transports.Find(dto.Id);
-            if (transport == null)
-            {
-                return BadRequest();
-            }
-            transport.Address = dto.Address;
-            transport.Cost = dto.Cost;
-
-            _uow.Transports.Update(transport);
-
-
-            try
-            {
-                await _uow.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TransportExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _bll.Transports.UpdateAsync(_mapper.Map(transportDTO));
+            await _bll.SaveChangesAsync();
 
             return NoContent();
+
         }
 
         // POST: api/Transports
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Transport>> PostTransport(TransportDTO dto)
+        public async Task<ActionResult<TransportDTO>> PostTransport(TransportDTO transportDTO)
         {
-            var transport = new Transport()
-            {
-                Address = dto.Address,
-                Cost = dto.Cost,
-            };
-            _uow.Transports.Add(transport);
-            await _uow.SaveChangesAsync();
+            var bllEntity = _mapper.Map(transportDTO);
+            _bll.Transports.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetTransport", new { id = transport.Id }, transport);
+            transportDTO.Id = bllEntity.Id;
+
+            return Ok(transportDTO);
         }
 
         // DELETE: api/Transports/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Transport>> DeleteTransport(Guid id)
+        public async Task<ActionResult<TransportDTO>> DeleteTransport(Guid id)
         {
-            var transport = await _uow.Transports.FindAsync(id);
+            var transport = await _bll.Transports.FirstOrDefaultAsync(id);
             if (transport == null)
             {
                 return NotFound();
             }
 
-            _uow.Transports.Remove(transport);
-            await _uow.SaveChangesAsync();
+            await _bll.Transports.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
-            return transport;
+            return Ok(_mapper.Map(transport));
         }
-
-        private bool TransportExists(Guid id)
-        {
-            return _uow.Transports.Find(id) != null;
-        }
+        
     }
 }

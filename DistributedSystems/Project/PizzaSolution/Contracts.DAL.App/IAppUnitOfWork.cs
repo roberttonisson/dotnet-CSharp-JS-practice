@@ -1,11 +1,9 @@
 ﻿using Contracts.DAL.App.Repositories;
 using Contracts.DAL.Base;
-using Contracts.DAL.Base.Repositories;
-using Domain;
 
 namespace Contracts.DAL.App
 {
-    public interface IAppUnitOfWork : IBaseUnitOfWork
+    public interface IAppUnitOfWork : IBaseUnitOfWork, IBaseEntityTracker
     {
         IAdditionalToppingRepository AdditionalToppings { get; } 
         ICartRepository Carts { get; } 
@@ -22,7 +20,7 @@ namespace Contracts.DAL.App
         ISizeRepository Sizes { get; } 
         IToppingRepository Toppings { get; } 
         ITransportRepository Transports { get; }
-        IUserRepository Users { get; }
+        IAppUserRepository AppUsers { get; }
         
     }
 }

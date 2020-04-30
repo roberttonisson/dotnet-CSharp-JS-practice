@@ -1,4 +1,4 @@
-@model PizzaInCartCreateEditViewModel
+@model BLL.App.DTO.PizzaInCart
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,33 +13,31 @@
         <form asp-action="Edit">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="PizzaInCart.Quantity" class="control-label"></label>
-                <input asp-for="PizzaInCart.Quantity" class="form-control" />
-                <span asp-validation-for="PizzaInCart.Quantity" class="text-danger"></span>
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PizzaInCart.PizzaTypeId" class="control-label"></label>
-                <select asp-for="PizzaInCart.PizzaTypeId" class="form-control" asp-items="Model.PizzaTypeSelectList"></select>
-                <span asp-validation-for="PizzaInCart.PizzaTypeId" class="text-danger"></span>
+                <label asp-for="PizzaTypeId" class="control-label"></label>
+                <select asp-for="PizzaTypeId" class="form-control" asp-items="Model.PizzaTypeSelectList"></select>
+                <span asp-validation-for="PizzaTypeId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PizzaInCart.CrustId" class="control-label"></label>
-                <select asp-for="PizzaInCart.CrustId" class="form-control" asp-items="Model.CrustSelectList"></select>
-                <span asp-validation-for="PizzaInCart.CrustId" class="text-danger"></span>
+                <label asp-for="CrustId" class="control-label"></label>
+                <select asp-for="CrustId" class="form-control" asp-items="Model.CrustSelectList"></select>
+                <span asp-validation-for="CrustId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PizzaInCart.SizeId" class="control-label"></label>
-                <select asp-for="PizzaInCart.SizeId" class="form-control" asp-items="Model.SizeSelectList"></select>
-                <span asp-validation-for="PizzaInCart.SizeId" class="text-danger"></span>
+                <label asp-for="SizeId" class="control-label"></label>
+                <select asp-for="SizeId" class="form-control" asp-items="Model.SizeSelectList"></select>
+                <span asp-validation-for="SizeId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PizzaInCart.CartId" class="control-label"></label>
-                <select asp-for="PizzaInCart.CartId" class="form-control" asp-items="Model.CartSelectList"></select>
-                <span asp-validation-for="PizzaInCart.CartId" class="text-danger"></span>
+                <label asp-for="CartId" class="control-label"></label>
+                <select asp-for="CartId" class="form-control" asp-items="Model.CartSelectList"></select>
+                <span asp-validation-for="CartId" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="PizzaInCart.Id" />
-            <input type="hidden" asp-for="PizzaInCart.CreatedAt" />
-            <input type="hidden" asp-for="PizzaInCart.CreatedBy" />
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

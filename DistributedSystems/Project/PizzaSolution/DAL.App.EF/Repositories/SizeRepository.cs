@@ -3,35 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
+using Contracts.DAL.Base.Mappers;
 using DAL.Base.EF.Repositories;
+using DAL.Base.Mappers;
 using Domain;
 using Microsoft.EntityFrameworkCore;
-using PublicApi.DTO.v1;
 
 namespace DAL.App.EF.Repositories
 {
-    public class SizeRepository : BaseRepository<Size>, ISizeRepository
+    public class SizeRepository :
+        EFBaseRepository<AppDbContext, Domain.Identity.AppUser, Domain.Size, DAL.App.DTO.Size>,
+        ISizeRepository
     {
-        public SizeRepository(DbContext dbContext) : base(dbContext)
+        public SizeRepository(AppDbContext repoDbContext) : base(repoDbContext,
+            new BaseMapper<Size, DTO.Size>())
         {
         }
-        
-        public async Task<IEnumerable<SizeDTO>> SelectAllDTO()
-        {
-            return await RepoDbSet.Select(s => new SizeDTO()
-            {
-                Id = s.Id, Name = s.Name, Price = s.Price, SizeCm = s.SizeCm
-            }).ToListAsync();
-        }
-        
-        public async Task<SizeDTO> SelectDTO(Guid id)
-        {
-            return await RepoDbSet.Select(s => new SizeDTO()
-            {
-                Id = s.Id, Name = s.Name, SizeCm = s.SizeCm, Price = s.Price
-            }).FirstOrDefaultAsync(t => t.Id == id);
-        }
-        
-    
     }
 }

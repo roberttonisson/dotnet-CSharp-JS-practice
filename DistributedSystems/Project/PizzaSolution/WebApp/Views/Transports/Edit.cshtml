@@ -1,4 +1,4 @@
-@model TransportCreateEditViewModel
+@model BLL.App.DTO.Transport
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,18 +13,16 @@
         <form asp-action="Edit">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Transport.Cost" class="control-label"></label>
-                <input asp-for="Transport.Cost" class="form-control" />
-                <span asp-validation-for="Transport.Cost" class="text-danger"></span>
+                <label asp-for="Cost" class="control-label"></label>
+                <input asp-for="Cost" class="form-control" />
+                <span asp-validation-for="Cost" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Transport.Address" class="control-label"></label>
-                <input asp-for="Transport.Address" class="form-control" />
-                <span asp-validation-for="Transport.Address" class="text-danger"></span>
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Transport.Id" />
-            <input type="hidden" asp-for="Transport.CreatedAt" />
-            <input type="hidden" asp-for="Transport.CreatedBy" />
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

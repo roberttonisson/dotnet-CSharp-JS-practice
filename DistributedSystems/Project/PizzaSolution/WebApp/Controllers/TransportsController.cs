@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Contracts.DAL.App;
 using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -8,23 +9,27 @@ using DAL.App.EF.Repositories;
 using Domain;
 using Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
+using Transport = BLL.App.DTO.Transport;
 
 namespace WebApp.Controllers
+
 {
+    [Authorize]
     public class TransportsController : Controller
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public TransportsController(IAppUnitOfWork uow)
+        public TransportsController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: Transports
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Transports.AllAsync());
+            return View(await _bll.Transports.GetAllAsync(null));
         }
 
         // GET: Transports/Details/5
@@ -35,7 +40,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var transport = await _uow.Transports.FindAsync(id);
+            var transport = await _bll.Transports.FirstOrDefaultAsync(id.Value);
 
             if (transport == null)
             {
@@ -46,10 +51,10 @@ namespace WebApp.Controllers
         }
 
         // GET: Transports/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var vm = new TransportCreateEditViewModel();
-            return View(vm);
+            var transport = new Transport();
+            return View(transport);
         }
 
         // POST: Transports/Create
@@ -57,38 +62,33 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TransportCreateEditViewModel vm)
+        public async Task<IActionResult> Create(BLL.App.DTO.Transport transport)
         {
             if (ModelState.IsValid)
             {
-                vm.Transport.CreatedAt = DateTime.Now;
-                vm.Transport.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.Transport.CreatedBy = vm.Transport.ChangedBy;
-                vm.Transport.ChangedAt = DateTime.Now;
-                _uow.Transports.Add(vm.Transport);
-                await _uow.SaveChangesAsync();
+                _bll.Transports.Add(transport);
+                await _bll.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-            return View(vm);
+            return View(transport);
         }
 
         // GET: Transports/Edit/5
-        public async Task<IActionResult> Edit(Guid? id, TransportCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            vm.Transport = await _uow.Transports.FindAsync(id);
-
-            if (vm.Transport == null)
+            var transport = await _bll.Transports.FirstOrDefaultAsync(id.Value);
+            
+            if (transport == null)
             {
                 return NotFound();
             }
 
-            return View(vm);
+            return View(transport);
         }
 
         // POST: Transports/Edit/5
@@ -96,25 +96,21 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            TransportCreateEditViewModel vm)
+        public async Task<IActionResult> Edit(Guid id, Transport transport)
         {
-            if (id != vm.Transport.Id)
+            if (id != transport.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                vm.Transport.ChangedBy = _uow.Users.Find(User.UserGuidId()).UserName;
-                vm.Transport.ChangedAt = DateTime.Now;
-                _uow.Transports.Update(vm.Transport);
-                await _uow.SaveChangesAsync();
+                await _bll.Transports.UpdateAsync(transport);
+                await _bll.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(vm);
+            return View(transport);
         }
 
         // GET: Transports/Delete/5
@@ -125,7 +121,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var transport = await _uow.Transports.FindAsync(id);
+            var transport = await _bll.Transports.FirstOrDefaultAsync(id.Value);
             if (transport == null)
             {
                 return NotFound();
@@ -139,8 +135,8 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var transport = _uow.Transports.Remove(id);
-            await _uow.SaveChangesAsync();
+            await _bll.Transports.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

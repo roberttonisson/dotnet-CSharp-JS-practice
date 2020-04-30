@@ -1,10 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Contracts.DAL.Base;
 
 namespace PublicApi.DTO.v1
 {
-    public class SizeDTO
+    public class SizeDTO : IDomainEntityId
     {
         
         public Guid Id { get; set; }
@@ -13,6 +14,7 @@ namespace PublicApi.DTO.v1
         
         [Column(TypeName = "decimal(6,2)")]
         public decimal Price { get; set; } = default!;
+        
         [Column(TypeName = "decimal(6,2)")]
         public decimal SizeCm { get; set; } = default!;
     }

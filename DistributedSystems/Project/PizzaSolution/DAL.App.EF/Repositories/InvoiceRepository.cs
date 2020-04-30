@@ -3,51 +3,52 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
+using Contracts.DAL.Base.Mappers;
 using DAL.Base.EF.Repositories;
+using DAL.Base.Mappers;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class InvoiceRepository : BaseRepository<Invoice>, IInvoiceRepository
+    public class InvoiceRepository :
+        EFBaseRepository<AppDbContext, Domain.Identity.AppUser, Domain.Invoice, DAL.App.DTO.Invoice>,
+        IInvoiceRepository
     {
-        public InvoiceRepository(DbContext dbContext) : base(dbContext)
+        public InvoiceRepository(AppDbContext repoDbContext) : base(repoDbContext,
+            new BaseMapper<Invoice, DTO.Invoice>())
         {
         }
-        
-        public async Task<IEnumerable<Invoice>> GetIncluded(Guid? userId = null)
-        {
-            var query = RepoDbSet
-                .Include(i => i.AppUser)
-                .Include(i => i.Transport)
-                .AsQueryable();
-            if (userId != null)
-            {
-                query = query.Where(i => i.AppUser!.Id == userId);
-            }
 
-            return await query.ToListAsync();
-        }
-        
-        public async Task<Invoice> FirstOrDefaultAsync(Guid id, Guid? userId = null)
+        public virtual async Task<IEnumerable<DTO.Invoice>> GetAllAsync(Guid? userId = null, bool noTracking = true)
         {
-            var query = RepoDbSet
+            var query = PrepareQuery(userId, noTracking);
+            query = query
                 .Include(i => i.AppUser)
-                .Include(i => i.Transport)
-                .Where(x => x.Id == id)
-                .AsQueryable();
+                .Include(i => i.Transport);
             if (userId != null)
             {
                 query = query.Where(a => a.AppUser!.Id == userId);
             }
-
-            return await query.FirstOrDefaultAsync();
+            var domainEntities = await query.ToListAsync();
+            var result = domainEntities.Select(e => Mapper.Map(e));
+            return result;
         }
-        
-        public async Task DeleteAsync(Guid id, Guid? userId = null)
+
+        public virtual async Task<DTO.Invoice> FirstOrDefaultAsync(Guid Id, Guid? userId = null, bool noTracking = true)
         {
-            var invoice = await FirstOrDefaultAsync(id, userId);
-            base.Remove(invoice);
+            var query = PrepareQuery(userId, noTracking);
+            query = query
+                .Include(i => i.AppUser)
+                .Include(i => i.Transport)
+                .Where(x => x.Id == Id);
+            if (userId != null)
+            {
+                query = query.Where(a => a.AppUser!.Id == userId);
+            }
+            var domainEntity = await query.FirstOrDefaultAsync();
+            return Mapper.Map(domainEntity);
+
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using Contracts.DAL.Base.Repositories;
-using Domain;
+using DAL.App.DTO;
 
 namespace Contracts.DAL.App.Repositories
 {
-    public interface IPizzaTypeRepository : IBaseRepository<PizzaType>
+    public interface IPizzaTypeRepository  : IBaseRepository<PizzaType>, IPizzaTypeRepositoryCustom
     {
-        // add your custom methods here!
+        
     }
 }

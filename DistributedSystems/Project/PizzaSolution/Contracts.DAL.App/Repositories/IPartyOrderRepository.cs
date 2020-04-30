@@ -1,10 +1,10 @@
 ﻿using Contracts.DAL.Base.Repositories;
-using Domain;
+using DAL.App.DTO;
 
 namespace Contracts.DAL.App.Repositories
 {
-    public interface IPartyOrderRepository : IBaseRepository<PartyOrder>
+    public interface IPartyOrderRepository  : IBaseRepository<PartyOrder>, IPartyOrderRepositoryCustom
     {
-        // add your custom methods here!
+        
     }
 }

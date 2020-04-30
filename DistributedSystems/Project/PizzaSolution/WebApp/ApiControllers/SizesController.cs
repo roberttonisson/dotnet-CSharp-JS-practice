@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Contracts.DAL.App;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain;
+using Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
@@ -16,106 +20,86 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class SizesController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
+        private readonly SizeDTOMapper _mapper = new SizeDTOMapper();
 
-        public SizesController(IAppUnitOfWork uow)
+        public SizesController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
-
+        
         // GET: api/Sizes
         [HttpGet]
-        public async Task<IEnumerable<SizeDTO>> GetSizes()
+        public async Task<ActionResult<IEnumerable<SizeDTO>>> GetSizes()
         {
-            return await _uow.Sizes.SelectAllDTO();
+            var sizes = (await _bll.Sizes.GetAllAsync(null))
+                .Select(bllEntity => _mapper.Map(bllEntity));
+            
+            return Ok(sizes);
         }
 
-        // GET: api/Sizes/5
+     // GET: api/Sizes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<SizeDTO>> GetSize(Guid id)
         {
-            var size = await _uow.Sizes.SelectDTO(id);
+            var size = await _bll.Sizes.FirstOrDefaultAsync(id);
 
             if (size == null)
             {
                 return NotFound();
             }
 
-            return size;
+            return Ok(_mapper.Map(size));
         }
 
         // PUT: api/Sizes/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSize(Guid id, SizeDTO dto)
+        public async Task<IActionResult> PutSize(Guid id, SizeDTO sizeDTO)
         {
-            if (id != dto.Id)
+            if (id != sizeDTO.Id)
             {
                 return BadRequest();
             }
 
-            var size = _uow.Sizes.Find(dto.Id);
-            if (size == null)
-            {
-                return BadRequest();
-            }
-            size.Name = dto.Name;
-            size.Price = dto.Price;
-            size.SizeCm = dto.SizeCm;
-
-            _uow.Sizes.Update(size);
-
-            try
-            {
-                await _uow.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SizeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _bll.Sizes.UpdateAsync(_mapper.Map(sizeDTO));
+            await _bll.SaveChangesAsync();
 
             return NoContent();
+
         }
 
         // POST: api/Sizes
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Size>> PostSize(Size size)
+        public async Task<ActionResult<SizeDTO>> PostSize(SizeDTO sizeDTO)
         {
-            _uow.Sizes.Add(size);
-            await _uow.SaveChangesAsync();
+            var bllEntity = _mapper.Map(sizeDTO);
+            _bll.Sizes.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetSize", new { id = size.Id }, size);
+            sizeDTO.Id = bllEntity.Id;
+
+            return Ok(sizeDTO);
         }
 
         // DELETE: api/Sizes/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Size>> DeleteSize(Guid id)
+        public async Task<ActionResult<SizeDTO>> DeleteSize(Guid id)
         {
-            var size = await _uow.Sizes.FindAsync(id);
+            var size = await _bll.Sizes.FirstOrDefaultAsync(id);
             if (size == null)
             {
                 return NotFound();
             }
 
-            _uow.Sizes.Remove(size);
-            await _uow.SaveChangesAsync();
+            await _bll.Sizes.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
-            return size;
+            return Ok(_mapper.Map(size));
         }
-
-        private bool SizeExists(Guid id)
-        {
-            return _uow.Sizes.Find(id) != null;
-        }
+        
     }
 }

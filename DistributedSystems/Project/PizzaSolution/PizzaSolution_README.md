@@ -54,3 +54,8 @@ dotnet aspnet-codegenerator controller -name TransportsController           -act
 dotnet aspnet-codegenerator controller -name PartyOrdersController          -actions -m PartyOrder          -dc AppDbContext -outDir ApiControllers -api --useAsyncActions  -f
 dotnet aspnet-codegenerator controller -name PartyOrderInvoicesController   -actions -m PartyOrderInvoice   -dc AppDbContext -outDir ApiControllers -api --useAsyncActions  -f
 ~~~
+
+
+
+
+
