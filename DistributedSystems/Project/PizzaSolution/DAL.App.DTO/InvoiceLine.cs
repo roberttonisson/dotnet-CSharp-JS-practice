@@ -16,12 +16,12 @@ namespace DAL.App.DTO
         public int Quantity { get; set; } = default;
 
         public Guid? PizzaInCartId { get; set; }
-        public Domain.PizzaInCart? PizzaInCart { get; set; }
+        public PizzaInCart? PizzaInCart { get; set; }
 
         public Guid? DrinkInCartId { get; set; }
-        public Domain.DrinkInCart? DrinkInCart { get; set; }
+        public DrinkInCart? DrinkInCart { get; set; }
 
         public Guid InvoiceId { get; set; } = default!;
-        public Domain.Invoice? Invoice { get; set; }
+        public Invoice? Invoice { get; set; }
     }
 }

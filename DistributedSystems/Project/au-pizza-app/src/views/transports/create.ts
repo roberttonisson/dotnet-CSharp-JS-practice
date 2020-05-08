@@ -27,7 +27,7 @@ export class TransportsCreate {
     onSubmit(event: Event) {
         console.log(event);
         this.transportService
-            .createTransport({address: this._transport!.address, cost: Number(this._transport!.cost)})
+            .create({address: this._transport!.address, cost: Number(this._transport!.cost), id: this._transport!.id})
             .then(
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {

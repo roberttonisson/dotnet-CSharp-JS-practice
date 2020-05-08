@@ -20,7 +20,7 @@ export class ToppingsEdit {
     activate(params: any, routeConfig: RouteConfig, navigationInstruction: NavigationInstruction) {
         console.log(params);
         if (params.id && typeof (params.id) == 'string') {
-            this.toppingService.getTopping(params.id).then(
+            this.toppingService.getSingle(params.id).then(
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {
                         this._alert = null;
@@ -41,7 +41,7 @@ export class ToppingsEdit {
     onSubmit(event: Event) {
         console.log(event);
         this.toppingService
-            .updateTopping({name: this._topping!.name, price: Number(this._topping!.price), id: this._topping!.id})
+            .update(this._topping!.id, {name: this._topping!.name, price: Number(this._topping!.price), id: this._topping!.id})
             .then(
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {

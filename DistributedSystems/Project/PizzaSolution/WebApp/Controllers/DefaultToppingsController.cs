@@ -28,6 +28,7 @@ namespace WebApp.Controllers
         // GET: DefaultToppings
         public async Task<IActionResult> Index()
         {
+            var x = await _bll.DefaultToppings.GetAllAsync(null);
             return View(await _bll.DefaultToppings.GetAllAsync(null));
         }
 

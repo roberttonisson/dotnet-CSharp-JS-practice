@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DAL.Base;
 
 namespace PublicApi.DTO.v1
@@ -20,6 +21,9 @@ namespace PublicApi.DTO.v1
 
         public Guid CartId { get; set; } = default!;
         public CartDTO? Cart { get; set; }
+        
+        public ICollection<AdditionalToppingDTO>? AdditionalToppings { get; set; }
+        
 
     }
 }

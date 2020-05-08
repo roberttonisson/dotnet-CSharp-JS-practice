@@ -1,8 +1,8 @@
 ﻿namespace PublicApi.DTO.v1.Mappers
 {
-    public class DefaultToppingDTOMapper : BaseMapper<BLL.App.DTO.DefaultTopping, DefaultToppingDTO >
+    public class DefaultToppingDTOMapper : DTOMapper<BLL.App.DTO.DefaultTopping, DefaultToppingDTO >
     {
-        public DefaultToppingDTO GetDTO(BLL.App.DTO.DefaultTopping inObject)
+       /* public DefaultToppingDTO GetDTO(BLL.App.DTO.DefaultTopping inObject)
         {
             return new DefaultToppingDTO
             {
@@ -24,6 +24,7 @@
             };
         }
         
+        
         public BLL.App.DTO.DefaultTopping GetBLL(DefaultToppingDTO inObject)
         {
             return new BLL.App.DTO.DefaultTopping
@@ -32,6 +33,6 @@
                 ToppingId = inObject.ToppingId,
                 PizzaTypeId = inObject.PizzaTypeId,
             };
-        }
+        }*/
     }
 }

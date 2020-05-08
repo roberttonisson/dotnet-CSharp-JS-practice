@@ -22,7 +22,7 @@ export class ToppingsDelete {
     activate(params: any, routeConfig: RouteConfig, navigationInstruction: NavigationInstruction) {
         console.log(params);
         if (params.id && typeof (params.id) == 'string') {
-            this.toppingService.getTopping(params.id).then(
+            this.toppingService.getSingle(params.id).then(
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {
                         this._alert = null;
@@ -43,7 +43,7 @@ export class ToppingsDelete {
 
     onSubmit(event: Event) {
         this.toppingService
-            .deleteTopping(this._topping!.id)
+            .delete(this._topping!.id)
             .then(
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {

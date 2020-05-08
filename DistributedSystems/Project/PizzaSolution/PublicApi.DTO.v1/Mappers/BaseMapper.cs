@@ -7,4 +7,5 @@ namespace PublicApi.DTO.v1.Mappers
         where TLeftObject : class?, new()
     {
     }
+    
 }

@@ -2,6 +2,6 @@
 {
     public class TransportDTOMapper : BaseMapper<BLL.App.DTO.Transport, TransportDTO>
     {
-        
+
     }
 }

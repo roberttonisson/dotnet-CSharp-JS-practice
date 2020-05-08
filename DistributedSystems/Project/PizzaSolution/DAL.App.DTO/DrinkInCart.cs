@@ -18,10 +18,10 @@ namespace DAL.App.DTO
         [NotMapped] public decimal? Price { get; set; }
 
         public Guid DrinkId { get; set; } = default!;
-        public Domain.Drink? Drink { get; set; }
+        public Drink? Drink { get; set; }
 
         public Guid CartId { get; set; } = default!;
-        public Domain.Cart? Cart { get; set; }
+        public Cart? Cart { get; set; }
 
         public ICollection<InvoiceLine>? InvoiceLines { get; set; }
     }

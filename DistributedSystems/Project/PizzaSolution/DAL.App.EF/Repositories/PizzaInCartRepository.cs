@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
 using Contracts.DAL.Base.Mappers;
+using DAL.App.EF.Mappers;
 using DAL.Base.EF.Repositories;
 using DAL.Base.Mappers;
 using Domain;
@@ -16,7 +17,7 @@ namespace DAL.App.EF.Repositories
         IPizzaInCartRepository
     {
         public PizzaInCartRepository(AppDbContext repoDbContext) : base(repoDbContext,
-            new BaseMapper<PizzaInCart, DTO.PizzaInCart>())
+            new DALMapper<PizzaInCart, DTO.PizzaInCart>())
         {
         }
 

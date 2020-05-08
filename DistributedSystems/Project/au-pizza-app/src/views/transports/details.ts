@@ -22,7 +22,7 @@ export class TransportsDetails {
     activate(params: any, routeConfig: RouteConfig, navigationInstruction: NavigationInstruction) {
         console.log(params);
         if (params.id && typeof (params.id) == 'string') {
-            this.transportService.getTransport(params.id).then(
+            this.transportService.getSingle(params.id).then(
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {
                         this._alert = null;

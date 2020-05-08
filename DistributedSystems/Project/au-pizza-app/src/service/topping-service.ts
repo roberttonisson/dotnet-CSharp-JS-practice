@@ -3,10 +3,15 @@ import { HttpClient } from 'aurelia-fetch-client';
 import { AppState } from 'state/app-state';
 import { IFetchResponse } from 'types/IFetchResponse';
 import { ITopping, IToppingCreate } from 'domain/ITopping';
+import { BaseService } from './base-service';
 
 @autoinject
-export class ToppingService {
-    constructor(private appState: AppState, private httpClient: HttpClient) {
+export class ToppingService extends BaseService<ITopping, ITopping>{
+
+    constructor(protected  appState: AppState, protected  httpClient: HttpClient){
+        super("Toppings", appState, httpClient);
+    }
+ /*   constructor(private appState: AppState, private httpClient: HttpClient) {
         this.httpClient.baseUrl = this.appState.baseUrl;
     }
 
@@ -163,5 +168,5 @@ export class ToppingService {
             }
         }
     }
-
+*/
 }

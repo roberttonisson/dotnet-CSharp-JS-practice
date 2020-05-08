@@ -1,9 +1,7 @@
 import { StringifyOptions } from "querystring";
 
-export interface ITransport {
+export interface ITransport  extends ITransportCreate{
     id: string;
-    address: string;
-    cost: number;
 }
 
 export interface ITransportCreate {

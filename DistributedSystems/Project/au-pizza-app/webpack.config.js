@@ -190,3 +190,4 @@ module.exports = ({ production } = {}, {extractCss, analyze, tests, hmr, port, h
     new CleanWebpackPlugin()
   ]
 });
+

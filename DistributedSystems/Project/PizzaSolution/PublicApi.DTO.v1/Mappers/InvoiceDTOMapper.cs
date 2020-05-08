@@ -31,6 +31,7 @@ namespace PublicApi.DTO.v1.Mappers
             };
         }
         
+        
         public BLL.App.DTO.Invoice GetBLL(InvoiceDTO inObject)
         {
             return new BLL.App.DTO.Invoice

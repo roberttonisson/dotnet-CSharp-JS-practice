@@ -17,5 +17,9 @@ namespace PublicApi.DTO.v1
         public Guid AppUserId { get; set; } = default!;
         public AppUserDTO? AppUser { get; set; }
         
+        public ICollection<PizzaInCartDTO>? PizzaInCarts { get; set; }
+        
+        public ICollection<DrinkInCartDTO>? DrinkInCarts { get; set; }
+        
     }
 }

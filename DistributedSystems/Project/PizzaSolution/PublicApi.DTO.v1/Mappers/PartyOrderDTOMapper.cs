@@ -26,7 +26,8 @@ namespace PublicApi.DTO.v1.Mappers
                 InviteKey = inObject.InviteKey
             };
         }
-        
+
+
         public BLL.App.DTO.PartyOrder GetBLL(PartyOrderDTO inObject)
         {
             return new BLL.App.DTO.PartyOrder

@@ -1,10 +1,7 @@
 import { StringifyOptions } from "querystring";
 
-export interface ISize {
+export interface ISize extends ISizeCreate{
     id: string;
-    name: string;
-    sizeCm: number;
-    price: number;
 }
 
 export interface ISizeCreate {

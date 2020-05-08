@@ -54,6 +54,7 @@ namespace PublicApi.DTO.v1.Mappers
             };
         }
         
+        
         public BLL.App.DTO.PartyOrderInvoice GetBLL(PartyOrderInvoiceDTO inObject)
         {
             return new BLL.App.DTO.PartyOrderInvoice

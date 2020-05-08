@@ -19,7 +19,7 @@ namespace BLL.App.DTO
         public bool IsPaid { get; set; } = false;
         
         public Guid TransportId { get; set; } = default!;
-        public Domain.Transport? Transport { get; set; }
+        public Transport? Transport { get; set; }
 
         public ICollection<InvoiceLine>? InvoiceLines { get; set; }
 

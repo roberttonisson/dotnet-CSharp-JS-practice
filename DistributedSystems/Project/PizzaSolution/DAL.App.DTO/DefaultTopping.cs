@@ -7,9 +7,9 @@ namespace DAL.App.DTO
     {
 
         public Guid ToppingId { get; set; } = default!;
-        public Domain.Topping? Topping { get; set; }
+        public Topping? Topping { get; set; }
 
         public Guid PizzaTypeId { get; set; } = default!;
-        public Domain.PizzaType? PizzaType { get; set; }
+        public PizzaType? PizzaType { get; set; }
     }
 }

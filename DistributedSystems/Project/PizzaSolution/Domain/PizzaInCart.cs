@@ -28,5 +28,6 @@ namespace Domain
         public Cart? Cart { get; set; }
 
         public ICollection<InvoiceLine>? InvoiceLines { get; set; }
+        public ICollection<AdditionalTopping>? AdditionalToppings { get; set; }
     }
 }

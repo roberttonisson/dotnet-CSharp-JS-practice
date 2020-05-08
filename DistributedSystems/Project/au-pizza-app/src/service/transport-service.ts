@@ -3,10 +3,15 @@ import { HttpClient } from 'aurelia-fetch-client';
 import { AppState } from 'state/app-state';
 import { IFetchResponse } from 'types/IFetchResponse';
 import { ITransport, ITransportCreate } from 'domain/ITransport';
+import { BaseService } from './base-service';
 
 @autoinject
-export class TransportService {
-    constructor(private appState: AppState, private httpClient: HttpClient) {
+export class TransportService extends BaseService<ITransport, ITransport>{
+
+    constructor(protected  appState: AppState, protected  httpClient: HttpClient){
+        super("Transports", appState,httpClient);
+    }
+ /*   constructor(private appState: AppState, private httpClient: HttpClient) {
         this.httpClient.baseUrl = this.appState.baseUrl;
     }
 
@@ -163,5 +168,5 @@ export class TransportService {
             }
         }
     }
-
+*/
 }

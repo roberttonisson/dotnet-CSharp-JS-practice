@@ -22,7 +22,7 @@ export class SizesDelete {
     activate(params: any, routeConfig: RouteConfig, navigationInstruction: NavigationInstruction) {
         console.log(params);
         if (params.id && typeof (params.id) == 'string') {
-            this.sizeService.getSize(params.id).then(
+            this.sizeService.getSingle(params.id).then(
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {
                         this._alert = null;
@@ -43,7 +43,7 @@ export class SizesDelete {
 
     onSubmit(event: Event) {
         this.sizeService
-            .deleteSize(this._size!.id)
+            .delete(this._size!.id)
             .then(
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {

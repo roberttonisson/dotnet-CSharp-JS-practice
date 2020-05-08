@@ -3,10 +3,17 @@ import { HttpClient } from 'aurelia-fetch-client';
 import { AppState } from 'state/app-state';
 import { IFetchResponse } from 'types/IFetchResponse';
 import { ISize, ISizeCreate } from 'domain/ISize';
+import { BaseService } from './base-service';
 
 @autoinject
-export class SizeService {
-    constructor(private appState: AppState, private httpClient: HttpClient) {
+export class SizeService extends BaseService<ISize, ISize>{
+
+    constructor(protected  appState: AppState, protected  httpClient: HttpClient){
+        super("Sizes", appState,httpClient);
+    }
+
+
+   /* constructor(private appState: AppState, private httpClient: HttpClient) {
         this.httpClient.baseUrl = this.appState.baseUrl;
     }
 
@@ -162,6 +169,6 @@ export class SizeService {
                 errorMessage: JSON.stringify(reason)
             }
         }
-    }
+    }*/
 
 }

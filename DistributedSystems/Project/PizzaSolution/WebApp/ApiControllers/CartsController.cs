@@ -11,6 +11,7 @@ using Domain;
 using Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 using PublicApi.DTO.v1;
 using PublicApi.DTO.v1.Mappers;
 
@@ -31,12 +32,20 @@ namespace WebApp.ApiControllers
         
         // GET: api/Carts
         [HttpGet]
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+
         public async Task<ActionResult<IEnumerable<CartDTO>>> GetCarts()
         {
+            var bar = (await _bll.Carts.GetAllWithCollectionsAsync(User.UserGuidId()));
+            var car = (await _bll.Carts.GetAllWithCollectionsAsync(User.UserGuidId()))
+                .Select(bllEntity => _mapper.Map(bllEntity));
+
             var carts = (await _bll.Carts.GetAllAsync(User.UserGuidId()))
-                .Select(bllEntity => _mapper.GetDTO(bllEntity));
+                .Select(bllEntity => _mapper.Map(bllEntity));
             
-            return Ok(carts);
+            return Ok(car);
         }
 
      // GET: api/Carts/5
@@ -50,7 +59,7 @@ namespace WebApp.ApiControllers
                 return NotFound();
             }
 
-            return Ok(_mapper.GetDTO(cart));
+            return Ok(_mapper.Map(cart));
         }
 
         // PUT: api/Carts/5
@@ -64,7 +73,7 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            await _bll.Carts.UpdateAsync(_mapper.GetBLL(cartDTO));
+            await _bll.Carts.UpdateAsync(_mapper.Map(cartDTO));
             await _bll.SaveChangesAsync();
 
             return NoContent();
@@ -77,7 +86,7 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<CartDTO>> PostCart(CartDTO cartDTO)
         {
-            var bllEntity = _mapper.GetBLL(cartDTO);
+            var bllEntity = _mapper.Map(cartDTO);
             _bll.Carts.Add(bllEntity);
             await _bll.SaveChangesAsync();
 
@@ -99,7 +108,7 @@ namespace WebApp.ApiControllers
             await _bll.Carts.RemoveAsync(id);
             await _bll.SaveChangesAsync();
 
-            return Ok(_mapper.GetDTO(cart));
+            return Ok(_mapper.Map(cart));
         }
         
     }

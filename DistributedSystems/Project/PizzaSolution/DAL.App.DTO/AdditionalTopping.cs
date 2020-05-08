@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DAL.Base;
 
 namespace DAL.App.DTO
@@ -7,9 +8,13 @@ namespace DAL.App.DTO
     {
 
         public Guid ToppingId { get; set; } = default!;
-        public Domain.Topping? Topping { get; set; }
+        public Topping? Topping { get; set; }
 
         public Guid PizzaInCartId { get; set; } = default!;
-        public Domain.PizzaInCart? PizzaInCart { get; set; }
+        public PizzaInCart? PizzaInCart { get; set; }
+        
+        public ICollection<Domain.PizzaInCart>? PizzaInCarts { get; set; }
+        
+        public ICollection<Domain.DrinkInCart>? DrinkInCarts { get; set; }
     }
 }

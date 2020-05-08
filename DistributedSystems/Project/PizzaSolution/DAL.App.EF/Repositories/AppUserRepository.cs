@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
+using DAL.App.EF.Mappers;
 using DAL.Base.EF.Repositories;
 using DAL.Base.Mappers;
 using Domain.Identity;
@@ -16,7 +17,7 @@ namespace DAL.App.EF.Repositories
         IAppUserRepository
     {
         public AppUserRepository(AppDbContext repoDbContext) : base(repoDbContext,
-            new BaseMapper<AppUser, DAL.App.DTO.Identity.AppUser>())
+            new DALMapper<AppUser, DAL.App.DTO.Identity.AppUser>())
         {
         }
         

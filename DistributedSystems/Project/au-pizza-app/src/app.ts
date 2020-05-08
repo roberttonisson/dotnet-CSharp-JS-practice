@@ -2,6 +2,7 @@ import { AppState } from 'state/app-state';
 import { autoinject, PLATFORM } from 'aurelia-framework';
 import { RouterConfiguration, Router } from 'aurelia-router';
 
+
 @autoinject
 export class App {
     router?: Router;
@@ -39,6 +40,10 @@ export class App {
             { route: ['sizes/edit/:id'], name: 'sizes-edit', moduleId: PLATFORM.moduleName('views/sizes/edit'), nav: false, title: 'Sizes Edit' },
             { route: ['sizes/delete/:id'], name: 'sizes-delete', moduleId: PLATFORM.moduleName('views/sizes/delete'), nav: false, title: 'Sizes Delete' },
             { route: ['sizes/create'], name: 'sizes-create', moduleId: PLATFORM.moduleName('views/sizes/create'), nav: false, title: 'Sizes Create' },
+
+            { route: ['carts', 'carts/index'], name: 'carts-index', moduleId: PLATFORM.moduleName('views/carts/index'), nav: true, title: 'Carts' },
+            { route: ['pizzas', 'pizzas/index'], name: 'pizzas-index', moduleId: PLATFORM.moduleName('views/pizzas/index'), nav: true, title: 'Pizzas' },
+            { route: ['drinks', 'drinks/index'], name: 'drinks-index', moduleId: PLATFORM.moduleName('views/drinks/index'), nav: true, title: 'Drinks' },
         ]
         );
 

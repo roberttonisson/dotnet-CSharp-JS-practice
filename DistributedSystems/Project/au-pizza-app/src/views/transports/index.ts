@@ -15,7 +15,7 @@ export class TransportsIndex {
     }
 
     attached() {
-        this.transportService.getTransports().then(
+        this.transportService.getAll().then(
             response => {
                 if (response.statusCode >= 200 && response.statusCode < 300) {
                     this._alert = null;

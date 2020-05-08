@@ -12,6 +12,7 @@ namespace Contracts.DAL.App.Repositories
     public interface ICartRepositoryCustom<TCart>
     {
         Task<IEnumerable<TCart>> GetAllAsync(Guid? userId = null, bool noTracking = true);
+        Task<IEnumerable<TCart>> GetAllWithCollectionsAsync(Guid? userId = null, bool noTracking = true);
         Task<TCart> FirstOrDefaultAsync(Guid Id, Guid? userId = null, bool noTracking = true);
     }
     

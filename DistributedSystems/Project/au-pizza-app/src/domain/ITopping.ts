@@ -1,10 +1,9 @@
 import { StringifyOptions } from "querystring";
 
-export interface ITopping {
+export interface ITopping extends IToppingCreate{
     id: string;
-    name: string;
-    price: number;
 }
+
 export interface IToppingCreate {
     name: string;
     price: number;

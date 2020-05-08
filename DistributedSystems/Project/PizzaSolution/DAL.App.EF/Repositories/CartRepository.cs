@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
 using Contracts.DAL.Base.Mappers;
+using DAL.App.EF.Mappers;
 using DAL.Base.EF.Repositories;
 using DAL.Base.Mappers;
 using Domain;
@@ -16,7 +17,7 @@ namespace DAL.App.EF.Repositories
         ICartRepository
     {
         public CartRepository(AppDbContext repoDbContext) : base(repoDbContext,
-            new BaseMapper<Cart, DTO.Cart>())
+            new DALMapper<Cart, DTO.Cart>())
         {
         }
 
@@ -24,6 +25,30 @@ namespace DAL.App.EF.Repositories
         {
             var query = PrepareQuery(userId, noTracking);
             query = query
+                .Include(c => c.AppUser!);
+            var domainEntities = await query.ToListAsync();
+            var result = domainEntities.Select(e => Mapper.Map(e));
+            return result;
+        }
+        
+        public virtual async Task<IEnumerable<DTO.Cart>> GetAllWithCollectionsAsync(Guid? userId = null, bool noTracking = true)
+        {
+            var query = PrepareQuery(userId, noTracking);
+            query = query
+                .Include(c => c.DrinkInCarts)
+                    .ThenInclude(d => d.Drink)
+                .Include(c => c.PizzaInCarts)
+                    .ThenInclude(d => d.Crust)
+                .Include(c => c.PizzaInCarts)
+                    .ThenInclude(d => d.Size)
+                .Include(c => c.PizzaInCarts)
+                    .ThenInclude(d => d.PizzaType)
+                .Include(c => c.PizzaInCarts)
+                    .ThenInclude(d => d.AdditionalToppings)
+                        .ThenInclude(d => d.Topping)
+                .Include(c => c.PizzaInCarts)
+                    .ThenInclude(d => d.AdditionalToppings)
+                        .ThenInclude(d => d.Topping)
                 .Include(c => c.AppUser!);
             var domainEntities = await query.ToListAsync();
             var result = domainEntities.Select(e => Mapper.Map(e));

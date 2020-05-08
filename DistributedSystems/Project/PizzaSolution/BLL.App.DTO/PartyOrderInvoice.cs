@@ -10,10 +10,10 @@ namespace BLL.App.DTO
     public class PartyOrderInvoice : DomainEntityIdMetadata
     {
         public Guid PartyOrderId { get; set; } = default!;
-        public Domain. PartyOrder? PartyOrder { get; set; }
+        public PartyOrder? PartyOrder { get; set; }
 
         public Guid InvoiceId { get; set; } = default!;
-        public Domain.Invoice? Invoice { get; set; }
+        public Invoice? Invoice { get; set; }
         
         public SelectList? PartyOrderSelectList { get; set; }
         public SelectList? InvoiceSelectList { get; set; }

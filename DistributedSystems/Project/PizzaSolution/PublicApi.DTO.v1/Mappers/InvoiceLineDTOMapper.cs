@@ -113,7 +113,7 @@ namespace PublicApi.DTO.v1.Mappers
                 }
             };
         }
-
+        
         public BLL.App.DTO.InvoiceLine GetBLL(InvoiceLineDTO inObject)
         {
             return new BLL.App.DTO.InvoiceLine

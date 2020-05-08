@@ -15,7 +15,7 @@ export class ToppingsIndex {
     }
 
     attached() {
-        this.toppingService.getToppings().then(
+        this.toppingService.getAll().then(
             response => {
                 if (response.statusCode >= 200 && response.statusCode < 300) {
                     this._alert = null;

@@ -64,7 +64,7 @@ namespace PublicApi.DTO.v1.Mappers
                 }
             };
         }
-        
+
         public BLL.App.DTO.AdditionalTopping GetBLL(AdditionalToppingDTO inObject)
         {
             return new BLL.App.DTO.AdditionalTopping

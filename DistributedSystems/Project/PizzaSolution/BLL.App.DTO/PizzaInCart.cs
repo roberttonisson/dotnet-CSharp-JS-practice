@@ -17,18 +17,19 @@ namespace BLL.App.DTO
         public int Quantity { get; set; } = default;
 
         public Guid PizzaTypeId { get; set; } = default!;
-        public Domain.PizzaType? PizzaType { get; set; }
+        public PizzaType? PizzaType { get; set; }
 
         public Guid CrustId { get; set; } = default!;
-        public Domain.Crust? Crust { get; set; }
+        public Crust? Crust { get; set; }
 
         public Guid SizeId { get; set; } = default!;
-        public Domain.Size? Size { get; set; }
+        public Size? Size { get; set; }
 
         public Guid CartId { get; set; } = default!;
-        public Domain.Cart? Cart { get; set; }
+        public Cart? Cart { get; set; }
 
         public ICollection<InvoiceLine>? InvoiceLines { get; set; }
+        public ICollection<AdditionalTopping>? AdditionalToppings { get; set; }
         
         public SelectList? PizzaTypeSelectList { get; set; }
         public SelectList? CrustSelectList { get; set; }

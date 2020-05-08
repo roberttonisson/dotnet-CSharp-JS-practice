@@ -1,0 +1,100 @@
+<template>
+    <h1>Cart</h1>
+    <div if.bind="_loading" class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <div else>
+        <h5>Pizzas and drinks in cart:</h5>
+        <table class="table table-bordered table-hover">
+            <thead class="bg-danger text-white">
+                <tr>
+                    <th>
+                        Pizza
+                    </th>
+                    <th>
+                        Type
+                    </th>
+                    <th>
+                        Additional toppings
+                    </th>
+                    <th>
+                        Quantity
+                    </th>
+                    <th>
+                        Cost
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr repeat.for="pic of _cart.pizzaInCarts ">
+                    <td>
+                        ${pic.pizzaType.name} (€${pic.pizzaType.price})
+                    </td>
+                    <td>
+                        ${pic.crust.name} (€${pic.crust.price}) + ${pic.size.name} (€${pic.size.price})
+                    </td>
+                    <td>
+                        <div repeat.for="additional of pic.additionalToppings">${additional.topping.name}
+                            (€${additional.topping.price})</div>
+                    </td>
+                    <td>
+                        ${pic.quantity}
+                    </td>
+                    <td>
+                        ${pizzaTotal(pic)}€
+                    </td>
+                </tr>
+            </tbody>
+            <thead class="bg-danger text-white">
+                <tr>
+                    <th>
+                        Drink
+                    </th>
+                    <th>
+                        Size
+                    </th>
+                    <th>
+                        Price
+                    </th>
+                    <th>
+                        Quantity
+                    </th>
+                    <th>
+                        Cost
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr repeat.for="dic of _cart.drinkInCarts">
+                    <td>
+                        ${dic.drink.name}
+                    </td>
+                    <td>
+                        ${dic.drink.size}l
+                    </td>
+                    <td>
+                        ${dic.drink.price}€
+                    </td>
+                    <td>
+                        ${dic.quantity}
+                    </td>
+                    <td>
+                        ${drinkTotal(dic)}€
+                    </td>
+                </tr>
+            </tbody>
+            <thead class="bg-danger text-white">
+                <tr>
+                    <th colspan="3"></th>
+                    <th>
+                        Total:
+                    </th>
+                    <th>
+                        ${_total}
+                    </th>
+                </tr>
+            </thead>
+    </div>
+</template>

@@ -27,7 +27,7 @@ export class SizesCreate {
     onSubmit(event: Event) {
         console.log(event);
         this.sizeService
-            .createSize({price: Number(this._size?.price), sizeCm: Number(this._size?.sizeCm), name: this._size!.name})
+            .create({price: Number(this._size!.price), sizeCm: Number(this._size!.sizeCm), name: this._size!.name, id: this._size!.id})
             .then(
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {
