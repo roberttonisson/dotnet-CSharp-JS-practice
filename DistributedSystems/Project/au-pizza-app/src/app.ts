@@ -23,7 +23,7 @@ export class App {
             { route: ['account/register'], name: 'account-register', moduleId: PLATFORM.moduleName('views/account/register'), nav: false, title: 'Register' },
 
 
-            { route: ['transports', 'transports/index'], name: 'transports-index', moduleId: PLATFORM.moduleName('views/transports/index'), nav: true, title: 'Transports' },
+          /*  { route: ['transports', 'transports/index'], name: 'transports-index', moduleId: PLATFORM.moduleName('views/transports/index'), nav: true, title: 'Transports' },
             { route: ['transports/details/:id'], name: 'transports-details', moduleId: PLATFORM.moduleName('views/transports/details'), nav: false, title: 'Transports Details' },
             { route: ['transports/edit/:id'], name: 'transports-edit', moduleId: PLATFORM.moduleName('views/transports/edit'), nav: false, title: 'Transports Edit' },
             { route: ['transports/delete/:id'], name: 'transports-delete', moduleId: PLATFORM.moduleName('views/transports/delete'), nav: false, title: 'Transports Delete' },
@@ -39,11 +39,12 @@ export class App {
             { route: ['sizes/details/:id'], name: 'sizes-details', moduleId: PLATFORM.moduleName('views/sizes/details'), nav: false, title: 'Sizes Details' },
             { route: ['sizes/edit/:id'], name: 'sizes-edit', moduleId: PLATFORM.moduleName('views/sizes/edit'), nav: false, title: 'Sizes Edit' },
             { route: ['sizes/delete/:id'], name: 'sizes-delete', moduleId: PLATFORM.moduleName('views/sizes/delete'), nav: false, title: 'Sizes Delete' },
-            { route: ['sizes/create'], name: 'sizes-create', moduleId: PLATFORM.moduleName('views/sizes/create'), nav: false, title: 'Sizes Create' },
+            { route: ['sizes/create'], name: 'sizes-create', moduleId: PLATFORM.moduleName('views/sizes/create'), nav: false, title: 'Sizes Create' },*/
 
-            { route: ['carts', 'carts/index'], name: 'carts-index', moduleId: PLATFORM.moduleName('views/carts/index'), nav: true, title: 'Carts' },
+           
             { route: ['pizzas', 'pizzas/index'], name: 'pizzas-index', moduleId: PLATFORM.moduleName('views/pizzas/index'), nav: true, title: 'Pizzas' },
             { route: ['drinks', 'drinks/index'], name: 'drinks-index', moduleId: PLATFORM.moduleName('views/drinks/index'), nav: true, title: 'Drinks' },
+            { route: ['carts', 'carts/index'], name: 'carts-index', moduleId: PLATFORM.moduleName('views/carts/index'), nav: true, title: 'Carts' },
         ]
         );
 

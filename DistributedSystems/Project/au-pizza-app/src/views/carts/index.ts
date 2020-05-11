@@ -76,4 +76,8 @@ export class CartsIndex {
         return total * pizzaInCart.quantity;
     }
 
+    order(){
+        console.log("bananananana")
+    }
+
 }
