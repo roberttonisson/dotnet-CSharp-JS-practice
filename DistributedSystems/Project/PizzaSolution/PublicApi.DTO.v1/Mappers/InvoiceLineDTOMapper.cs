@@ -2,9 +2,10 @@
 
 namespace PublicApi.DTO.v1.Mappers
 {
-    public class InvoiceLineDTOMapper
+    public class InvoiceLineDTOMapper : DTOMapper<BLL.App.DTO.InvoiceLine, InvoiceLineDTO>
+
     {
-        public InvoiceLineDTO GetDTO(BLL.App.DTO.InvoiceLine inObject)
+       /* public InvoiceLineDTO GetDTO(BLL.App.DTO.InvoiceLine inObject)
         {
             return new InvoiceLineDTO
             {
@@ -125,6 +126,6 @@ namespace PublicApi.DTO.v1.Mappers
                 DrinkInCartId = inObject.DrinkInCartId,
                 InvoiceId = inObject.InvoiceId,
             };
-        }
+        }*/
     }
 }

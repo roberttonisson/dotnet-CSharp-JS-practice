@@ -28,6 +28,7 @@ namespace DAL.App.EF.Mappers
             MapperConfigurationExpression.CreateMap<Domain.Size, DAL.App.DTO.Size>();
             MapperConfigurationExpression.CreateMap<Domain.Topping, DAL.App.DTO.Topping>();
             MapperConfigurationExpression.CreateMap<Domain.Transport, DAL.App.DTO.Transport>();
+            MapperConfigurationExpression.CreateMap<Domain.OrderStatus, DAL.App.DTO.OrderStatus>();
             
             
             Mapper = new Mapper(new MapperConfiguration(MapperConfigurationExpression));

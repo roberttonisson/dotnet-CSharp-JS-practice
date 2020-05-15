@@ -21,6 +21,7 @@ namespace Contracts.BLL.App
         public IToppingService Toppings { get; } 
         public ITransportService Transports { get; }
         public IAppUserService AppUsers { get; }
+        public IOrderStatusService OrderStatuses { get; }
 
     }
 }

@@ -19,6 +19,5 @@ namespace BLL.App.DTO
         
         public ICollection<Invoice>? Invoices { get; set; }
         
-        public ICollection<BLL.App.DTO.AdditionalTopping>? AdditionalToppings { get; set; }
     }
 }

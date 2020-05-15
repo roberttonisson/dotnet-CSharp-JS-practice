@@ -99,14 +99,14 @@ namespace WebApp
                         ClockSkew = TimeSpan.Zero // remove delay of token when expire
                     };
                 });
-         /*
+         
             services.AddApiVersioning(options => { options.ReportApiVersions = true; });
 
             services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddSwaggerGen();
 
-            */
+            
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -124,7 +124,7 @@ namespace WebApp
 
                 // These are the cultures the app supports for UI strings
                 options.SupportedUICultures = supportedCultures;
-/*
+
                 services.AddApiVersioning(options =>
                 {
                     options.ReportApiVersions = true;
@@ -134,13 +134,13 @@ namespace WebApp
 
                 services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
                 services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-                services.AddSwaggerGen();*/
+                services.AddSwaggerGen();
 
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
             UpdateDatabase(app, env, Configuration);
 
@@ -170,7 +170,7 @@ namespace WebApp
 
             app.UseAuthentication();
             app.UseAuthorization();
-/*
+
             app.UseSwagger();
             app.UseSwaggerUI(
                 options =>
@@ -181,7 +181,7 @@ namespace WebApp
                             description.GroupName.ToUpperInvariant());
                     }
                 });
-*/
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

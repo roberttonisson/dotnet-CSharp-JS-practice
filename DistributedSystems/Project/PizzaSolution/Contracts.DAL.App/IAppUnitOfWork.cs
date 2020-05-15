@@ -21,6 +21,7 @@ namespace Contracts.DAL.App
         IToppingRepository Toppings { get; } 
         ITransportRepository Transports { get; }
         IAppUserRepository AppUsers { get; }
+        IOrderStatusRepository OrderStatuses { get; }
         
     }
 }

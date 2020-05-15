@@ -66,5 +66,8 @@ namespace DAL.App.EF
         
         public IAppUserRepository AppUsers =>
             GetRepository<IAppUserRepository>(() => new AppUserRepository(UOWDbContext));
+        
+        public IOrderStatusRepository OrderStatuses =>
+            GetRepository<IOrderStatusRepository>(() => new OrderStatusRepository(UOWDbContext));
     }
 }

@@ -1,3 +1,4 @@
+import { bootstrap } from 'aurelia-bootstrapper';
 import { DefaultToppingService } from './../../service/default-topping-service';
 import { AdditionalToppingService } from './../../service/additional-topping-service';
 import { RouteConfig, NavigationInstruction } from 'aurelia-router';
@@ -20,9 +21,8 @@ import 'style/pizzasDrinks.css'
 import { IDefaultTopping } from 'domain/IDefaultTopping';
 
 
-
 @autoinject
-export class CartsIndex {
+export class PizzasIndex {
     private _pizzas: IPizzaType[] = [];
 
     private _crusts: ICrust[] = [];
@@ -70,13 +70,16 @@ export class CartsIndex {
     ) {
 
     }
+    
 
     attached() {
-        this.cartService.getAll().then(
+
+
+        this.cartService.getActive().then(
             response => {
                 if (response.statusCode >= 200 && response.statusCode < 300) {
                     this._alert = null;
-                    this._cart = response.data![0];
+                    this._cart = response.data!;
                 } else {
                     // show error message
                     this._alert = {
@@ -177,6 +180,10 @@ export class CartsIndex {
     }
 
     selectPizza(pizza: IPizzaType) {
+        this._pizza = null;
+        this._additional = [];
+        this._available = [];
+        this._default = []
         this._pizza = pizza;
         for (const defaultTopping of this._defaultToppings) {
             if (defaultTopping.pizzaTypeId === pizza.id) {
@@ -187,8 +194,6 @@ export class CartsIndex {
     }
 
     availableToppings() {
-        console.log(this._toppings)
-        console.log(this._default)
         for (const t of this._toppings) {
             let inDefault = false;
             for (const d of this._default) {
@@ -204,12 +209,6 @@ export class CartsIndex {
 
     }
 
-    deselectPizza() {
-        this._pizza = null;
-        this._additional = [];
-        this._default = []
-    }
-
     chooseCrust(crust: ICrust) {
         this._crust = crust;
     }
@@ -220,18 +219,15 @@ export class CartsIndex {
 
     plus() {
         this._quantity = Number(this._quantity) + 1;
-        console.log(this._quantity)
     }
     minus() {
         this._quantity = Number(this._quantity) - 1;
         if (this._quantity < 1) {
             this._quantity = 1;
         }
-        console.log(this._quantity)
     }
 
     addToCart(event: Event) {
-        console.log(event);
         this.pizzaInCartService
             .create({
                 pizzaTypeId: this._pizza!.id,
@@ -245,10 +241,8 @@ export class CartsIndex {
                 response => {
                     if (response.statusCode >= 200 && response.statusCode < 300) {
                         this._alert = null;
-                        //console.log(response.data)
                         this._pizzaInCart = response.data!
                         for (const topping of this._additional) {
-                            console.log(this._pizzaInCart!.id)
                             this.additionalToppingService
                                 .create({
                                     pizzaInCartId: this._pizzaInCart!.id,

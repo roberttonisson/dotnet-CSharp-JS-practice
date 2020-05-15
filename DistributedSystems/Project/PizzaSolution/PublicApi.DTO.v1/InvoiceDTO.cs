@@ -13,13 +13,19 @@ namespace PublicApi.DTO.v1
     {
         public Guid AppUserId { get; set; } = default!;
         public AppUserDTO? AppUser { get; set; }
-        
+
         public decimal? Total { get; set; }
 
         public bool IsPaid { get; set; } = false;
-        
+
+        public DateTime? CreatedAt { get; set; }
+
         public Guid TransportId { get; set; } = default!;
         public TransportDTO? Transport { get; set; }
-        
+
+        public Guid OrderStatusId { get; set; } = default!;
+        public OrderStatusDTO? OrderStatus { get; set; }
+
+        public ICollection<InvoiceLineDTO>? InvoiceLines { get; set; }
     }
 }

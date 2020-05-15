@@ -2,112 +2,111 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain;
+using Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
+using PublicApi.DTO.v1;
+using PublicApi.DTO.v1.Mappers;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers._1._0
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class InvoicesController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly InvoiceDTOMapper _mapper = new InvoiceDTOMapper();
 
-        public InvoicesController(AppDbContext context)
+        public InvoicesController(IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
         }
-
+        
         // GET: api/Invoices
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+
+        public async Task<ActionResult<IEnumerable<InvoiceDTO>>> GetInvoices()
         {
-            return await _context.Invoices.ToListAsync();
+            var invoices = (await _bll.Invoices.GetAllWithCollectionsAsync(User.UserGuidId()))
+                .Select(bllEntity => _mapper.Map(bllEntity));
+
+            return Ok(invoices);
         }
 
-        // GET: api/Invoices/5
+     // GET: api/Invoices/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Invoice>> GetInvoice(Guid id)
+        public async Task<ActionResult<InvoiceDTO>> GetInvoice(Guid id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
+            var invoice = await _bll.Invoices.FirstOrDefaultAsync(id, User.UserGuidId());
 
             if (invoice == null)
             {
                 return NotFound();
             }
 
-            return invoice;
+            return Ok(_mapper.Map(invoice));
         }
 
-        // PUT: api/Invoices/5
+        // PUT: api/Invoices/active
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutInvoice(Guid id, Invoice invoice)
+        public async Task<IActionResult> PutInvoice(Guid id, InvoiceDTO invoiceDTO)
         {
-            if (id != invoice.Id)
+            if (id != invoiceDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(invoice).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!InvoiceExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _bll.Invoices.UpdateAsync(_mapper.Map(invoiceDTO));
+            await _bll.SaveChangesAsync();
 
             return NoContent();
+
         }
 
         // POST: api/Invoices
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
+        public async Task<ActionResult<InvoiceDTO>> PostInvoice(InvoiceDTO invoiceDTO)
         {
-            _context.Invoices.Add(invoice);
-            await _context.SaveChangesAsync();
+            var bllEntity = _mapper.Map(invoiceDTO);
+            _bll.Invoices.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetInvoice", new { id = invoice.Id }, invoice);
+            invoiceDTO.Id = bllEntity.Id;
+
+            return Ok(invoiceDTO);
         }
 
         // DELETE: api/Invoices/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Invoice>> DeleteInvoice(Guid id)
+        public async Task<ActionResult<InvoiceDTO>> DeleteInvoice(Guid id)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
+            var invoice = await _bll.Invoices.FirstOrDefaultAsync(id, User.UserGuidId());
             if (invoice == null)
             {
                 return NotFound();
             }
 
-            _context.Invoices.Remove(invoice);
-            await _context.SaveChangesAsync();
+            await _bll.Invoices.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
 
-            return invoice;
+            return Ok(_mapper.Map(invoice));
         }
-
-        private bool InvoiceExists(Guid id)
-        {
-            return _context.Invoices.Any(e => e.Id == id);
-        }
+        
     }
 }

@@ -20,6 +20,5 @@ namespace DAL.App.DTO
         
         public ICollection<Invoice>? Invoices { get; set; }
         
-        public ICollection<AdditionalTopping>? AdditionalToppings { get; set; }
     }
 }

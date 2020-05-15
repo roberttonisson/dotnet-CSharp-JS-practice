@@ -31,6 +31,7 @@ namespace DAL.App.EF
         public DbSet<Transport> Transports { get; set; } = default!;
         public DbSet<PartyOrder> PartyOrders { get; set; } = default!;
         public DbSet<PartyOrderInvoice> PartyOrderInvoices { get; set; } = default!;
+        public DbSet<OrderStatus> OrderStatuses { get; set; } = default!;
 
         private readonly Dictionary<IDomainEntityId<Guid>, IDomainEntityId<Guid>> _entityTracker =
             new Dictionary<IDomainEntityId<Guid>, IDomainEntityId<Guid>>();
@@ -77,26 +78,30 @@ namespace DAL.App.EF
             var markedAsAdded = ChangeTracker.Entries().Where(x => x.State == EntityState.Added);
             foreach (var entityEntry in markedAsAdded)
             {
-                if (!(entityEntry.Entity is IDomainEntityMetadata entityWithMetaData)) continue;
-
-                entityWithMetaData.CreatedAt = DateTime.Now;
-                entityWithMetaData.CreatedBy = _userNameProvider.CurrentUserName;
-                entityWithMetaData.ChangedAt = entityWithMetaData.CreatedAt;
-                entityWithMetaData.ChangedBy = entityWithMetaData.CreatedBy;
+                if (entityEntry.Entity is IDomainEntityMetadata entityWithMetaData)
+                {
+                    entityWithMetaData.CreatedAt = DateTime.Now;
+                    entityWithMetaData.CreatedBy = _userNameProvider.CurrentUserName;
+                    entityWithMetaData.ChangedAt = entityWithMetaData.CreatedAt;
+                    entityWithMetaData.ChangedBy = entityWithMetaData.CreatedBy;
+                }
+                
+                
             }
 
             var markedAsModified = ChangeTracker.Entries().Where(x => x.State == EntityState.Modified);
             foreach (var entityEntry in markedAsModified)
             {
                 // check for IDomainEntityMetadata
-                if (!(entityEntry.Entity is IDomainEntityMetadata entityWithMetaData)) continue;
+                if (entityEntry.Entity is IDomainEntityMetadata entityWithMetaData)
+                {
+                    entityWithMetaData.ChangedAt = DateTime.Now;
+                    entityWithMetaData.ChangedBy = _userNameProvider.CurrentUserName;
 
-                entityWithMetaData.ChangedAt = DateTime.Now;
-                entityWithMetaData.ChangedBy = _userNameProvider.CurrentUserName;
-
-                // do not let changes on these properties get into generated db sentences - db keeps old values
-                entityEntry.Property(nameof(entityWithMetaData.CreatedAt)).IsModified = false;
-                entityEntry.Property(nameof(entityWithMetaData.CreatedBy)).IsModified = false;
+                    // do not let changes on these properties get into generated db sentences - db keeps old values
+                    entityEntry.Property(nameof(entityWithMetaData.CreatedAt)).IsModified = false;
+                    entityEntry.Property(nameof(entityWithMetaData.CreatedBy)).IsModified = false;
+                }
             }
         }
 

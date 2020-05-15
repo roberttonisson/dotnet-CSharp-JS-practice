@@ -45,16 +45,11 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("ToppingId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("TransportId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PizzaInCartId");
 
                     b.HasIndex("ToppingId");
-
-                    b.HasIndex("TransportId");
 
                     b.ToTable("AdditionalToppings");
                 });
@@ -64,6 +59,9 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("AppUserId")
                         .HasColumnType("uniqueidentifier");
@@ -380,8 +378,14 @@ namespace DAL.App.EF.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
+                    b.Property<DateTime?>("Estimated")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
+
+                    b.Property<Guid>("OrderStatusId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("TransportId")
                         .HasColumnType("uniqueidentifier");
@@ -389,6 +393,8 @@ namespace DAL.App.EF.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
+
+                    b.HasIndex("OrderStatusId");
 
                     b.HasIndex("TransportId");
 
@@ -436,6 +442,36 @@ namespace DAL.App.EF.Migrations
                     b.HasIndex("PizzaInCartId");
 
                     b.ToTable("InvoiceLines");
+                });
+
+            modelBuilder.Entity("Domain.OrderStatus", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ChangedBy")
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrderStatuses");
                 });
 
             modelBuilder.Entity("Domain.PartyOrder", b =>
@@ -806,7 +842,7 @@ namespace DAL.App.EF.Migrations
             modelBuilder.Entity("Domain.AdditionalTopping", b =>
                 {
                     b.HasOne("Domain.PizzaInCart", "PizzaInCart")
-                        .WithMany()
+                        .WithMany("AdditionalToppings")
                         .HasForeignKey("PizzaInCartId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -816,11 +852,6 @@ namespace DAL.App.EF.Migrations
                         .HasForeignKey("ToppingId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("Domain.Transport", null)
-                        .WithMany("AdditionalToppings")
-                        .HasForeignKey("TransportId")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Domain.Cart", b =>
@@ -867,6 +898,12 @@ namespace DAL.App.EF.Migrations
                     b.HasOne("Domain.Identity.AppUser", "AppUser")
                         .WithMany("Invoices")
                         .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.OrderStatus", "OrderStatus")
+                        .WithMany("Invoices")
+                        .HasForeignKey("OrderStatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

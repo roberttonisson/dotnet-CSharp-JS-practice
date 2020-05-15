@@ -26,6 +26,7 @@ namespace BLL.App.Mappers
             MapperConfigurationExpression.CreateMap<DALAppDTO.Size, BLLAppDTO.Size>();
             MapperConfigurationExpression.CreateMap<DALAppDTO.Topping, BLLAppDTO.Topping>();
             MapperConfigurationExpression.CreateMap<DALAppDTO.Transport, BLLAppDTO.Transport>();
+            MapperConfigurationExpression.CreateMap<DALAppDTO.OrderStatus, BLLAppDTO.OrderStatus>();
             
             Mapper = new Mapper(new MapperConfiguration(MapperConfigurationExpression));
         }

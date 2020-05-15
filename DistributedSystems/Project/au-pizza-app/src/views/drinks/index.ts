@@ -39,11 +39,11 @@ export class DrinksIndex {
 
     attached() {
          
-        this.cartService.getAll().then(
+        this.cartService.getActive().then(
             response => {
                 if (response.statusCode >= 200 && response.statusCode < 300) {
                     this._alert = null;
-                    this._cart = response.data![0];
+                    this._cart = response.data!;
                 } else {
                     // show error message
                     this._alert = {

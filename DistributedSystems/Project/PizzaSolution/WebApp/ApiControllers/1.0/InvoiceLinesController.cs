@@ -14,10 +14,11 @@ using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1;
 using PublicApi.DTO.v1.Mappers;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers._1._0
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class InvoiceLinesController : ControllerBase
     {
@@ -34,7 +35,7 @@ namespace WebApp.ApiControllers
         public async Task<ActionResult<IEnumerable<InvoiceLineDTO>>> GetInvoiceLines()
         {
             var invoiceLines = (await _bll.InvoiceLines.GetAllAsync(User.UserGuidId()))
-                .Select(bllEntity => _mapper.GetDTO(bllEntity));
+                .Select(bllEntity => _mapper.Map(bllEntity));
             
             return Ok(invoiceLines);
         }
@@ -50,7 +51,7 @@ namespace WebApp.ApiControllers
                 return NotFound();
             }
 
-            return Ok(_mapper.GetDTO(invoiceLine));
+            return Ok(_mapper.Map(invoiceLine));
         }
 
         // PUT: api/InvoiceLines/5
@@ -64,7 +65,7 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            await _bll.InvoiceLines.UpdateAsync(_mapper.GetBLL(invoiceLineDTO));
+            await _bll.InvoiceLines.UpdateAsync(_mapper.Map(invoiceLineDTO));
             await _bll.SaveChangesAsync();
 
             return NoContent();
@@ -77,7 +78,7 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<InvoiceLineDTO>> PostInvoiceLine(InvoiceLineDTO invoiceLineDTO)
         {
-            var bllEntity = _mapper.GetBLL(invoiceLineDTO);
+            var bllEntity = _mapper.Map(invoiceLineDTO);
             _bll.InvoiceLines.Add(bllEntity);
             await _bll.SaveChangesAsync();
 
@@ -99,7 +100,7 @@ namespace WebApp.ApiControllers
             await _bll.InvoiceLines.RemoveAsync(id);
             await _bll.SaveChangesAsync();
 
-            return Ok(_mapper.GetDTO(invoiceLine));
+            return Ok(_mapper.Map(invoiceLine));
         }
         
     }

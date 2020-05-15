@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
 		PizzaSolution_README.md = PizzaSolution_README.md
+		.gitignore = .gitignore
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts.DAL.Base", "Contracts.DAL.Base\Contracts.DAL.Base.csproj", "{CB125C5C-22B3-4034-9ADE-9FD52D877497}"
@@ -44,8 +45,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BLL", "BLL", "{C5471343-1388-426B-92DC-4FDC4F4C503D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DAL", "DAL", "{D2EF67B0-63E6-4074-93A8-05F5BF923E5D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DTO", "DTO", "{07D8A4FE-ED1D-4674-84F2-CCF47D35AD55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

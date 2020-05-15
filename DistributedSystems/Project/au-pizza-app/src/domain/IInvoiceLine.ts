@@ -8,22 +8,24 @@ export interface IInvoiceLine {
     total : number | null;
     quantity : number | null;
     
-    pizzaInCartId: string;
+    pizzaInCartId: string | null;
     pizzaInCart: IPizzaInCart | null;
 
-    drinkInCartId: string;
+    drinkInCartId: string | null;
     drinkInCart: IDrinkInCart | null;
 
     invoiceId: string;
     invoice:  IInvoice | null;
+
 }
 
 export interface IInvoiceLineCreate {
     id: string | undefined;
+    quantity : number | null;
     
-    pizzaInCartId: string;
+    pizzaInCartId: string | null;
 
-    drinkInCartId: string;
+    drinkInCartId: string | null;
 
     invoiceId: string;
 }

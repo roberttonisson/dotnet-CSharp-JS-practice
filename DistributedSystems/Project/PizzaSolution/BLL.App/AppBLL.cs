@@ -62,5 +62,9 @@ namespace BLL.App
         
         public IAppUserService AppUsers =>
             GetService<IAppUserService>(() => new AppUserService(UOW));
+        
+        public IOrderStatusService OrderStatuses =>
+            GetService<IOrderStatusService>(() => new OrderStatusService(UOW));
+        
     }
 }

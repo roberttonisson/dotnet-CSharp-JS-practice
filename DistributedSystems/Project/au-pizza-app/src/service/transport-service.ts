@@ -6,7 +6,7 @@ import { ITransport, ITransportCreate } from 'domain/ITransport';
 import { BaseService } from './base-service';
 
 @autoinject
-export class TransportService extends BaseService<ITransport, ITransport>{
+export class TransportService extends BaseService<ITransportCreate, ITransport>{
 
     constructor(protected  appState: AppState, protected  httpClient: HttpClient){
         super("Transports", appState,httpClient);

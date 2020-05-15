@@ -13,6 +13,8 @@ namespace PublicApi.DTO.v1
     public class CartDTO : DomainEntityId
     {
         public decimal? Total { get; set; }
+        
+        public bool Active { get; set; } = true;
 
         public Guid AppUserId { get; set; } = default!;
         public AppUserDTO? AppUser { get; set; }

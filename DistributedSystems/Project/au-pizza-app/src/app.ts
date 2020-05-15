@@ -1,7 +1,7 @@
 import { AppState } from 'state/app-state';
 import { autoinject, PLATFORM } from 'aurelia-framework';
 import { RouterConfiguration, Router } from 'aurelia-router';
-
+import * as environment from '../config/environment.json';
 
 @autoinject
 export class App {
@@ -45,6 +45,7 @@ export class App {
             { route: ['pizzas', 'pizzas/index'], name: 'pizzas-index', moduleId: PLATFORM.moduleName('views/pizzas/index'), nav: true, title: 'Pizzas' },
             { route: ['drinks', 'drinks/index'], name: 'drinks-index', moduleId: PLATFORM.moduleName('views/drinks/index'), nav: true, title: 'Drinks' },
             { route: ['carts', 'carts/index'], name: 'carts-index', moduleId: PLATFORM.moduleName('views/carts/index'), nav: true, title: 'Carts' },
+            { route: ['orders', 'orders/index'], name: 'orders-index', moduleId: PLATFORM.moduleName('views/orders/index'), nav: true, title: 'Orders' },
         ]
         );
 

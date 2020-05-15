@@ -29,6 +29,8 @@ namespace DAL.App.EF.Repositories
                     .ThenInclude(c => c.AppUser!)
                 .Include(i => i.Invoice!)
                     .ThenInclude(c => c.Transport!)
+                .Include(i => i.Invoice!)
+                    .ThenInclude(c => c.OrderStatus!)
                 
                 .Include(i => i.DrinkInCart!)
                     .ThenInclude(d => d.Drink!)
@@ -64,6 +66,8 @@ namespace DAL.App.EF.Repositories
                     .ThenInclude(c => c.AppUser!)
                 .Include(i => i.Invoice!)
                     .ThenInclude(c => c.Transport!)
+                .Include(i => i.Invoice!)
+                    .ThenInclude(c => c.OrderStatus!)
                 
                 .Include(i => i.DrinkInCart!)
                     .ThenInclude(d => d.Drink!)

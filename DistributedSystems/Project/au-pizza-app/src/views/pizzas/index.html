@@ -21,15 +21,18 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h3 class="modal-title text-danger" id="exampleModalLongTitle">${pizza.name}</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <button  type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                             </div>
                             <div class="modal-body">
                                 <img src="https://dodopizza-a.akamaihd.net/static/Img/Products/2050f2cd3d43416b95f476c74e1d188a_1875x1875.jpeg"
                                     class="card-img-top kappa kappa2 rounded mx-auto d-block" alt="...">
-                                <p class="card-text">Please select what kind of crust, size and toppings you would like.
-                                </p>
+                                <p class="card-text">Please select what kind of crust, size and toppings you would like.</p>
+                                <h6>Default toppings are:</h6>
+                                <div repeat.for="topping of _default">&emsp;${topping.name}</div>
+                                <p></p>
+                                
                                 <form>
                                     <h6 class="card-title">Size</h6>
                                     <div repeat.for="size of _sizes" class="d-inline-block">
@@ -73,7 +76,7 @@
                                         <h4 class="text-danger">Total: ${total}€
                                     </div>
                                     <div class="modal-footer">
-                                        <button click.delegate="deselectPizza" type="button" class="btn btn-secondary"
+                                        <button type="button" class="btn btn-secondary"
                                             data-dismiss="modal">Close</button>
 
                                         <button click.delegate="addToCart($event)" type="button" class="btn btn-danger"
@@ -90,6 +93,5 @@
             </div>
         </div>
     </div>
-
 
 </template>

@@ -27,6 +27,7 @@ namespace PublicApi.DTO.v1.Mappers
             MapperConfigurationExpression.CreateMap<BLL.App.DTO.Size, SizeDTO>();
             MapperConfigurationExpression.CreateMap<BLL.App.DTO.Topping, ToppingDTO>();
             MapperConfigurationExpression.CreateMap<BLL.App.DTO.Transport, TransportDTO>();
+            MapperConfigurationExpression.CreateMap<BLL.App.DTO.OrderStatus, OrderStatusDTO>();
             
             Mapper = new Mapper(new MapperConfiguration(MapperConfigurationExpression));
         }

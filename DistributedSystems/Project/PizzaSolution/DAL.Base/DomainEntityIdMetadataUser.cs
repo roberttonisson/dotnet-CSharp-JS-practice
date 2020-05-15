@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace DAL.Base
 {
-    public abstract class DomainEntityIdMetadataUser<TUser> : DomainEntityIdMetadataUser<Guid, TUser>, IDomainEntityUser<TUser>
+    public abstract class DomainEntityIdMetadataUser<TUser> : DomainEntityIdMetadataUser<Guid, TUser>, IDomainEntityUser<TUser>, IDomainEntityMetadata
         where TUser : IdentityUser<Guid>
     {
     }

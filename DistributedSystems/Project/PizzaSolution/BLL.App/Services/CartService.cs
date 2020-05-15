@@ -29,6 +29,11 @@ namespace BLL.App.Services
         {
             return (await Repository.GetAllWithCollectionsAsync(userId, noTracking)).Select(e => Mapper.Map(e));
         }
+        public async Task<Cart> GetActiveCart(Guid? userId = null, bool noTracking = true)
+        {
+            return Mapper.Map(await Repository.GetActiveCart(userId));;
+        }
+        
 
         public async Task<Cart> FirstOrDefaultAsync(Guid Id, Guid? userId = null, bool noTracking = true)
         {

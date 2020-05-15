@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Models;
 using Invoice = BLL.App.DTO.Invoice;
+using OrderStatus = BLL.App.DTO.OrderStatus;
 
 namespace WebApp.Controllers
 
@@ -55,6 +56,7 @@ namespace WebApp.Controllers
         {
             var invoice = new Invoice();
             invoice.TransportSelectList = new SelectList(await _bll.Transports.GetAllAsync(), nameof(Transport.Id), nameof(Transport.Address));
+            invoice.OrderStatusSelectList = new SelectList(await _bll.OrderStatuses.GetAllAsync(), nameof(OrderStatus.Id), nameof(OrderStatus.Status));
             return View(invoice);
         }
 
@@ -74,6 +76,7 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             invoice.TransportSelectList = new SelectList(await _bll.Transports.GetAllAsync(), nameof(Transport.Id), nameof(Transport.Address));
+            invoice.OrderStatusSelectList = new SelectList(await _bll.OrderStatuses.GetAllAsync(), nameof(OrderStatus.Id), nameof(OrderStatus.Status));
             return View(invoice);
         }
 
@@ -91,6 +94,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
             invoice.TransportSelectList = new SelectList(await _bll.Transports.GetAllAsync(), nameof(Transport.Id), nameof(Transport.Address));
+            invoice.OrderStatusSelectList = new SelectList(await _bll.OrderStatuses.GetAllAsync(), nameof(OrderStatus.Id), nameof(OrderStatus.Status));
 
             return View(invoice);
         }
@@ -116,6 +120,7 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             invoice.TransportSelectList = new SelectList(await _bll.Transports.GetAllAsync(), nameof(Transport.Id), nameof(Transport.Address));
+            invoice.OrderStatusSelectList = new SelectList(await _bll.OrderStatuses.GetAllAsync(), nameof(OrderStatus.Id), nameof(OrderStatus.Status));
             return View(invoice);
         }
 

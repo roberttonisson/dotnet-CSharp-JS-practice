@@ -17,8 +17,14 @@ namespace DAL.App.DTO
         [Display(Name = nameof(IsPaid), ResourceType = typeof(Resources.Domain.Shared))]
         public bool IsPaid { get; set; } = false;
         
+        public DateTime? Estimated { get; set; }
+        
+        
         public Guid TransportId { get; set; } = default!;
         public Transport? Transport { get; set; }
+        public Guid OrderStatusId { get; set; } = default!;
+        public OrderStatus? OrderStatus { get; set; }
+        
 
         public ICollection<InvoiceLine>? InvoiceLines { get; set; }
 

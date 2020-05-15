@@ -29,6 +29,8 @@ namespace DAL.App.EF.Repositories
                     .ThenInclude(p => p.AppUser!)
                 .Include(a => a.Invoice!)
                     .ThenInclude(c => c.Transport!)
+                .Include(i => i.Invoice!)
+                    .ThenInclude(c => c.OrderStatus!)
                 .Include(a => a.PartyOrder!)
                     .ThenInclude(c => c.AppUser!);
             var domainEntities = await query.ToListAsync();
@@ -44,6 +46,8 @@ namespace DAL.App.EF.Repositories
                     .ThenInclude(p => p.AppUser!)
                 .Include(a => a.Invoice!)
                     .ThenInclude(c => c.Transport!)
+                .Include(i => i.Invoice!)
+                    .ThenInclude(c => c.OrderStatus!)
                 .Include(a => a.PartyOrder!)
                     .ThenInclude(c => c.AppUser!)
                 .Where(x => x.Id == Id);

@@ -7,8 +7,8 @@ dotnet ef database drop --project DAL.App.EF --startup-project WebApp --context 
 
 
 
-server=alpha.akaver.com;database=student2018_rotoni_pizza;user=student2018;password=student2018
-server=localhost;port=3307;database=MySQLServer;user=root;password=password
+
+"MsSqlConnection": "Server=alpha.akaver.com,1533;User Id=student;Password=Student.Bad.password.0;Database=rotoni-pizzaDB;MultipleActiveResultSets=true"
 ~~~
 
 
@@ -30,6 +30,7 @@ dotnet aspnet-codegenerator controller -name ToppingsController             -act
 dotnet aspnet-codegenerator controller -name TransportsController           -actions -m Transport           -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
 dotnet aspnet-codegenerator controller -name PartyOrdersController          -actions -m PartyOrder          -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
 dotnet aspnet-codegenerator controller -name PartyOrderInvoicesController   -actions -m PartyOrderInvoice   -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
+dotnet aspnet-codegenerator controller -name OrderStatusesController        -actions -m OrderStatus         -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
 
 Generate Identity UI
 ~~~
@@ -53,6 +54,7 @@ dotnet aspnet-codegenerator controller -name ToppingsController             -act
 dotnet aspnet-codegenerator controller -name TransportsController           -actions -m Transport           -dc AppDbContext -outDir ApiControllers -api --useAsyncActions  -f
 dotnet aspnet-codegenerator controller -name PartyOrdersController          -actions -m PartyOrder          -dc AppDbContext -outDir ApiControllers -api --useAsyncActions  -f
 dotnet aspnet-codegenerator controller -name PartyOrderInvoicesController   -actions -m PartyOrderInvoice   -dc AppDbContext -outDir ApiControllers -api --useAsyncActions  -f
+dotnet aspnet-codegenerator controller -name OrderStatusesController        -actions -m OrderStatus         -dc AppDbContext -outDir ApiControllers -api --useAsyncActions  -f
 ~~~
 
 

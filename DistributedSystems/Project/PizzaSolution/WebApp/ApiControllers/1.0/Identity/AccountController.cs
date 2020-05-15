@@ -10,10 +10,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 
-namespace WebApp.ApiControllers.Identity
+namespace WebApp.ApiControllers._1._0.Identity
 {
+    /// <summary>
+    /// Api endpoint for registering new user and user log-in (jwt token generation)
+    /// </summary>
     [ApiController]
-    [Route("api/[controller]/[action]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]/[action]")]
+
     public class AccountController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -23,6 +28,14 @@ namespace WebApp.ApiControllers.Identity
         private IList<AuthenticationScheme>? ExternalLogins { get; set; }
         private readonly IEmailSender _emailSender;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="userManager"></param>
+        /// <param name="logger"></param>
+        /// <param name="signInManager"></param>
+        /// <param name="emailSender"></param>
         public AccountController(IConfiguration configuration, UserManager<AppUser> userManager,
             ILogger<AccountController> logger, SignInManager<AppUser> signInManager, IEmailSender emailSender)
         {
@@ -33,6 +46,11 @@ namespace WebApp.ApiControllers.Identity
             _emailSender = emailSender;
         }
 
+        /// <summary>
+        /// Endpoint for user log-in (jwt generation)
+        /// </summary>
+        /// <param name="model">login data</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<string>> Login([FromBody] LoginDTO model)
         {
@@ -61,6 +79,11 @@ namespace WebApp.ApiControllers.Identity
         }
 
 
+        /// <summary>
+        /// Endpoint for user registration and immediate log-in (jwt generation) 
+        /// </summary>
+        /// <param name="model">user data</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<string>> Register([FromBody] RegisterDTO model)
         {

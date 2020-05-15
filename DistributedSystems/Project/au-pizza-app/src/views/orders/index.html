@@ -1,0 +1,65 @@
+<template>
+    <h1>Orders</h1>
+
+    <div if.bind="_loading" class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+
+    <div else class="accordion" id="accordionExample">
+        <div repeat.for="invoice of _invoices" class="card">
+            <div click.delegate="calculateTotals(invoice)" class="card-header"
+                id="heading_${invoice.id.substring(1,6)}">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse"
+                        data-target="#collapse_${invoice.id.substring(1,6)}" aria-expanded="true"
+                        aria-controls="collapse_${invoice.id.substring(1,6)}">
+                        <div class="text-success font-weight-bold">Order id: ${invoice.id}</div>
+                        <div class="text-success font-weight-bold">${invoice.createdAt.split("T")[0]}</div>
+                        <div class="text-danger font-weight-bold">${invoice.orderStatus.status}</div>
+                        <div if.bind="invoice.isPaid" class="text-success font-weight-bold">Successfully paid</div>
+                        <div else class="text-danger font-weight-bold">Cash payment when receiving the order</div>
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse_${invoice.id.substring(1,6)}" class="collapse"
+                aria-labelledby="heading_${invoice.id.substring(1,6)}" data-parent="#accordionExample">
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th scope="col">Item</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Sum</th>
+                            </tr>
+                        </thead>
+                        <tbody repeat.for="invoiceLine of invoice.invoiceLines">
+                            <tr if.bind="invoiceLine.drinkInCart != null">
+                                <td>${invoiceLine.drinkInCart.drink.name}</td>
+                                <td>${invoiceLine.drinkInCart.price}€</td>
+                                <td>${invoiceLine.drinkInCart.quantity}</td>
+                                <td>${invoiceLine.total}€</td>
+                            </tr>
+                            <tr if.bind="invoiceLine.pizzaInCart != null">
+                                <td>${invoiceLine.pizzaInCart.pizzaType.name}</td>
+                                <td>${invoiceLine.pizzaInCart.price}€</td>
+                                <td>${invoiceLine.pizzaInCart.quantity}</td>
+                                <td>${invoiceLine.total}€</td>
+                            </tr>
+
+                        </tbody>
+                        <tbody  class="font-weight-bold">
+                            <tr>
+                                <td colspan="2"> </td>
+                                <td>Total:</td>
+                                <td>${invoice.total}€</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</template>

@@ -12,6 +12,9 @@ namespace DAL.App.DTO
         [NotMapped]
         [Display(Name = nameof(Total), ResourceType = typeof(Resources.Domain.Shared))]
         public decimal? Total { get; set; }
+        
+        public bool Active { get; set; } = true;
+        
 
         public ICollection<PizzaInCart>? PizzaInCarts { get; set; }
         

@@ -17,6 +17,8 @@ namespace BLL.App.DTO
 
         public SelectList? AppUserSelectList { get; set; }
         
+        public bool Active { get; set; } = true;
+        
         public ICollection<PizzaInCart>? PizzaInCarts { get; set; }
         
         public ICollection<DrinkInCart>? DrinkInCarts { get; set; }

@@ -15,10 +15,11 @@ using Newtonsoft.Json;
 using PublicApi.DTO.v1;
 using PublicApi.DTO.v1.Mappers;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers._1._0
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CartsController : ControllerBase
     {
@@ -38,14 +39,10 @@ namespace WebApp.ApiControllers
 
         public async Task<ActionResult<IEnumerable<CartDTO>>> GetCarts()
         {
-            var bar = (await _bll.Carts.GetAllWithCollectionsAsync(User.UserGuidId()));
-            var car = (await _bll.Carts.GetAllWithCollectionsAsync(User.UserGuidId()))
+            var carts = (await _bll.Carts.GetAllWithCollectionsAsync(User.UserGuidId()))
                 .Select(bllEntity => _mapper.Map(bllEntity));
 
-            var carts = (await _bll.Carts.GetAllAsync(User.UserGuidId()))
-                .Select(bllEntity => _mapper.Map(bllEntity));
-            
-            return Ok(car);
+            return Ok(carts);
         }
 
      // GET: api/Carts/5
@@ -61,8 +58,21 @@ namespace WebApp.ApiControllers
 
             return Ok(_mapper.Map(cart));
         }
+        [HttpGet("active")]
+        public async Task<ActionResult<CartDTO>> GetActiveCart(Guid id)
+        {
+            var cart = await _bll.Carts.GetActiveCart(User.UserGuidId());
 
-        // PUT: api/Carts/5
+            if (cart == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map(cart));
+        }
+        
+
+        // PUT: api/Carts/active
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]

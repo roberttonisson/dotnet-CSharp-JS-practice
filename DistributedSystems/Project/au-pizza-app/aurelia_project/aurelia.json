@@ -13,6 +13,7 @@
     "id": "typescript",
     "fileExtension": ".ts"
   },
+  
   "build": {
     "options": {
       "server": "dev",
@@ -28,5 +29,6 @@
     "output": "dist"
   },
   "packageManager": "npm"
+  
   
 }

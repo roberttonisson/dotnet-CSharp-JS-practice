@@ -90,6 +90,22 @@ namespace DAL.App.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OrderStatuses",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    CreatedBy = table.Column<string>(maxLength: 256, nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ChangedBy = table.Column<string>(maxLength: 256, nullable: true),
+                    ChangedAt = table.Column<DateTime>(nullable: false),
+                    Status = table.Column<string>(maxLength: 256, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderStatuses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PizzaTypes",
                 columns: table => new
                 {
@@ -273,7 +289,8 @@ namespace DAL.App.EF.Migrations
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     ChangedBy = table.Column<string>(maxLength: 256, nullable: true),
                     ChangedAt = table.Column<DateTime>(nullable: false),
-                    AppUserId = table.Column<Guid>(nullable: false)
+                    AppUserId = table.Column<Guid>(nullable: false),
+                    Active = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -352,7 +369,9 @@ namespace DAL.App.EF.Migrations
                     ChangedAt = table.Column<DateTime>(nullable: false),
                     AppUserId = table.Column<Guid>(nullable: false),
                     IsPaid = table.Column<bool>(nullable: false),
-                    TransportId = table.Column<Guid>(nullable: false)
+                    Estimated = table.Column<DateTime>(nullable: true),
+                    TransportId = table.Column<Guid>(nullable: false),
+                    OrderStatusId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -361,6 +380,12 @@ namespace DAL.App.EF.Migrations
                         name: "FK_Invoices_AspNetUsers_AppUserId",
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Invoices_OrderStatuses_OrderStatusId",
+                        column: x => x.OrderStatusId,
+                        principalTable: "OrderStatuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -484,8 +509,7 @@ namespace DAL.App.EF.Migrations
                     ChangedBy = table.Column<string>(maxLength: 256, nullable: true),
                     ChangedAt = table.Column<DateTime>(nullable: false),
                     ToppingId = table.Column<Guid>(nullable: false),
-                    PizzaInCartId = table.Column<Guid>(nullable: false),
-                    TransportId = table.Column<Guid>(nullable: true)
+                    PizzaInCartId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -500,12 +524,6 @@ namespace DAL.App.EF.Migrations
                         name: "FK_AdditionalToppings_Toppings_ToppingId",
                         column: x => x.ToppingId,
                         principalTable: "Toppings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_AdditionalToppings_Transports_TransportId",
-                        column: x => x.TransportId,
-                        principalTable: "Transports",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -556,11 +574,6 @@ namespace DAL.App.EF.Migrations
                 name: "IX_AdditionalToppings_ToppingId",
                 table: "AdditionalToppings",
                 column: "ToppingId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AdditionalToppings_TransportId",
-                table: "AdditionalToppings",
-                column: "TransportId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -645,6 +658,11 @@ namespace DAL.App.EF.Migrations
                 name: "IX_Invoices_AppUserId",
                 table: "Invoices",
                 column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_OrderStatusId",
+                table: "Invoices",
+                column: "OrderStatusId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invoices_TransportId",
@@ -748,6 +766,9 @@ namespace DAL.App.EF.Migrations
 
             migrationBuilder.DropTable(
                 name: "Sizes");
+
+            migrationBuilder.DropTable(
+                name: "OrderStatuses");
 
             migrationBuilder.DropTable(
                 name: "Transports");
