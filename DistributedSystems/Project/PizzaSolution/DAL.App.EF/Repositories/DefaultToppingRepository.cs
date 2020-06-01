@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
-using Contracts.DAL.Base.Mappers;
+
 using DAL.App.EF.Mappers;
-using DAL.Base.EF.Repositories;
-using DAL.Base.Mappers;
+
+
 using Domain;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
@@ -25,6 +26,18 @@ namespace DAL.App.EF.Repositories
         {
             var query = PrepareQuery(userId, noTracking);
             query = query
+                .Include(d => d.Topping!)
+                .Include(t => t.PizzaType!);
+            var domainEntities = await query.ToListAsync();
+            var result = domainEntities.Select(e => Mapper.Map(e));
+            return result;
+        }
+        
+        public virtual async Task<IEnumerable<DTO.DefaultTopping>> GetAllForPizzaAsync(Guid pizzaTypeId, Guid? userId = null, bool noTracking = true)
+        {
+            var query = PrepareQuery(userId, noTracking);
+            query = query
+                .Where(x=> x.PizzaTypeId == pizzaTypeId)
                 .Include(d => d.Topping!)
                 .Include(t => t.PizzaType!);
             var domainEntities = await query.ToListAsync();

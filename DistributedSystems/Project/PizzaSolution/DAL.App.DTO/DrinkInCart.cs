@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Contracts.DAL.Base;
+
 using DAL.App.DTO;
-using DAL.Base;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base;
+
 
 namespace DAL.App.DTO
 {

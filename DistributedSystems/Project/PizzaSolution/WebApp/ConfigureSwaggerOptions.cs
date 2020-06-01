@@ -25,7 +25,7 @@ namespace WebApp
                 options.SwaggerDoc(description.GroupName,
                     new OpenApiInfo()
                     {
-                        Title = $"SportMap API {description.ApiVersion}", Version = description.ApiVersion.ToString()
+                        Title = $"PizzaApp API {description.ApiVersion}", Version = description.ApiVersion.ToString()
                     });
             }
 

@@ -1,0 +1,17 @@
+<template>
+    <h1>${langResources[appState.selectedCulture.code].manageAccount}</h1>
+    <h4>${langResources[appState.selectedCulture.code].changeYourAccountSettings}</h4>
+    <div class="row">
+        <div class="col-md-3">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" route-href="route: account-changePassword;">${langResources[appState.selectedCulture.code].changePassword}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" route-href="route: account-changeEmail;">${langResources[appState.selectedCulture.code].changeEmail}</a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</template>

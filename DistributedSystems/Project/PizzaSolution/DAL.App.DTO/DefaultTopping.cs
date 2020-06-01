@@ -1,5 +1,6 @@
 ﻿using System;
-using DAL.Base;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base;
+
 
 namespace DAL.App.DTO
 {

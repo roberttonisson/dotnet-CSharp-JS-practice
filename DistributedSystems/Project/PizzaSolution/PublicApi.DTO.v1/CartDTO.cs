@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DAL.Base;
-using Domain;
-using Domain.Identity;
+
+using ee.itcollege.rotoni.pizzaApp.DAL.Base;
 using PublicApi.DTO.v1.Identity;
 using AppUser = BLL.App.DTO.Identity.AppUser;
 

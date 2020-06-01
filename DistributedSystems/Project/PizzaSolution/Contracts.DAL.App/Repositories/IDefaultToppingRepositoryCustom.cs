@@ -12,6 +12,7 @@ namespace Contracts.DAL.App.Repositories
     public interface IDefaultToppingRepositoryCustom<TDefaultTopping>
     {
         Task<IEnumerable<TDefaultTopping>> GetAllAsync(Guid? userId = null, bool noTracking = true);
+        Task<IEnumerable<TDefaultTopping>> GetAllForPizzaAsync(Guid pizzaTypeId, Guid? userId = null, bool noTracking = true);
         Task<TDefaultTopping> FirstOrDefaultAsync(Guid Id, Guid? userId = null, bool noTracking = true);
     }
     

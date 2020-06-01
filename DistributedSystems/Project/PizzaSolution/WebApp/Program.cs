@@ -11,8 +11,16 @@ using Microsoft.Extensions.Logging;
 
 namespace WebApp
 {
+    /// <summary>
+    /// Host creation
+    /// </summary>
     public class Program
     {
+        
+        /// <summary>
+        /// Entry point of the host for the web application 
+        /// </summary>
+        /// <param name="args">Args</param>
         public static void Main(string[] args)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
@@ -21,6 +29,12 @@ namespace WebApp
             CreateHostBuilder(args).Build().Run();
         }
 
+        
+        /// <summary>
+        /// Creates the host
+        /// </summary>
+        /// <param name="args">Args</param>
+        /// <returns>IHostBuilder</returns>
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });

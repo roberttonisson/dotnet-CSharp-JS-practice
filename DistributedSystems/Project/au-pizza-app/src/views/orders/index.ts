@@ -1,17 +1,23 @@
+import { DrinkInCartService } from './../../service/drink-in-cart-service';
+import { PizzaInCartService } from './../../service/pizza-in-cart-service';
+import { InvoiceLineService } from './../../service/invoice-line-service';
 import { IInvoice } from './../../domain/IInvoice';
 import { InvoiceService } from './../../service/invoice-service';
-import { RouteConfig, NavigationInstruction } from 'aurelia-router';
+import { RouteConfig, NavigationInstruction, Router } from 'aurelia-router';
 import { autoinject } from 'aurelia-framework';
 import { AlertType } from "types/AlertType";
 import { IAlertData } from "types/IAlertData";
 import { bindable } from 'aurelia-framework';
 import 'style/pizzasDrinks.css'
+import { AppState } from 'state/app-state';
+import { OrderResources } from './../../lang/orders';
 
 
 
 @autoinject
 export class DrinksIndex {
-
+    
+    private langResources = OrderResources;
 
     private _invoices: IInvoice[] = [];
 
@@ -19,15 +25,21 @@ export class DrinksIndex {
 
     private _loading: boolean = true;
 
+    private _loading2: boolean = false;
+
 
     constructor(
-        private invoiceService: InvoiceService,
+        private appState: AppState, private invoiceService: InvoiceService, private router: Router
 
     ) {
 
     }
 
     attached() {
+        if (this.appState.jwt == null) {
+            this.router.navigateToRoute('account-login');
+            return
+        }
 
         this.invoiceService.getAll().then(
             response => {
@@ -55,6 +67,25 @@ export class DrinksIndex {
 
     }
 
+    reOrder(invoice: IInvoice){
+
+        this._loading2 = true;
+        this.invoiceService.reOrder(invoice).then(response => {
+            if (response.statusCode >= 200 && response.statusCode < 300) {
+                this._alert = null;
+                this.router.navigateToRoute('carts-index');
+            } else {
+                // show error message
+                this._loading2 = false;
+                this._alert = {
+                    message: response.statusCode.toString() + ' - ' + response.errorMessage,
+                    type: AlertType.Danger,
+                    dismissable: true,
+                }
+            }
+        })
+    }
+
     calculateTotals(invoice: IInvoice) {
         invoice.total = 0;
         for (const invoiceLine of invoice.invoiceLines!) {
@@ -63,7 +94,6 @@ export class DrinksIndex {
                 invoiceLine.pizzaInCart.price = 0;
                 if (invoiceLine.pizzaInCart.additionalToppings != null) {
                     for (const additional of invoiceLine.pizzaInCart.additionalToppings) {
-                        invoice.total += additional.topping!.price;
                         invoiceLine.pizzaInCart.price += additional.topping!.price;
                     }
                 }

@@ -1,0 +1,40 @@
+@model IEnumerable<BLL.App.DTO.AdditionalTopping>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">@Resources.Views.Shared.CreateShared.Create</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+               @Resources.Domain.Tables.AdditionalTopping
+            </th>
+            <th>
+                @Resources.Domain.Tables.PizzaType
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Topping!.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PizzaInCart!.PizzaType!.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">@Resources.Views.Shared.EditShared.Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">@Resources.Views.Shared.DetailsShared.Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">@Resources.Views.Shared.DeleteShared.Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

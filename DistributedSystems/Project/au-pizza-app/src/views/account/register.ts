@@ -2,9 +2,11 @@ import { Router } from 'aurelia-router';
 import { AppState } from './../../state/app-state';
 import { autoinject } from 'aurelia-framework';
 import { AccountService } from 'service/account-service';
+import { AccountResources } from './../../lang/accounts';
 
 @autoinject
 export class AccountRegister {
+    private langResources = AccountResources;
     private _email: string = "";
     private _password: string = "";
     private _firstName: string = "";
@@ -25,6 +27,7 @@ export class AccountRegister {
                 console.log(response);
                 if (response.statusCode == 200) {
                     this.appState.jwt = response.data!.token;
+                    this.appState.email = response.data!.email
                     this.router!.navigateToRoute('home');
                 } else {
                     this._errorMessage = response.statusCode.toString()

@@ -1,95 +1,107 @@
 <template>
-    <h1>Pizzas</h1>
+    <h1 class="text-danger">${langResources[appState.selectedCulture.code].pizzas}</h1>
 
-    <div class="card-group kappa3">
-        <div repeat.for="pizza of _pizzas" class="card  " style="width: 12rem;">
-            <img src="https://dodopizza-a.akamaihd.net/static/Img/Products/2050f2cd3d43416b95f476c74e1d188a_1875x1875.jpeg"
-                class="card-img-top kappa" alt="placeholder for image">
-            <div class="card-body">
-                <h5 class="card-title">${pizza.name}</h5>
-                <p class="card-text">This is a placeholder for our incredibly specific pizza description. Coming
-                    soon!</p>
+    <div repeat.for="i of _row" class="card-group kappa3">
+        <div repeat.for="y of 3">
+            <div if.bind="(_pizzas[3*i+y] != undefined)" class="card bg-danger">
+                <img src="${_pizzas[3*i+y].imageUrl}" class="card-img-top kappa4 rounded" alt="placeholder for image">
+                <div class="card-body text-white">
+                    <h5 class="card-title">${_pizzas[3*i+y].name}</h5>
+                    <p class="card-text text-align">${langResources[appState.selectedCulture.code].placeholder}</p>
 
-                <button click.delegate="selectPizza(pizza)" type="button" class="btn btn-danger" data-toggle="modal"
-                    data-target="#exampleModalLong">
-                    Choose pizza
-                </button>
+                    <button if.bind="appState.jwt != null" click.delegate="selectPizza(_pizzas[3*i+y])" type="button"
+                        class="btn btn-light text-danger font-weight-bold" data-toggle="modal"
+                        data-target="#exampleModalLong">
+                        ${langResources[appState.selectedCulture.code].choosePizza}
+                    </button>
+                    <button else  click.delegate="selectPizza(_pizzas[3*i+y])" type="button"
+                        class="btn btn-light text-danger font-weight-bold">
+                        ${langResources[appState.selectedCulture.code].choosePizza}
+                    </button>
 
-                <div class="modal fade " id="exampleModalLong" tabindex="-1" role="dialog"
-                    aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                    <div class="modal-dialog " role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3 class="modal-title text-danger" id="exampleModalLongTitle">${pizza.name}</h5>
-                                    <button  type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                            </div>
-                            <div class="modal-body">
-                                <img src="https://dodopizza-a.akamaihd.net/static/Img/Products/2050f2cd3d43416b95f476c74e1d188a_1875x1875.jpeg"
-                                    class="card-img-top kappa kappa2 rounded mx-auto d-block" alt="...">
-                                <p class="card-text">Please select what kind of crust, size and toppings you would like.</p>
-                                <h6>Default toppings are:</h6>
-                                <div repeat.for="topping of _default">&emsp;${topping.name}</div>
-                                <p></p>
-                                
-                                <form>
-                                    <h6 class="card-title">Size</h6>
-                                    <div repeat.for="size of _sizes" class="d-inline-block">
-                                        <button if.bind="_size === size" click.delegate="chooseSize(size)" type="button" class=" btn btn-danger">
-                                            ${size.name}(${size.sizeCm}cm) ${size.price}€
+                    <div class="modal fade text-dark" id="exampleModalLong" tabindex="-1" role="dialog"
+                        aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                        <div class="modal-dialog " role="document">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger">
+                                    <h3 class="modal-title text-white" id="exampleModalLongTitle">${_pizza.name}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
                                         </button>
-                                        <button else click.delegate="chooseSize(size)" type="button" class=" btn btn-outline-danger">
-                                            ${size.name}(${size.sizeCm}cm) ${size.price}€
-                                        </button>
-                                    </div>
-
+                                </div>
+                                <div class="modal-body">
+                                    <img src="${_pizza.imageUrl}"
+                                        class="card-img-top kappa4 kappa5 rounded mx-auto d-block" alt="...">
+                                    <h6>${langResources[appState.selectedCulture.code].defaultToppingsAre}</h6>
+                                    <div repeat.for="topping of _default">&emsp;${topping.name}</div>
                                     <p></p>
-                                    <h6 class="card-title">Crust</h6>
-                                    <div repeat.for="crust of _crusts" class="d-inline-block">
-                                        <button if.bind="_crust === crust" click.delegate="chooseCrust(crust)" type="button" class=" btn btn-danger">
-                                            ${crust.name} ${crust.price}€
-                                        </button>
-                                        <button else click.delegate="chooseCrust(crust)" type="button" class=" btn btn-outline-danger">
-                                            ${crust.name} ${crust.price}€
-                                        </button>
-                                    </div>
 
-                                    <p></p>
-                                    <h6 class="card-title">Additional toppings</h6>
-                                    <label>
-                                        <select class="custom-select " multiple value.bind="_additional">
-                                            <option repeat.for="topping of _available" model.bind="topping">
-                                                ${topping.name} ${topping.price}€
-                                            </option>
-                                        </select>
-                                    </label>
+                                    <form>
+                                        <h6 class="card-title">${langResources[appState.selectedCulture.code].size}</h6>
+                                        <div repeat.for="size of _sizes" class="d-inline-block">
+                                            <button if.bind="_size === size" click.delegate="chooseSize(size)"
+                                                type="button" class=" btn btn-danger">
+                                                ${size.name}(${size.sizeCm}cm) ${size.price}€
+                                            </button>
+                                            <button else click.delegate="chooseSize(size)" type="button"
+                                                class=" btn btn-outline-danger">
+                                                ${size.name}(${size.sizeCm}cm) ${size.price}€
+                                            </button>
+                                        </div>
 
-                                    <h4 class="card-title xdd">Quantity:</h4>
-                                    <div class="qty mt-5 xdd">
-                                        <span class="minus bg-dark" click.delegate="minus()">-</span>
+                                        <p></p>
+                                        <h6 class="card-title">${langResources[appState.selectedCulture.code].crust}
+                                        </h6>
+                                        <div repeat.for="crust of _crusts" class="d-inline-block">
+                                            <button if.bind="_crust === crust" click.delegate="chooseCrust(crust)"
+                                                type="button" class=" btn btn-danger">
+                                                ${crust.name} ${crust.price}€
+                                            </button>
+                                            <button else click.delegate="chooseCrust(crust)" type="button"
+                                                class=" btn btn-outline-danger">
+                                                ${crust.name} ${crust.price}€
+                                            </button>
+                                        </div>
+
+                                        <p></p>
+                                        <h6 class="card-title">
+                                            ${langResources[appState.selectedCulture.code].selectAdditionalToppings}
+                                        </h6>
+                                        <label>
+                                            <select class="custom-select " multiple value.bind="_additional">
+                                                <option repeat.for="topping of _available" model.bind="topping">
+                                                    ${topping.name} ${topping.price}€
+                                                </option>
+                                            </select>
+                                        </label>
+
+                                        <h4 class="card-title xdd">
+                                            ${langResources[appState.selectedCulture.code].quantity}:</h4>
+                                        <div class="qty mt-5 xdd">
+                                            <span class="minus bg-dark" click.delegate="minus()">-</span>
                                             <input type="number" class="count" name="qty" value.bind="_quantity">
-                                        <span class="plus bg-dark" click.delegate="plus()">+</span>
-                                    </div>
+                                            <span class="plus bg-dark" click.delegate="plus()">+</span>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <h4 class="text-danger">Total: ${total}€
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Close</button>
+                                        <div class="form-group">
+                                            <h4 class="text-danger">
+                                                ${langResources[appState.selectedCulture.code].total}: ${total}€
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">${langResources[appState.selectedCulture.code].close}</button>
 
-                                        <button click.delegate="addToCart($event)" type="button" class="btn btn-danger"
-                                            data-dismiss="modal">
-                                            Add to Cart
-                                        </button>
-                                    </div>
-                                </form>
+                                            <button click.delegate="addToCart($event)" type="button"
+                                                class="btn btn-danger" data-dismiss="modal">
+                                                ${langResources[appState.selectedCulture.code].addToCart}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>

@@ -1,0 +1,130 @@
+﻿@model PaymentViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+<head>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/css/payment.css"/>
+</head>
+
+<h1>@Resources.Views.ClientCarts.Index.PaymentTotal : @Model.Total €</h1>
+<div>
+    <div class="accordion" id="accordionExample">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button"
+                            data-toggle="collapse" data-target="#collapseOne"
+                            aria-expanded="true" aria-controls="collapseOne">
+
+                        <img src="https://cdn1034.templcdn.com/wp-content/uploads/2019/11/Visa-MasterCard.png"
+                             class="card-img-top rounded mx-auto methodIMG"
+                             alt="...">
+
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
+                 data-parent="#accordionExample">
+                <div class="card-body">
+                    <form asp-action="Pay">
+                        <h4>@Resources.Views.ClientCarts.Index.InsertYourDeliveryAddress :</h4>
+                        <input asp-for="Transport.Address" class="form-control"/>
+                        <span asp-validation-for="Transport.Address" class="text-danger"></span>
+                        <button type="submit"
+                                class="btn btn-success btn-lg">@Resources.Views.ClientCarts.Index.PayNow
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingTwo">
+                <h2 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button"
+                            data-toggle="collapse" data-target="#collapseTwo"
+                            aria-expanded="false" aria-controls="collapseTwo">
+
+                        <img src="https://4.bp.blogspot.com/-1U5o6oUjyag/V3ej4fw2e0I/AAAAAAAAAl4/bpDFYFHbjDkkg8o1UHxVwWsl8zDhxgJRACKgB/s1600/paypal-784404_1280.png"
+                             class="card-img-top rounded mx-auto methodIMG "
+                             alt="...">
+
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo"
+                 data-parent="#accordionExample">
+                <div class="card-body">
+                    <form asp-action="Pay">
+                        <h4>@Resources.Views.ClientCarts.Index.InsertYourDeliveryAddress :</h4>
+                        <input asp-for="Transport.Address" class="form-control"/>
+                        <span asp-validation-for="Transport.Address" class="text-danger"></span>
+                        <button type="submit"
+                                class="btn btn-success btn-lg">@Resources.Views.ClientCarts.Index.PayNow
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingThree">
+                <h2 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button"
+                            data-toggle="collapse" data-target="#collapseThree"
+                            aria-expanded="false" aria-controls="collapseThree">
+                        <img src="https://diginomica.com/sites/default/files/styles/entry_medium_mobile/public/images/2016-05/swedbank_fb.png?itok=q4iZPiVq"
+                             class="card-img-top rounded mx-auto methodIMG "
+                             alt="...">
+                        <img src="http://www.ettevotlikkus.ee/wp-content/uploads/2016/02/seb_logo-300x300.png"
+                             class="card-img-top rounded mx-auto methodIMG "
+                             alt="...">
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseThree" class="collapse" aria-labelledby="headingThree"
+                 data-parent="#accordionExample">
+                <div class="card-body">
+                    <form asp-action="Pay">
+                        <h4>@Resources.Views.ClientCarts.Index.InsertYourDeliveryAddress :</h4>
+                        <input asp-for="Transport.Address" class="form-control"/>
+                        <span asp-validation-for="Transport.Address" class="text-danger"></span>
+                        <button type="submit"
+                                class="btn btn-success btn-lg">@Resources.Views.ClientCarts.Index.PayNow
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" id="headingFour">
+                <h2 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button"
+                            data-toggle="collapse" data-target="#collapseFour"
+                            aria-expanded="false" aria-controls="collapseFour">
+                        @Resources.Views.ClientCarts.Index.Cash
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseFour" class="collapse" aria-labelledby="headingFour"
+                 data-parent="#accordionExample">
+                <div class="card-body">
+                    <form asp-action="Pay">
+                        <h4>@Resources.Views.ClientCarts.Index.InsertYourDeliveryAddress :</h4>
+                        <input asp-for="Transport.Address" class="form-control"/>
+                        <span asp-validation-for="Transport.Address" class="text-danger"></span>
+                        <button type="submit"
+                                class="btn btn-success btn-lg">@Resources.Views.ClientCarts.Index.OrderNow
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

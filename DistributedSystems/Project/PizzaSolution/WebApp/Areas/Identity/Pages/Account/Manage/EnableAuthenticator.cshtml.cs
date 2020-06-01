@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+#pragma warning disable 1591
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Linq;

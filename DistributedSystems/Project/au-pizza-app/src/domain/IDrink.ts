@@ -7,5 +7,6 @@ export interface IDrink extends IDrinkCreate{
 export interface IDrinkCreate {
     name: string;
     price: number;
-    size: number
+    size: number;
+    imageUrl: string;
 }

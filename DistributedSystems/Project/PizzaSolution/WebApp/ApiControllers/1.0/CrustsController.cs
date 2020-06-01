@@ -16,6 +16,9 @@ using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers._1._0
 {
+    /// <summary>
+    /// Controller for Crusts
+    /// </summary>
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
@@ -24,12 +27,20 @@ namespace WebApp.ApiControllers._1._0
         private readonly IAppBLL _bll;
         private readonly CrustDTOMapper _mapper = new CrustDTOMapper();
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="bll"></param>
         public CrustsController(IAppBLL bll)
         {
             _bll = bll;
         }
         
         // GET: api/Crusts
+        /// <summary>
+        /// Get the list of all Crusts for specific user.
+        /// </summary>
+        /// <returns>List of Crusts</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CrustDTO>>> GetCrusts()
         {
@@ -39,7 +50,12 @@ namespace WebApp.ApiControllers._1._0
             return Ok(crusts);
         }
 
-     // GET: api/Crusts/5
+        // GET: api/Crusts/5
+        /// <summary>
+        /// Get single Crust by given id
+        /// </summary>
+        /// <param name="id">Id of the Crust that we are returning</param>
+        /// <returns>Crust</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<CrustDTO>> GetCrust(Guid id)
         {
@@ -56,7 +72,14 @@ namespace WebApp.ApiControllers._1._0
         // PUT: api/Crusts/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        /// <summary>
+        /// Change existing Crust by given ID
+        /// </summary>
+        /// <param name="id">Given ID that we use to find the Crust from DB</param>
+        /// <param name="crustDTO">DTO with new values tha we need to change</param>
+        /// <returns>Nothing</returns>
         [HttpPut("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> PutCrust(Guid id, CrustDTO crustDTO)
         {
             if (id != crustDTO.Id)
@@ -74,7 +97,13 @@ namespace WebApp.ApiControllers._1._0
         // POST: api/Crusts
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        /// <summary>
+        /// Add a new Crust to the DB.
+        /// </summary>
+        /// <param name="crustDTO">DTO with the values for the record tha will be inserted into DB.</param>
+        /// <returns>DTO with the values from the record that was added to the DB.</returns>
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<ActionResult<CrustDTO>> PostCrust(CrustDTO crustDTO)
         {
             var bllEntity = _mapper.Map(crustDTO);
@@ -87,7 +116,13 @@ namespace WebApp.ApiControllers._1._0
         }
 
         // DELETE: api/Crusts/5
+        /// <summary>
+        /// Deletes a Crust record from the DB by id.
+        /// </summary>
+        /// <param name="id">Id for the record that will be removed from the DB.</param>
+        /// <returns>:)</returns>
         [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<ActionResult<CrustDTO>> DeleteCrust(Guid id)
         {
             var crust = await _bll.Crusts.FirstOrDefaultAsync(id);

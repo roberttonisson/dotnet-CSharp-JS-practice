@@ -4,9 +4,8 @@
   "description": "JS Basic Demo",
   "main": "index.ts",
   "scripts": {
-    "build" : "webpack --mode production",
-    "start" : "webpack-dev-server --mode development --progress --color"
-
+    "build": "webpack --mode production",
+    "start": "webpack-dev-server --mode development --progress --color"
   },
   "author": "rotoni",
   "license": "ISC",

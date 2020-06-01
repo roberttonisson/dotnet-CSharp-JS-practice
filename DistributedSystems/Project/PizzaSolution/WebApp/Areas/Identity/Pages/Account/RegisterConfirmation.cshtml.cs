@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Identity;
+#pragma warning disable 1591
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;

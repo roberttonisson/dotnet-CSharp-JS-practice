@@ -1,7 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Contracts.DAL.Base;
+using ee.itcollege.rotoni.pizzaApp.Contracts.DAL.Base;
+
 
 namespace PublicApi.DTO.v1
 {
@@ -10,7 +11,7 @@ namespace PublicApi.DTO.v1
         
         public Guid Id { get; set; }
         
-        [MaxLength(64)] [MinLength(1)] public string Name { get; set; } = default!;
+        [MaxLength(64, ErrorMessageResourceName = "ErrorMessage_MaxLength", ErrorMessageResourceType = typeof(Resources.Common))] [MinLength(1, ErrorMessageResourceName = "ErrorMessage_MinLength", ErrorMessageResourceType = typeof(Resources.Common))] public string Name { get; set; } = default!;
 
         [Column(TypeName = "decimal(6,2)")]
         public decimal Price { get; set; } = default!;

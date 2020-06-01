@@ -1,8 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Contracts.DAL.Base;
-using DAL.Base;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BLL.App.DTO

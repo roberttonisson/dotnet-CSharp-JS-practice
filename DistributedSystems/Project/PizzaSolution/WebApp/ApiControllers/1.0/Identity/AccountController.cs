@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using BLL.App.DTO;
+using Contracts.BLL.App;
 using Domain.Identity;
 using Extensions;
 using Microsoft.AspNetCore.Authentication;
@@ -27,6 +30,7 @@ namespace WebApp.ApiControllers._1._0.Identity
         private readonly SignInManager<AppUser> _signInManager;
         private IList<AuthenticationScheme>? ExternalLogins { get; set; }
         private readonly IEmailSender _emailSender;
+        private readonly IAppBLL _bll;
 
         /// <summary>
         /// Constructor
@@ -36,14 +40,16 @@ namespace WebApp.ApiControllers._1._0.Identity
         /// <param name="logger"></param>
         /// <param name="signInManager"></param>
         /// <param name="emailSender"></param>
+        /// <param name="bll">bll</param>
         public AccountController(IConfiguration configuration, UserManager<AppUser> userManager,
-            ILogger<AccountController> logger, SignInManager<AppUser> signInManager, IEmailSender emailSender)
+            ILogger<AccountController> logger, SignInManager<AppUser> signInManager, IEmailSender emailSender, IAppBLL bll)
         {
             _configuration = configuration;
             _userManager = userManager;
             _logger = logger;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _bll = bll;
         }
 
         /// <summary>
@@ -71,7 +77,7 @@ namespace WebApp.ApiControllers._1._0.Identity
                     _configuration.GetValue<int>("JWT:ExpirationInDays")
                 );
                 _logger.LogInformation($"Token generated for user {model.Email}");
-                return Ok(new {token = jwt, status = "Logged in"});
+                return Ok(new {token = jwt, status = "Logged in", email = model.Email});
             }
 
             _logger.LogInformation($"Web-Api login. User {model.Email} attempted to log-in with bad password!");
@@ -108,8 +114,16 @@ namespace WebApp.ApiControllers._1._0.Identity
                         _configuration["JWT:Issuer"],
                         _configuration.GetValue<int>("JWT:ExpirationInDays")
                     );
+                    _bll.Carts.Add(new Cart
+                    {
+
+                        AppUserId = appUser.Id,
+                        Active = true,
+                    });
+                   await _bll.SaveChangesAsync();
+                    
                     _logger.LogInformation("Token generated for user");
-                    return Ok(new {token = jwt, status = "Account created for " + model.Email});
+                    return Ok(new {token = jwt, status = "Account created for " + model.Email, email = model.Email});
                 }
 
                 return StatusCode(406); //406 Not Acceptable
@@ -117,20 +131,159 @@ namespace WebApp.ApiControllers._1._0.Identity
 
             return StatusCode(400); //400 Bad Request
         }
-    }
+        
+        /// <summary>
+        /// Change the password.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult<string>> ChangePassword([FromBody] ChangePasswordDTO model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            Console.WriteLine(user.ToString());
+            if (user == null)
+            {
+                _logger.LogInformation("User not found!");
+                return StatusCode(403);
+            }
 
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            if (!changePasswordResult.Succeeded)
+            {
+                foreach (var error in changePasswordResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return StatusCode(406); //406 Not Acceptable
+            }
+
+            await _signInManager.RefreshSignInAsync(user);
+            _logger.LogInformation("User changed their password successfully.");
+            
+            var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(user); //get the User analog
+            var jwt = IdentityExtensions.GenerateJWT(claimsPrincipal.Claims,
+                _configuration["JWT:SigningKey"],
+                _configuration["JWT:Issuer"],
+                _configuration.GetValue<int>("JWT:ExpirationInDays")
+            );
+            _logger.LogInformation("Token generated for user");
+            return Ok(new {token = jwt, status = "Password changed", email = model.Email});
+        }
+        
+        /// <summary>
+        /// Change the password.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult<string>> ChangeEmail([FromBody] ChangeEmailDTO model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            Console.WriteLine(user.ToString());
+            if (user == null)
+            {
+                _logger.LogInformation("User not found!");
+                return StatusCode(403);
+            }
+            var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(user); //get the User analog
+            var jwt = IdentityExtensions.GenerateJWT(claimsPrincipal.Claims,
+                _configuration["JWT:SigningKey"],
+                _configuration["JWT:Issuer"],
+                _configuration.GetValue<int>("JWT:ExpirationInDays")
+            );
+            
+            var email = await _userManager.GetEmailAsync(user);
+            if (model.NewEmail != email)
+            {
+                
+                var code = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
+                await _userManager.ChangeEmailAsync(user, model.NewEmail, code);
+                await _userManager.SetUserNameAsync(user, model.NewEmail);
+                
+                _logger.LogInformation("Token generated for user");
+                return Ok(new {token = jwt, status = "Email changed", email = model.NewEmail});
+            }
+
+            return Ok(new {token = jwt, status = "Email was not changed", email = model.Email});
+        }
+    }
+    
+    
+
+    /// <summary>
+    /// DTO for login validation
+    /// </summary>
     public class LoginDTO
     {
+        /// <summary>
+        /// Email
+        /// </summary>
         public string Email { get; set; } = default!;
+        /// <summary>
+        /// Password
+        /// </summary>
         public string Password { get; set; } = default!;
     }
 
+    /// <summary>
+    /// DTO for register validation
+    /// </summary>
     public class RegisterDTO
     {
+        /// <summary>
+        /// Email
+        /// </summary>
         public string Email { get; set; } = default!;
+        /// <summary>
+        /// Password
+        /// </summary>
         public string Password { get; set; } = default!;
+        /// <summary>
+        /// First name
+        /// </summary>
         public string FirstName { get; set; } = default!;
+        /// <summary>
+        /// Last name
+        /// </summary>
         public string LastName { get; set; } = default!;
+        /// <summary>
+        /// Address
+        /// </summary>
         public string Address { get; set; } = default!;
+    }
+    
+    /// <summary>
+    /// DTO for changing password
+    /// </summary>
+    public class ChangePasswordDTO
+    {
+        /// <summary>
+        /// Email
+        /// </summary>
+        public string Email { get; set; } = default!;
+        /// <summary>
+        /// Old password
+        /// </summary>
+        public string OldPassword { get; set; } = default!;
+        /// <summary>
+        /// Password that we want to change to
+        /// </summary>
+        public string NewPassword { get; set; } = default!;
+    }
+    
+    /// <summary>
+    /// DTO for changing email
+    /// </summary>
+    public class ChangeEmailDTO
+    {
+        /// <summary>
+        /// Old email
+        /// </summary>
+        public string Email { get; set; } = default!;
+        /// <summary>
+        /// New email
+        /// </summary>
+        public string NewEmail { get; set; } = default!;
     }
 }

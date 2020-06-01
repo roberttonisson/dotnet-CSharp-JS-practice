@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Contracts.DAL.Base;
-using DAL.Base;
+
+
 using Domain.Identity;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BLL.App.DTO
@@ -21,7 +22,7 @@ namespace BLL.App.DTO
         [NotMapped] public decimal? Total { get; set; }
 
         [Display(Name = nameof(Address), ResourceType = typeof(Resources.Domain.Shared))]
-        [MaxLength(256)] [MinLength(1)] public string Address { get; set; } = default!;
+        [MaxLength(256, ErrorMessageResourceName = "ErrorMessage_MaxLength", ErrorMessageResourceType = typeof(Resources.Common))] [MinLength(1, ErrorMessageResourceName = "ErrorMessage_MinLength", ErrorMessageResourceType = typeof(Resources.Common))] public string Address { get; set; } = default!;
 
         [Display(Name = nameof(InviteKey), ResourceType = typeof(Resources.Domain.Shared))]
         [MaxLength(8)] [MinLength(6)] public string InviteKey { get; set; } = Guid.NewGuid().ToString();

@@ -1,7 +1,7 @@
 import { bootstrap } from 'aurelia-bootstrapper';
 import { DefaultToppingService } from './../../service/default-topping-service';
 import { AdditionalToppingService } from './../../service/additional-topping-service';
-import { RouteConfig, NavigationInstruction } from 'aurelia-router';
+import { RouteConfig, NavigationInstruction, Router } from 'aurelia-router';
 import { CartService } from './../../service/cart-service';
 import { PizzaInCartService } from './../../service/pizza-in-cart-service';
 import { IPizzaInCart } from './../../domain/IPizzaInCart';
@@ -19,10 +19,15 @@ import { CrustService } from 'service/crust-service';
 import { ICart } from 'domain/ICart';
 import 'style/pizzasDrinks.css'
 import { IDefaultTopping } from 'domain/IDefaultTopping';
+import { AppState } from 'state/app-state';
+import { PizzaResources } from './../../lang/pizzas';
 
 
 @autoinject
 export class PizzasIndex {
+
+    private langResources = PizzaResources;
+
     private _pizzas: IPizzaType[] = [];
 
     private _crusts: ICrust[] = [];
@@ -54,11 +59,13 @@ export class PizzasIndex {
     private _available: ITopping[] = [];
 
     private _quantity: number = 1;
+    private _row: number = 0;
 
 
 
 
     constructor(
+        private appState: AppState,
         private pizzaService: PizzaTypeService,
         private crustService: CrustService,
         private sizeService: SizeService,
@@ -66,7 +73,8 @@ export class PizzasIndex {
         private pizzaInCartService: PizzaInCartService,
         private cartService: CartService,
         private additionalToppingService: AdditionalToppingService,
-        private defaultToppingService: DefaultToppingService
+        private defaultToppingService: DefaultToppingService,
+        private router: Router
     ) {
 
     }
@@ -112,6 +120,7 @@ export class PizzasIndex {
                 if (response.statusCode >= 200 && response.statusCode < 300) {
                     this._alert = null;
                     this._pizzas = response.data!;
+                    this._row = Math.ceil(this._pizzas.length / 3)
                 } else {
                     // show error message
                     this._alert = {
@@ -180,6 +189,10 @@ export class PizzasIndex {
     }
 
     selectPizza(pizza: IPizzaType) {
+        if (this.appState.jwt == null) {
+            this.router.navigateToRoute('account-login');
+            return;
+        }
         this._pizza = null;
         this._additional = [];
         this._available = [];

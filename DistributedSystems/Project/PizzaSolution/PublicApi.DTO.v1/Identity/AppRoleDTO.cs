@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Contracts.DAL.Base;
+using ee.itcollege.rotoni.pizzaApp.Contracts.DAL.Base;
+
 
 namespace PublicApi.DTO.v1.Identity
 {
@@ -8,8 +9,8 @@ namespace PublicApi.DTO.v1.Identity
     {
         public Guid Id { get; set; }
         
-        [MinLength(1)]
-        [MaxLength(256)]
+        [MinLength(1, ErrorMessageResourceName = "ErrorMessage_MinLength", ErrorMessageResourceType = typeof(Resources.Common))]
+        [MaxLength(256, ErrorMessageResourceName = "ErrorMessage_MaxLength", ErrorMessageResourceType = typeof(Resources.Common))]
         [Required]
         public string DisplayName { get; set; } = default!;
         

@@ -4,7 +4,7 @@ import Axios from 'axios';
 export abstract class TransportsApi {
     private static axios = Axios.create(
         {
-            baseURL: "https://localhost:5001/api/Transports/",
+            baseURL: "https://localhost:5001/api/v1.0/Transports/",
             headers: {
                 common: {
                     'Content-Type': 'application/json'

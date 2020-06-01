@@ -2,19 +2,15 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DAL.App.DTO.Identity;
-using DAL.Base;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base;
 
 
 namespace DAL.App.DTO
 {    
     public class Cart : DomainEntityIdMetadataUser<Domain.Identity.AppUser>
     {
-        [NotMapped]
-        [Display(Name = nameof(Total), ResourceType = typeof(Resources.Domain.Shared))]
-        public decimal? Total { get; set; }
-        
+
         public bool Active { get; set; } = true;
-        
 
         public ICollection<PizzaInCart>? PizzaInCarts { get; set; }
         

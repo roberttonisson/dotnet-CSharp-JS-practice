@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <AssemblyName>ee.itcollege.rotoni.pizzaApp.BLL.Base</AssemblyName>
+        <RootNamespace>ee.itcollege.rotoni.pizzaApp.BLL.Base</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="9.0.0" />
+      <PackageReference Include="ee.itcollege.rotoni.pizzaApp.Contracts.BLL.Base" Version="1.0.0" />
+      <PackageReference Include="ee.itcollege.rotoni.pizzaApp.Contracts.DAL.Base" Version="1.0.0" />
+      <PackageReference Include="ee.itcollege.rotoni.pizzaApp.DAL.Base" Version="1.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Contracts.BLL.Base\Contracts.BLL.Base.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -4,7 +4,7 @@ import Axios from 'axios';
 export abstract class SizesApi {
     private static axios = Axios.create(
         {
-            baseURL: "https://localhost:5001/api/Sizes/",
+            baseURL: "https://localhost:5001/api/v1.0/Sizes/",
             headers: {
                 common: {
                     'Content-Type': 'application/json'

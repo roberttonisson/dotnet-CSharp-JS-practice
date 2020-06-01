@@ -16,6 +16,9 @@ using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers._1._0
 {
+    /// <summary>
+    /// Controller for PartyOrderInvoices
+    /// </summary>
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
@@ -25,22 +28,35 @@ namespace WebApp.ApiControllers._1._0
         private readonly IAppBLL _bll;
         private readonly PartyOrderInvoiceDTOMapper _mapper = new PartyOrderInvoiceDTOMapper();
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="bll"></param>
         public PartyOrderInvoicesController(IAppBLL bll)
         {
             _bll = bll;
         }
         
         // GET: api/PartyOrderInvoices
+        /// <summary>
+        /// Get the list of all PartyOrderInvoices for specific user.
+        /// </summary>
+        /// <returns>List of PartyOrderInvoices</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PartyOrderInvoiceDTO>>> GetPartyOrderInvoices()
         {
             var partyOrderInvoices = (await _bll.PartyOrderInvoices.GetAllAsync(User.UserGuidId()))
-                .Select(bllEntity => _mapper.GetDTO(bllEntity));
+                .Select(bllEntity => _mapper.Map(bllEntity));
             
             return Ok(partyOrderInvoices);
         }
 
-     // GET: api/PartyOrderInvoices/5
+        // GET: api/PartyOrderInvoices/5
+        /// <summary>
+        /// Get single PartyOrderInvoice by given id
+        /// </summary>
+        /// <param name="id">Id of the PartyOrderInvoice that we are returning</param>
+        /// <returns>PartyOrderInvoice</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<PartyOrderInvoiceDTO>> GetPartyOrderInvoice(Guid id)
         {
@@ -51,12 +67,18 @@ namespace WebApp.ApiControllers._1._0
                 return NotFound();
             }
 
-            return Ok(_mapper.GetDTO(partyOrderInvoice));
+            return Ok(_mapper.Map(partyOrderInvoice));
         }
 
         // PUT: api/PartyOrderInvoices/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        /// <summary>
+        /// Change existing PartyOrderInvoice by given ID
+        /// </summary>
+        /// <param name="id">Given ID that we use to find the PartyOrderInvoice from DB</param>
+        /// <param name="partyOrderInvoiceDTO">DTO with new values tha we need to change</param>
+        /// <returns>Nothing</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPartyOrderInvoice(Guid id, PartyOrderInvoiceDTO partyOrderInvoiceDTO)
         {
@@ -65,7 +87,7 @@ namespace WebApp.ApiControllers._1._0
                 return BadRequest();
             }
 
-            await _bll.PartyOrderInvoices.UpdateAsync(_mapper.GetBLL(partyOrderInvoiceDTO));
+            await _bll.PartyOrderInvoices.UpdateAsync(_mapper.Map(partyOrderInvoiceDTO));
             await _bll.SaveChangesAsync();
 
             return NoContent();
@@ -75,10 +97,15 @@ namespace WebApp.ApiControllers._1._0
         // POST: api/PartyOrderInvoices
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        /// <summary>
+        /// Add a new PartyOrderInvoice to the DB.
+        /// </summary>
+        /// <param name="partyOrderInvoiceDTO">DTO with the values for the record tha will be inserted into DB.</param>
+        /// <returns>DTO with the values from the record that was added to the DB.</returns>
         [HttpPost]
         public async Task<ActionResult<PartyOrderInvoiceDTO>> PostPartyOrderInvoice(PartyOrderInvoiceDTO partyOrderInvoiceDTO)
         {
-            var bllEntity = _mapper.GetBLL(partyOrderInvoiceDTO);
+            var bllEntity = _mapper.Map(partyOrderInvoiceDTO);
             _bll.PartyOrderInvoices.Add(bllEntity);
             await _bll.SaveChangesAsync();
 
@@ -87,7 +114,12 @@ namespace WebApp.ApiControllers._1._0
             return Ok(partyOrderInvoiceDTO);
         }
 
-        // DELETE: api/PartyOrderInvoices/5
+                // DELETE: api/PartyOrderInvoices/5
+        /// <summary>
+        /// Deletes a PartyOrderInvoice record from the DB by id.
+        /// </summary>
+        /// <param name="id">Id for the record that will be removed from the DB.</param>
+        /// <returns>:)</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<PartyOrderInvoiceDTO>> DeletePartyOrderInvoice(Guid id)
         {
@@ -100,7 +132,7 @@ namespace WebApp.ApiControllers._1._0
             await _bll.PartyOrderInvoices.RemoveAsync(id);
             await _bll.SaveChangesAsync();
 
-            return Ok(_mapper.GetDTO(partyOrderInvoice));
+            return Ok(_mapper.Map(partyOrderInvoice));
         }
         
     }

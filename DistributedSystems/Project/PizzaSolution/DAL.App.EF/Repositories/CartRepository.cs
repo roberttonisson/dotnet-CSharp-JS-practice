@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
-using Contracts.DAL.Base.Mappers;
+
 using DAL.App.EF.Mappers;
-using DAL.Base.EF.Repositories;
-using DAL.Base.Mappers;
+
+
 using Domain;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
@@ -75,6 +76,16 @@ namespace DAL.App.EF.Repositories
                     .ThenInclude(d => d.AdditionalToppings)
                         .ThenInclude(d => d.Topping)
                 .Include(c => c.AppUser!);
+            var domainEntities = await query.FirstOrDefaultAsync();
+            return Mapper.Map(domainEntities);
+        }
+        
+        public virtual async Task<DTO.Cart> GetActiveCartWithoutCollections(Guid? userId = null, bool noTracking = true)
+        {
+            var query = PrepareQuery(userId, noTracking);
+            query = query
+                .Where(a => a.Active == true);
+                
             var domainEntities = await query.FirstOrDefaultAsync();
             return Mapper.Map(domainEntities);
         }

@@ -1,4 +1,7 @@
 using System;
+using BLL.App.DTO;
+using Contracts.BLL.App;
+#pragma warning disable 1591
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -24,17 +27,19 @@ namespace WebApp.Areas.Identity.Pages.Account
         private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IAppBLL _bll;
 
         public RegisterModel(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender, IAppBLL bll)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _bll = bll;
         }
 
         [BindProperty]
@@ -52,13 +57,13 @@ namespace WebApp.Areas.Identity.Pages.Account
             public string? Email { get; set; }
             
             [Display(Name = "First name")]
-            [MaxLength(128)] [MinLength(1)] public string FirstName { get; set; } = default!;
+            [MaxLength(128, ErrorMessageResourceName = "ErrorMessage_MaxLength", ErrorMessageResourceType = typeof(Resources.Common))] [MinLength(1, ErrorMessageResourceName = "ErrorMessage_MinLength", ErrorMessageResourceType = typeof(Resources.Common))] public string FirstName { get; set; } = default!;
 
             [Display(Name = "Last name")]
-            [MaxLength(128)] [MinLength(1)] public string LastName { get; set; } = default!;
+            [MaxLength(128, ErrorMessageResourceName = "ErrorMessage_MaxLength", ErrorMessageResourceType = typeof(Resources.Common))] [MinLength(1, ErrorMessageResourceName = "ErrorMessage_MinLength", ErrorMessageResourceType = typeof(Resources.Common))] public string LastName { get; set; } = default!;
 
             [Display(Name = "Address")]
-            [MaxLength(256)] [MinLength(1)] public string Address { get; set; } = default!;
+            [MaxLength(256, ErrorMessageResourceName = "ErrorMessage_MaxLength", ErrorMessageResourceType = typeof(Resources.Common))] [MinLength(1, ErrorMessageResourceName = "ErrorMessage_MinLength", ErrorMessageResourceType = typeof(Resources.Common))] public string Address { get; set; } = default!;
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -92,6 +97,12 @@ namespace WebApp.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
+                    _bll.Carts.Add(new Cart()
+                    {
+                        AppUserId = user.Id,
+                        Active = true
+                    });
+                    await _bll.SaveChangesAsync();
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

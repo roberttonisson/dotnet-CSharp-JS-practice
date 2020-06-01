@@ -7,4 +7,5 @@ export interface IPizzaType extends IPizzaTypeCreate{
 export interface IPizzaTypeCreate {
     name: string;
     price: number;
+    imageUrl: string;
 }

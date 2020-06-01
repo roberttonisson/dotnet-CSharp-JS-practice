@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 using BLL.App;
 using Contracts.BLL.App;
 using Contracts.DAL.App;
-using Contracts.DAL.Base;
+
 using DAL.App.EF;
 using DAL.App.EF.Helpers;
 using Domain.Identity;
+using ee.itcollege.rotoni.pizzaApp.Contracts.DAL.Base;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -106,7 +107,12 @@ namespace WebApp
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddSwaggerGen();
 
-            
+            var supportedCultures = Configuration
+                .GetSection("SupportedCultures")
+                .GetChildren()
+                .Select(x => new CultureInfo(x.Value))
+                .ToArray();
+
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -185,8 +191,14 @@ namespace WebApp
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
+                    name: "area",
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+                
+                endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+
                 endpoints.MapRazorPages();
             });
 

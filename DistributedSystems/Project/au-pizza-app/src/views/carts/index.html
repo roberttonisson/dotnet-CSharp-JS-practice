@@ -1,27 +1,28 @@
 <template>
-    <h1>Cart</h1>
+    <h1>${langResources[appState.selectedCulture.code].cart}</h1>
     <div if.bind="_loading" class="spinner-border text-primary" role="status">
-        <span class="sr-only">Loading...</span>
+        <span class="sr-only">${langResources[appState.selectedCulture.code].loading}</span>
     </div>
     <div else>
-        <h5>Pizzas and drinks in cart:</h5>
+        <h5>${langResources[appState.selectedCulture.code].pizzasAndDrinksInCart}</h5>
+        <h6>${langResources[appState.selectedCulture.code].required}</h5>
         <table class="table table-bordered table-hover">
             <thead class="bg-danger text-white">
                 <tr>
                     <th>
-                        Pizza
+                        ${langResources[appState.selectedCulture.code].pizza}
                     </th>
                     <th>
-                        Type
+                        ${langResources[appState.selectedCulture.code].type}
                     </th>
                     <th>
-                        Additional toppings
+                        ${langResources[appState.selectedCulture.code].additionalToppings}
                     </th>
                     <th>
-                        Quantity
+                        ${langResources[appState.selectedCulture.code].quantity}
                     </th>
                     <th>
-                        Cost
+                        ${langResources[appState.selectedCulture.code].cost}
                     </th>
                     <th class="bg-danger">
 
@@ -65,19 +66,19 @@
             <thead class="bg-danger text-white">
                 <tr>
                     <th>
-                        Drink
+                        ${langResources[appState.selectedCulture.code].drink}
                     </th>
                     <th>
-                        Size
+                        ${langResources[appState.selectedCulture.code].size}
                     </th>
                     <th>
-                        Price
+                        ${langResources[appState.selectedCulture.code].price}
                     </th>
                     <th>
-                        Quantity
+                        ${langResources[appState.selectedCulture.code].quantity}
                     </th>
                     <th>
-                        Cost
+                        ${langResources[appState.selectedCulture.code].cost}
                     </th>
                     <th class="bg-danger">
 
@@ -121,7 +122,7 @@
                 <tr>
                     <th colspan="3"></th>
                     <th>
-                        Total:
+                        ${langResources[appState.selectedCulture.code].total}
                     </th>
                     <th>
                         ${_cart.total.toFixed(2)}
@@ -132,7 +133,7 @@
                     <td colspan="2">
                         <button if.bind="!_empty" click.delegate="updateQuantity()" type="button"
                             class="btn btn-success btn-lg" data-toggle="modal" data-target="#exampleModalLong">
-                            Order now
+                            ${langResources[appState.selectedCulture.code].orderNow}
                         </button>
 
                         <div class="modal fade " id="exampleModalLong" tabindex="-1" role="dialog"
@@ -151,8 +152,7 @@
                                 </div>
                                 <div else class="modal-content">
                                     <div class="modal-header">
-                                        <h3 class="modal-title text-success" id="exampleModalLongTitle">Select payment
-                                            method and pay</h5>
+                                        <h3 class="modal-title text-success" id="exampleModalLongTitle">${langResources[appState.selectedCulture.code].selectpayment}</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
@@ -160,7 +160,7 @@
                                     <div class="modal-body">
                                         <div class="input-group mb-3">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text" id="basic-addon1">Shipping address</span>
+                                                <span class="input-group-text" id="basic-addon1">${langResources[appState.selectedCulture.code].shippingAddress}</span>
                                             </div>
                                             <input input id="_address" value.bind="_address" type="text"
                                                 class="form-control" placeholder="Tallinn, Mustam2e, Akadeemia tee 7/2"
@@ -175,7 +175,7 @@
                                                             data-toggle="collapse" data-target="#collapseOne"
                                                             aria-expanded="true" aria-controls="collapseOne">
 
-                                                            <img src="https://99casinos.com/media/pages/visa-mastercard/2376156158-1586597263/visa-mastercard-400x-q75.png"
+                                                            <img src="https://cdn1034.templcdn.com/wp-content/uploads/2019/11/Visa-MasterCard.png"
                                                                 class="card-img-top rounded mx-auto methodIMG"
                                                                 alt="...">
 
@@ -188,7 +188,7 @@
                                                     <div class="card-body">
                                                         <button click.delegate="order()" type="button"
                                                             class="btn btn-success btn-lg" data-dismiss="modal">
-                                                            Pay
+                                                            ${langResources[appState.selectedCulture.code].pay}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -200,7 +200,7 @@
                                                             data-toggle="collapse" data-target="#collapseTwo"
                                                             aria-expanded="false" aria-controls="collapseTwo">
 
-                                                            <img src="https://png2.cleanpng.com/sh/ef1c38075dafa9e96f8a8c270c7c03f1/L0KzQYq3V8A0N51sf5H0aYP2gLBuTfxwb5CyiNNEcHHvPbF5hBFvcatmjNt4bj3lecXqjBlvNZNxjdd2LXTyh7BzjBFlNaFmkeJqbD3zfri0jP9od151eet5YXywgLBuTfluaZhqRelydHiwfn68hMFkbWkAS6IDOHTnRXAAWcQ2PmM2S6MANkK0R4a9U8UxO2Y2RuJ3Zx==/kisspng-logo-paypal-organization-bitcoin-bluem-download-paypal-png-logo-paypal-png-image-with-n-5d1ce893088dd5.7945621315621756350351.png"
+                                                            <img src="https://4.bp.blogspot.com/-1U5o6oUjyag/V3ej4fw2e0I/AAAAAAAAAl4/bpDFYFHbjDkkg8o1UHxVwWsl8zDhxgJRACKgB/s1600/paypal-784404_1280.png"
                                                                 class="card-img-top rounded mx-auto methodIMG "
                                                                 alt="...">
 
@@ -212,7 +212,7 @@
                                                     <div class="card-body">
                                                         <button click.delegate="order()" type="button"
                                                             class="btn btn-success btn-lg" data-dismiss="modal">
-                                                            Pay
+                                                            ${langResources[appState.selectedCulture.code].pay}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -237,7 +237,7 @@
                                                     <div class="card-body">
                                                         <button click.delegate="order()" type="button"
                                                             class="btn btn-success btn-lg" data-dismiss="modal">
-                                                            Pay
+                                                            ${langResources[appState.selectedCulture.code].pay}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -249,7 +249,7 @@
                                                         <button class="btn btn-link collapsed" type="button"
                                                             data-toggle="collapse" data-target="#collapseThree"
                                                             aria-expanded="false" aria-controls="collapseThree">
-                                                            Cash
+                                                            ${langResources[appState.selectedCulture.code].cash}
                                                         </button>
                                                     </h2>
                                                 </div>
@@ -258,7 +258,7 @@
                                                     <div class="card-body">
                                                         <button click.delegate="order(false)" type="button"
                                                             class="btn btn-success btn-lg" data-dismiss="modal">
-                                                            Continue
+                                                            ${langResources[appState.selectedCulture.code].continue}
                                                         </button>
                                                     </div>
                                                 </div>

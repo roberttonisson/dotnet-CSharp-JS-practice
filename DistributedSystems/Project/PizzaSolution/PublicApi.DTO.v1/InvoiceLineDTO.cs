@@ -1,8 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DAL.Base;
+
 using Domain;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base;
 
 namespace PublicApi.DTO.v1
 {

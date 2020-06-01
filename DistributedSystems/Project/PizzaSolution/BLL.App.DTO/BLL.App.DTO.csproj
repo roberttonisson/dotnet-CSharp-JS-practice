@@ -5,11 +5,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Contracts.DAL.Base\Contracts.DAL.Base.csproj" />
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="ee.itcollege.rotoni.pizzaApp.Contracts.DAL.Base" Version="1.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     </ItemGroup>
 

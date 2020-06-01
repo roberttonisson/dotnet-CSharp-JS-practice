@@ -4,7 +4,7 @@ import Axios from 'axios';
 export abstract class ToppingsApi {
     private static axios = Axios.create(
         {
-            baseURL: "https://localhost:5001/api/Toppings/",
+            baseURL: "https://localhost:5001/api/v1.0/Toppings/",
             headers: {
                 common: {
                     'Content-Type': 'application/json'

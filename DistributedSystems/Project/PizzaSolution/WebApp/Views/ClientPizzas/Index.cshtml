@@ -1,0 +1,146 @@
+﻿@using BLL.App.DTO
+@model PizzasViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<head>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/css/pizzasDrinks.css"/>
+</head>
+
+<div class="text-left">
+    <h1 class="text-danger">@Resources.Views.ClientPizzas.Index.Pizzas</h1>
+
+    <div class="card-group kappa3">
+        @{ int i = 1; }
+        @foreach (var pizza in Model.PizzaTypes)
+        {
+            <div class="card bg-danger" style="width: 12rem;">
+                <img src="@pizza.ImageUrl"
+                     class="card-img-top kappa4" alt="placeholder for image">
+                <div class="card-body">
+                    <h5 class="card-title text-white">@pizza.Name  @pizza.Price €</h5>
+                    <p class="card-text text-white">
+                        @Resources.Views.ClientPizzas.Index.PlaceHolder
+                    </p>
+
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <button id="choose" type="button" class="btn btn-light text-danger font-weight-bold" data-toggle="modal"
+                                data-target="#exampleModal@(i)">
+                            @Resources.Views.ClientPizzas.Index.ChoosePizza
+                        </button>
+                    }
+                    else
+                    {
+                        <form asp-action="CheckLogin">
+                            <div asp-validation-summary="All" class="text-danger "></div>
+                            <button type="submit" class="btn btn-light font-weight-bold text-danger">
+                                @Resources.Views.ClientPizzas.Index.ChoosePizza
+                            </button>
+                        </form>
+                    }
+                    <div class="modal fade " id="exampleModal@(i)" tabindex="-1" role="dialog"
+                         aria-labelledby="exampleModalLongTitle@(i)" aria-hidden="true">
+                        <div class="modal-dialog " role="document">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger">
+                                    <h1 class="modal-title text-white " id="exampleModalLongTitle@(i)">@pizza.Name -- @pizza.Price€</h1 >
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body xdd">
+                                    <img src="@pizza.ImageUrl"
+                                         class="card-img-top kappa kappa2 rounded mx-auto d-block" alt="...">
+                                    <form asp-action="AddToCart">
+                                        <h5 class="font-weight-bold">@Resources.Views.ClientPizzas.Index.DefaultToppingsAre:</h5>
+                                        @foreach (var d in Model.DefaultToppings)
+                                        {
+                                            if (d.PizzaTypeId == pizza.Id)
+                                            {
+                                                <div>&emsp;@(d.Topping!.Name)</div>
+                                            }
+                                        }
+                                        <p></p>
+                                        <div asp-validation-summary="All" class="text-danger"></div>
+                                        <div class="form-group">
+                                            <label class="font-weight-bold" style="font-size:1.25rem">@Resources.Views.ClientPizzas.Index.Crust:</label>
+                                            <select asp-for="PizzaInCart.CrustId" class="form-control" asp-items="Model.CrustSelectList"></select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="font-weight-bold" style="font-size:1.25rem">@Resources.Views.ClientPizzas.Index.Size:</label>
+                                            <select asp-for="PizzaInCart.SizeId" class="form-control" asp-items="Model.SizeSelectList"></select>
+                                        </div>
+                                        <h5>@Resources.Views.ClientPizzas.Index.SelectAdditionalToppings:</h5>
+                                        <select asp-for="AdditionalToppings" multiple>
+                                            @foreach (var topping in Model.Toppings)
+                                            {
+                                                var inDefault = false;
+                                                foreach (var def in Model.DefaultToppings)
+                                                {
+                                                    if (def.PizzaTypeId == pizza.Id)
+                                                    {
+                                                        if (def.ToppingId == topping.Id)
+                                                        {
+                                                            inDefault = true;
+                                                        }
+                                                    }
+                                                }
+                                                if (!inDefault)
+                                                {
+                                                    <option value="@topping.Id">@topping.Name (@topping.Price€)</option>
+                                                }
+                                            }
+                                        </select>
+                                        <h4 class="card-title">@Resources.Views.ClientPizzas.Index.Quantity:</h4>
+                                        <div class="qty mt-5">
+                                            <span class="minus bg-dark">-</span>
+                                            <input asp-for="PizzaInCart.Quantity" id="quantity" type="number" class="count" name="qty" value="1">
+                                            <span class="plus bg-dark">+</span>
+                                        </div>
+                                        <p></p>
+                                        <input asp-for="PizzaInCart.Quantity" value="1" id="dic" type="hidden">
+                                        <input asp-for="PizzaInCart.PizzaTypeId" value="@pizza.Id" type="hidden">
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-danger">
+                                                @Resources.Views.ClientPizzas.Index.AddToCart
+                                            </button>
+                                            <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">
+                                                @Resources.Views.ClientPizzas.Index.Close
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            i++;
+        }
+    </div>
+</div>
+<script>
+		$(document).ready(function(){
+		    $('.count').prop('disabled', true);
+   			$(document).on('click','.plus',function(){
+				$(this).siblings('.count').val(parseInt($(this).siblings('.count').val()) + 1 )
+				$(this).parent().siblings('#dic').val($(this).siblings('.count').val())
+				$(this).siblings('#total').text(parseFloat($(this).siblings('.count').val()) * parseFloat($(this).parent().siblings('#price').text()));
+    		});
+        	$(document).on('click','.minus',function(){
+    			$(this).siblings('.count').val(parseInt($(this).siblings('.count').val()) - 1 )
+    			$(this).parent().siblings('#dic').val($(this).siblings('.count').val())
+    				if ($(this).siblings('.count').val() == 0) {
+						$(this).siblings('.count').val(1)
+						$(this).parent().siblings('#dic').val(1)
+					}
+    				$(this).siblings('#total').text(parseFloat($(this).siblings('.count').val()) * parseFloat($(this).parent().siblings('#price').text()))
+    	    	});
+ 		});	
+</script>

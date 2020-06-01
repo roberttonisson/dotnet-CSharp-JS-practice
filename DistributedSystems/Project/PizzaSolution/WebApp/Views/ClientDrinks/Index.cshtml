@@ -1,0 +1,120 @@
+﻿@using Contracts.BLL.App
+@using BLL.App.DTO
+@using Extensions
+@using WebApp.Controllers.Client
+@model DrinksViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<head>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/css/pizzasDrinks.css"/>
+</head>
+
+<h1>@Resources.Views.ClientDrinks.Index.Drinks</h1>
+
+@for (var y = 0; y < (int)Math.Ceiling(Model.Drinks.Count() / 3.0); y++)
+{
+    <div class="card-group kappa3">
+        @for (var z = 0; z < 3; z++)
+        {
+            var i = 3 * y + z;
+            if (i < Model.Drinks.Count())
+            {
+                var drink = @Model.Drinks.ElementAt(i);
+                <div class="card">
+                    <img src="@drink.ImageUrl"
+                         class="card-img-top kappa" alt="placeholder for image">
+                    <div class="card-body">
+                        <h5 class="card-title">@drink.Name - @(drink.Size)l</h5>
+                        <p class="card-text">
+                            @Resources.Views.ClientDrinks.Index.PlaceHolder
+                        </p>
+
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <button id="choose" type="button" class="btn btn-primary" data-toggle="modal"
+                                    data-target="#exampleModal@(i)">
+                                @Resources.Views.ClientDrinks.Index.ChooseDrink
+                            </button>
+                        }
+                        else
+                        {
+                            <form asp-action="CheckLogin">
+                                <div asp-validation-summary="All" class="text-danger"></div>
+                                <button type="submit" class="btn btn-primary">
+                                    @Resources.Views.ClientDrinks.Index.ChooseDrink
+                                </button>
+                            </form>
+                        }
+                        <div class="modal fade " id="exampleModal@(i)" tabindex="-1" role="dialog"
+                             aria-labelledby="exampleModalLongTitle@(i)" aria-hidden="true">
+                            <div class="modal-dialog " role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title text-primary " id="exampleModalLongTitle@(i)">@drink.Name</h1 >
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body xdd">
+                                        <img src="@drink.ImageUrl"
+                                             class="card-img-top kappa kappa2 rounded mx-auto d-block" alt="...">
+                                        <form asp-action="AddToCart">
+                                            <div asp-validation-summary="All" class="text-danger"></div>
+                                            <h4 id="price" class="card-title text-primary">@drink.Price€</h4>
+                                            <h4 class="card-title">@Resources.Views.ClientDrinks.Index.Quantity:</h4>
+                                            <div class="qty mt-5">
+                                                <span class="minus bg-dark">-</span>
+                                                <input asp-for="DrinkInCart.Quantity" id="quantity" type="number" class="count" name="qty" value="1">
+                                                <span class="plus bg-dark">+</span>
+                                                <h4 id="total" class="text-primary">@drink.Price€</h4>
+                                            </div>
+                                            <input asp-for="DrinkInCart.Quantity" value="1" id="dic" type="hidden">
+                                            <input asp-for="DrinkInCart.DrinkId" value="@drink.Id" type="hidden">
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-primary">
+                                                    @Resources.Views.ClientDrinks.Index.AddToCart
+                                                </button>
+                                                <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">
+                                                    @Resources.Views.ClientDrinks.Index.Close
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        }
+    </div>
+}
+<script>
+
+</script>
+<script>
+		$(document).ready(function(){
+		    $('.count').prop('disabled', true);
+   			$(document).on('click','.plus',function(){
+				$(this).siblings('.count').val(parseInt($(this).siblings('.count').val()) + 1 )
+				$(this).parent().siblings('#dic').val($(this).siblings('.count').val())
+				$(this).siblings('#total').text(parseFloat($(this).siblings('.count').val()) * parseFloat($(this).parent().siblings('#price').text()));
+    		});
+        	$(document).on('click','.minus',function(){
+    			$(this).siblings('.count').val(parseInt($(this).siblings('.count').val()) - 1 )
+    			$(this).parent().siblings('#dic').val($(this).siblings('.count').val())
+    				if ($(this).siblings('.count').val() == 0) {
+						$(this).siblings('.count').val(1)
+						$(this).parent().siblings('#dic').val(1)
+					}
+    				$(this).siblings('#total').text(parseFloat($(this).siblings('.count').val()) * parseFloat($(this).parent().siblings('#price').text()))
+    	    	});
+ 		});	
+</script>

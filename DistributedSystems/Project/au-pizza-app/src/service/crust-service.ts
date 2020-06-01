@@ -9,7 +9,7 @@ import { BaseService } from './base-service';
 export class CrustService extends BaseService<ICrust,ICrust>{
 
     constructor(protected  appState: AppState, protected  httpClient: HttpClient){
-        super("Crusts", appState,httpClient);
+        super("Crusts", appState, httpClient);
     }
 
 }

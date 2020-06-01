@@ -1,8 +1,8 @@
 <template>
-    <h1>Orders</h1>
+    <h1>${langResources[appState.selectedCulture.code].orders}</h1>
 
     <div if.bind="_loading" class="spinner-border text-primary" role="status">
-        <span class="sr-only">Loading...</span>
+        <span class="sr-only">${langResources[appState.selectedCulture.code].loading}</span>
     </div>
 
     <div else class="accordion" id="accordionExample">
@@ -16,8 +16,10 @@
                         <div class="text-success font-weight-bold">Order id: ${invoice.id}</div>
                         <div class="text-success font-weight-bold">${invoice.createdAt.split("T")[0]}</div>
                         <div class="text-danger font-weight-bold">${invoice.orderStatus.status}</div>
-                        <div if.bind="invoice.isPaid" class="text-success font-weight-bold">Successfully paid</div>
-                        <div else class="text-danger font-weight-bold">Cash payment when receiving the order</div>
+                        <div if.bind="invoice.isPaid" class="text-success font-weight-bold">
+                            ${langResources[appState.selectedCulture.code].successful}</div>
+                        <div else class="text-danger font-weight-bold">
+                            ${langResources[appState.selectedCulture.code].unsuccessful}</div>
                     </button>
                 </h2>
             </div>
@@ -28,10 +30,10 @@
                     <table class="table table-borderless">
                         <thead>
                             <tr>
-                                <th scope="col">Item</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Quantity</th>
-                                <th scope="col">Sum</th>
+                                <th scope="col">${langResources[appState.selectedCulture.code].item}</th>
+                                <th scope="col">${langResources[appState.selectedCulture.code].price}</th>
+                                <th scope="col">${langResources[appState.selectedCulture.code].quantity}</th>
+                                <th scope="col">${langResources[appState.selectedCulture.code].sum}</th>
                             </tr>
                         </thead>
                         <tbody repeat.for="invoiceLine of invoice.invoiceLines">
@@ -49,12 +51,24 @@
                             </tr>
 
                         </tbody>
-                        <tbody  class="font-weight-bold">
+                        <tbody class="font-weight-bold">
                             <tr>
                                 <td colspan="2"> </td>
-                                <td>Total:</td>
+                                <td>${langResources[appState.selectedCulture.code].total}</td>
                                 <td>${invoice.total}€</td>
                             </tr>
+                            <tr>
+                                <td colspan="2"> </td>
+                                <td colspan="2" class="d-inline">
+                                    <button click.delegate="reOrder(invoice)" type="button"
+                                        class="btn btn-success btn-lg">
+                                        ${langResources[appState.selectedCulture.code].reorderThis}
+                                    </button>
+                                </td>
+                            </tr>
+                            <div if.bind="_loading2" class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
                         </tbody>
                     </table>
                 </div>

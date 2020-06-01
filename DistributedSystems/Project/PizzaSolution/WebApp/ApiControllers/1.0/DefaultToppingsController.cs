@@ -16,6 +16,9 @@ using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers._1._0
 {
+    /// <summary>
+    /// Controller for DefaultToppings
+    /// </summary>
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
@@ -24,12 +27,20 @@ namespace WebApp.ApiControllers._1._0
         private readonly IAppBLL _bll;
         private readonly DefaultToppingDTOMapper _mapper = new DefaultToppingDTOMapper();
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="bll"></param>
         public DefaultToppingsController(IAppBLL bll)
         {
             _bll = bll;
         }
         
         // GET: api/DefaultToppings
+        /// <summary>
+        /// Get the list of all DefaultToppings for specific user.
+        /// </summary>
+        /// <returns>List of DefaultToppings</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DefaultToppingDTO>>> GetDefaultToppings()
         {
@@ -39,7 +50,12 @@ namespace WebApp.ApiControllers._1._0
             return Ok(defaultToppings);
         }
 
-     // GET: api/DefaultToppings/5
+        // GET: api/DefaultToppings/5
+        /// <summary>
+        /// Get single DefaultTopping by given id
+        /// </summary>
+        /// <param name="id">Id of the DefaultTopping that we are returning</param>
+        /// <returns>DefaultTopping</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<DefaultToppingDTO>> GetDefaultTopping(Guid id)
         {
@@ -56,7 +72,14 @@ namespace WebApp.ApiControllers._1._0
         // PUT: api/DefaultToppings/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        /// <summary>
+        /// Change existing DefaultTopping by given ID
+        /// </summary>
+        /// <param name="id">Given ID that we use to find the DefaultTopping from DB</param>
+        /// <param name="defaultToppingDTO">DTO with new values tha we need to change</param>
+        /// <returns>Nothing</returns>
         [HttpPut("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> PutDefaultTopping(Guid id, DefaultToppingDTO defaultToppingDTO)
         {
             if (id != defaultToppingDTO.Id)
@@ -74,7 +97,13 @@ namespace WebApp.ApiControllers._1._0
         // POST: api/DefaultToppings
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        /// <summary>
+        /// Add a new DefaultTopping to the DB.
+        /// </summary>
+        /// <param name="defaultToppingDTO">DTO with the values for the record tha will be inserted into DB.</param>
+        /// <returns>DTO with the values from the record that was added to the DB.</returns>
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<ActionResult<DefaultToppingDTO>> PostDefaultTopping(DefaultToppingDTO defaultToppingDTO)
         {
             var bllEntity = _mapper.Map(defaultToppingDTO);
@@ -87,7 +116,13 @@ namespace WebApp.ApiControllers._1._0
         }
 
         // DELETE: api/DefaultToppings/5
+        /// <summary>
+        /// Deletes a DefaultTopping record from the DB by id.
+        /// </summary>
+        /// <param name="id">Id for the record that will be removed from the DB.</param>
+        /// <returns>:)</returns>
         [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<ActionResult<DefaultToppingDTO>> DeleteDefaultTopping(Guid id)
         {
             var defaultTopping = await _bll.DefaultToppings.FirstOrDefaultAsync(id);

@@ -13,6 +13,7 @@ namespace Contracts.DAL.App.Repositories
     {
         Task<IEnumerable<TInvoice>> GetAllAsync(Guid? userId = null, bool noTracking = true);
         Task<IEnumerable<TInvoice>> GetAllWithCollectionsAsync(Guid? userId = null, bool noTracking = true);
+        Task<TInvoice> FirstWithCollectionsAsync(Guid Id, Guid? userId = null, bool noTracking = true);
         Task<TInvoice> FirstOrDefaultAsync(Guid Id, Guid? userId = null, bool noTracking = true);
     }
     

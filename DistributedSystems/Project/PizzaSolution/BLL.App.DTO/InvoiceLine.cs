@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Contracts.DAL.Base;
-using DAL.Base;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BLL.App.DTO
@@ -14,6 +13,7 @@ namespace BLL.App.DTO
         [NotMapped] public decimal? Total { get; set; }
 
         [Display(Name = nameof(Quantity), ResourceType = typeof(Resources.Domain.Shared))]
+        [Required(ErrorMessageResourceName = "ErrorMessage_Required", ErrorMessageResourceType = typeof(Resources.Common))]
         public int Quantity { get; set; } = default;
 
         public Guid? PizzaInCartId { get; set; }
@@ -21,7 +21,8 @@ namespace BLL.App.DTO
 
         public Guid? DrinkInCartId { get; set; }
         public DrinkInCart? DrinkInCart { get; set; }
-
+        
+        [Required(ErrorMessageResourceName = "ErrorMessage_Required", ErrorMessageResourceType = typeof(Resources.Common))]
         public Guid InvoiceId { get; set; } = default!;
         public Invoice? Invoice { get; set; }
         

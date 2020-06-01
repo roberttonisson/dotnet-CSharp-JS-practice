@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DAL.Base.Mappers;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base.Mappers;
 
 namespace DAL.App.EF.Mappers
 {
@@ -29,6 +29,7 @@ namespace DAL.App.EF.Mappers
             MapperConfigurationExpression.CreateMap<Domain.Topping, DAL.App.DTO.Topping>();
             MapperConfigurationExpression.CreateMap<Domain.Transport, DAL.App.DTO.Transport>();
             MapperConfigurationExpression.CreateMap<Domain.OrderStatus, DAL.App.DTO.OrderStatus>();
+            MapperConfigurationExpression.CreateMap<Domain.NewProduct, DAL.App.DTO.NewProduct>();
             
             
             Mapper = new Mapper(new MapperConfiguration(MapperConfigurationExpression));

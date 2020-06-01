@@ -1,4 +1,4 @@
-import { RouteConfig, NavigationInstruction } from 'aurelia-router';
+import { RouteConfig, NavigationInstruction, Router } from 'aurelia-router';
 import { CartService } from 'service/cart-service';
 import { autoinject } from 'aurelia-framework';
 import { AlertType } from "types/AlertType";
@@ -8,12 +8,15 @@ import { IDrink } from 'domain/IDrink';
 import { IDrinkInCart } from 'domain/IDrinkInCart';
 import { DrinkService } from 'service/drink-service';
 import { DrinkInCartService } from 'service/drink-in-cart-service';
+import { DrinkResources } from './../../lang/drinks';
 import 'style/pizzasDrinks.css'
+import { AppState } from 'state/app-state';
 
 
 
 @autoinject
 export class DrinksIndex {
+    private langResources = DrinkResources;
 
     private _drinks: IDrink[] = [];
 
@@ -27,12 +30,16 @@ export class DrinksIndex {
 
     private _quantity: number = 1;
 
+    private _row: number = 0;
+
 
 
     constructor(
+        private appState: AppState,
         private drinkService: DrinkService,
         private drinkInCartService: DrinkInCartService,
         private cartService: CartService,
+        private router: Router
     ) {
 
     }
@@ -60,6 +67,7 @@ export class DrinksIndex {
                 if (response.statusCode >= 200 && response.statusCode < 300) {
                     this._alert = null;
                     this._drinks = response.data!;
+                    this._row = Math.ceil(this._drinks.length / 3)
                 } else {
                     // show error message
                     this._alert = {
@@ -78,6 +86,10 @@ export class DrinksIndex {
     }
 
     selectDrink(drink: IDrink) {
+        if (this.appState.jwt == null) {
+            this.router.navigateToRoute('account-login');
+            return;
+        }
         this._drink = drink;
     }
 
@@ -132,5 +144,7 @@ export class DrinksIndex {
         return 0;
        
     }
+
+    
 
 }

@@ -1,6 +1,6 @@
 ﻿namespace PublicApi.DTO.v1.Mappers
 {
-    public class TransportDTOMapper : BaseMapper<BLL.App.DTO.Transport, TransportDTO>
+    public class TransportDTOMapper : DTOMapper<BLL.App.DTO.Transport, TransportDTO>
     {
 
     }

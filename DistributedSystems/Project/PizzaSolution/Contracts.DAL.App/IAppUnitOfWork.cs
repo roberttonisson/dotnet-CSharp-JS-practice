@@ -1,5 +1,6 @@
 ﻿using Contracts.DAL.App.Repositories;
-using Contracts.DAL.Base;
+using ee.itcollege.rotoni.pizzaApp.Contracts.DAL.Base;
+
 
 namespace Contracts.DAL.App
 {
@@ -22,6 +23,7 @@ namespace Contracts.DAL.App
         ITransportRepository Transports { get; }
         IAppUserRepository AppUsers { get; }
         IOrderStatusRepository OrderStatuses { get; }
+        INewProductRepository NewProducts { get; }
         
     }
 }

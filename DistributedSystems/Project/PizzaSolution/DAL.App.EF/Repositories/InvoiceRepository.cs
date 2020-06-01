@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
-using Contracts.DAL.Base.Mappers;
+
 using DAL.App.EF.Mappers;
-using DAL.Base.EF.Repositories;
-using DAL.Base.Mappers;
+
+
 using Domain;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Drink = BLL.App.DTO.Drink;
 
@@ -49,25 +50,25 @@ namespace DAL.App.EF.Repositories
                
                 .Include(c => c.InvoiceLines)
                     .ThenInclude(e => e.DrinkInCart)
-                        .ThenInclude(f => f.Drink)
+                        .ThenInclude(f => f!.Drink)
                 
                 .Include(c => c.InvoiceLines)
                     .ThenInclude(e => e.PizzaInCart)
-                        .ThenInclude(f => f.PizzaType)
+                        .ThenInclude(f => f!.PizzaType)
                 .Include(c => c.InvoiceLines)
                     .ThenInclude(e => e.PizzaInCart)
-                        .ThenInclude(f => f.Crust)
+                        .ThenInclude(f => f!.Crust)
                 .Include(c => c.InvoiceLines)
                     .ThenInclude(e => e.PizzaInCart)
-                        .ThenInclude(f => f.Size)
+                        .ThenInclude(f => f!.Size)
                 .Include(c => c.InvoiceLines)
                     .ThenInclude(e => e.PizzaInCart)
-                        .ThenInclude(f => f.AdditionalToppings)
+                        .ThenInclude(f => f!.AdditionalToppings)
                             .ThenInclude(x => x.Topping)
                 
                 .Include(c => c.InvoiceLines)
                     .ThenInclude(e => e.DrinkInCart)
-                        .ThenInclude(f => f.Drink);
+                        .ThenInclude(f => f!.Drink);
             if (userId != null)
             {
                 query = query.Where(a => a.AppUser!.Id == userId);
@@ -95,5 +96,45 @@ namespace DAL.App.EF.Repositories
             return Mapper.Map(domainEntity);
 
         }
+        
+        public virtual async Task<DTO.Invoice> FirstWithCollectionsAsync(Guid Id, Guid? userId = null, bool noTracking = true)
+        {
+            var query = PrepareQuery(userId, noTracking);
+            query = query
+                .Where(d => d.Id == Id)
+                .Include(i => i.AppUser)
+                .Include(i => i.Transport)
+                .Include(i => i.OrderStatus)
+               
+                .Include(c => c.InvoiceLines)
+                .ThenInclude(e => e.DrinkInCart)
+                .ThenInclude(f => f!.Drink)
+                
+                .Include(c => c.InvoiceLines)
+                .ThenInclude(e => e.PizzaInCart)
+                .ThenInclude(f => f!.PizzaType)
+                .Include(c => c.InvoiceLines)
+                .ThenInclude(e => e.PizzaInCart)
+                .ThenInclude(f => f!.Crust)
+                .Include(c => c.InvoiceLines)
+                .ThenInclude(e => e.PizzaInCart)
+                .ThenInclude(f => f!.Size)
+                .Include(c => c.InvoiceLines)
+                .ThenInclude(e => e.PizzaInCart)
+                .ThenInclude(f => f!.AdditionalToppings)
+                .ThenInclude(x => x.Topping)
+                
+                .Include(c => c.InvoiceLines)
+                .ThenInclude(e => e.DrinkInCart)
+                .ThenInclude(f => f!.Drink);
+            if (userId != null)
+            {
+                query = query.Where(a => a.AppUser!.Id == userId);
+            }
+            var domainEntity = await query.FirstOrDefaultAsync();
+            return Mapper.Map(domainEntity);
+
+        }
+        
     }
 }

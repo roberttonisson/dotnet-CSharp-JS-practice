@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Contracts.DAL.Base;
-using DAL.Base;
+
+
 using Domain.Identity;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base;
 
 namespace Domain
 {
@@ -19,9 +20,11 @@ namespace Domain
         
         public DateTime? Estimated { get; set; }
         
+        [Required(ErrorMessageResourceName = "ErrorMessage_Required", ErrorMessageResourceType = typeof(Resources.Common))]
         public Guid TransportId { get; set; } = default!;
         public Transport? Transport { get; set; }
         
+        [Required(ErrorMessageResourceName = "ErrorMessage_Required", ErrorMessageResourceType = typeof(Resources.Common))]
         public Guid OrderStatusId { get; set; } = default!;
         public OrderStatus? OrderStatus { get; set; }
 

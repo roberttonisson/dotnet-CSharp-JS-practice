@@ -15,87 +15,59 @@
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-0">
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-danger border-bottom box-shadow mb-0 text-white">
         <div class="container customHeader">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">@Resources.Views.Shared._Layout.Home</a>
+                <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">@Resources.Views.Shared._Layout.Home</a>
             </div>
-            <li class="nav-item dropdown">
-                <a class="dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    PizzaApp
-                </a>
-                <div class="dropdown-menu nav-item" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" asp-area="" asp-controller="AdditionalToppings" asp-action="Index">AdditionalToppings</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="Carts" asp-action="Index">Carts</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="Crusts" asp-action="Index">Crusts</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="DefaultToppings" asp-action="Index">DefaultToppings</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="Drinks" asp-action="Index">Drinks</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="DrinkInCarts" asp-action="Index">DrinkInCarts</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="InvoiceLines" asp-action="Index">InvoiceLines</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="Invoices" asp-action="Index">Invoices</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="PartyOrderInvoices" asp-action="Index">PartyOrderInvoices</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="PartyOrders" asp-action="Index">PartyOrders</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="PizzaInCarts" asp-action="Index">PizzaInCarts</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="PizzaTypes" asp-action="Index">PizzaTypes</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="Sizes" asp-action="Index">Sizes</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="Toppings" asp-action="Index">Toppings</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="Transports" asp-action="Index">Transports</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="OrderStatuses" asp-action="Index">OrderStatuses</a>
-                </div>
-            </li>
+            @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+            {
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        ADMIN
+                    </a>
+                    <div class="dropdown-menu nav-item " aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="AdditionalToppings" asp-action="Index">AdditionalToppings</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="Carts" asp-action="Index">Carts</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="Crusts" asp-action="Index">Crusts</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="DefaultToppings" asp-action="Index">DefaultToppings</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="Drinks" asp-action="Index">Drinks</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="DrinkInCarts" asp-action="Index">DrinkInCarts</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="InvoiceLines" asp-action="Index">InvoiceLines</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="Invoices" asp-action="Index">Invoices</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="PartyOrderInvoices" asp-action="Index">PartyOrderInvoices</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="PartyOrders" asp-action="Index">PartyOrders</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="PizzaInCarts" asp-action="Index">PizzaInCarts</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="PizzaTypes" asp-action="Index">PizzaTypes</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="Sizes" asp-action="Index">Sizes</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="Toppings" asp-action="Index">Toppings</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="Transports" asp-action="Index">Transports</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="OrderStatuses" asp-action="Index">OrderStatuses</a>
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="NewProducts" asp-action="Index">NewProducts</a>
+                    </div>
+                </li>
+            }
             <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                 <partial name="_LoginPartial"/>
                 <ul class="navbar-nav flex-grow-1">
 
-                    @*<li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="AdditionalToppings" asp-action="Index">AdditionalToppings</a>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" asp-area="" asp-controller="ClientCarts" asp-action="Index">@Resources.Views.Shared._Layout.Cart</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Carts" asp-action="Index">Carts</a>
+                        <a class="nav-link text-white" asp-area="" asp-controller="ClientDrinks" asp-action="Index">@Resources.Views.Shared._Layout.Drinks</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Crusts" asp-action="Index">Crusts</a>
+                        <a class="nav-link text-white" asp-area="" asp-controller="ClientPizzas" asp-action="Index">@Resources.Views.Shared._Layout.Pizzas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="DefaultToppings" asp-action="Index">DefaultToppings</a>
+                        <a class="nav-link text-white" asp-area="" asp-controller="ClientOrders" asp-action="Index">@Resources.Views.Shared._Layout.Orders</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Drinks" asp-action="Index">Drinks</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="DrinkInCarts" asp-action="Index">DrinkInCarts</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="InvoiceLines" asp-action="Index">InvoiceLines</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Invoices" asp-action="Index">Invoices</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="PartyOrderInvoices" asp-action="Index">PartyOrderInvoices</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="PartyOrders" asp-action="Index">PartyOrders</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="PizzaInCarts" asp-action="Index">PizzaInCarts</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="PizzaTypes" asp-action="Index">PizzaTypes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Sizes" asp-action="Index">Sizes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Toppings" asp-action="Index">Toppings</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Transports" asp-action="Index">Transports</a>
-                    </li>*@
+
                 </ul>
             </div>
         </div>
@@ -109,7 +81,7 @@
 
 <footer class="border-top footer text-muted">
     <div class="container">
-        &copy; 2020 - PizzaApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">@Resources.Views.Shared._Layout.Privacy</a>
+        &copy; 2020 - PizzaApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">@Resources.Views.Shared._Layout.Privacy</a> - <a class="nav-link text-primary d-inline p0" href="https://rotoni-pizza.azurewebsites.net/swagger/">SwaggerDocs</a>
     </div>
 </footer>
 @*

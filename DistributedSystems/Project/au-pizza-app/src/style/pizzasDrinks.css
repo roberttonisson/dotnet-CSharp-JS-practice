@@ -1,16 +1,30 @@
+
+
 .kappa {
-    max-width: 12rem;
-    height: auto;
+    width: 16rem;
+    height: 22rem;
+    margin-left: auto;
+    margin-right: auto;
+    object-fit: contain;
+}
+.kappa4 {
+    width: 16rem;
+    height: 9rem;
     margin-left: auto;
     margin-right: auto;
 }
+.kappa5 {
+    width: 26rem;
+    height: auto;
+}
 
 .kappa2 {
-    max-width: 18rem;
+    max-width: 14rem;
 }
 
 .kappa3 {
-    max-width: 36rem;
+    width: 18rem;
+    flex-flow: unset;
 }
 
 .btn-outline-primary {

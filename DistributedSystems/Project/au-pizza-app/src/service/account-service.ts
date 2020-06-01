@@ -79,4 +79,69 @@ export class AccountService {
             }
         }
     }
+
+    async changePassword(oldPassword: string, newPassword: string, email: string): Promise<IFetchResponse<ILoginResponse>> {
+        try {
+            const response = await this.httpClient.post('account/changePassword', JSON.stringify({
+                email: email,
+                oldPassword: oldPassword,
+                newPassword: newPassword
+            }), {
+                cache: 'no-store'
+            });
+
+            // happy case
+            if (response.status >= 200 && response.status < 300){
+                const data = (await response.json()) as ILoginResponse;
+                return {
+                    statusCode: response.status,
+                    data: data
+                }
+            } 
+
+            // something went wrong
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
+            }
+        }
+        catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
+            }
+        }
+    }
+
+    async changeEmail(email: string, newEmail: string): Promise<IFetchResponse<ILoginResponse>> {
+        try {
+            const response = await this.httpClient.post('account/changeEmail', JSON.stringify({
+                email: email,
+                newEmail: newEmail,
+            }), {
+                cache: 'no-store'
+            });
+
+            // happy case
+            if (response.status >= 200 && response.status < 300){
+                const data = (await response.json()) as ILoginResponse;
+                return {
+                    statusCode: response.status,
+                    data: data
+                }
+            } 
+
+            // something went wrong
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
+            }
+        }
+        catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
+            }
+        }
+    }
 }

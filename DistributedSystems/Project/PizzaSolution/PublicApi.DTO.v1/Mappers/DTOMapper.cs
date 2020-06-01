@@ -7,7 +7,7 @@ namespace PublicApi.DTO.v1.Mappers
         where TLeftObject : class?, new()
     {
         public DTOMapper() : base()
-        { 
+        {
             // add more mappings
             MapperConfigurationExpression.CreateMap<BLL.App.DTO.Identity.AppUser, Identity.AppUserDTO>();
             MapperConfigurationExpression.CreateMap<Domain.Identity.AppUser, Identity.AppUserDTO>();
@@ -28,7 +28,8 @@ namespace PublicApi.DTO.v1.Mappers
             MapperConfigurationExpression.CreateMap<BLL.App.DTO.Topping, ToppingDTO>();
             MapperConfigurationExpression.CreateMap<BLL.App.DTO.Transport, TransportDTO>();
             MapperConfigurationExpression.CreateMap<BLL.App.DTO.OrderStatus, OrderStatusDTO>();
-            
+            MapperConfigurationExpression.CreateMap<BLL.App.DTO.NewProduct, NewProductDTO>();
+
             Mapper = new Mapper(new MapperConfiguration(MapperConfigurationExpression));
         }
     }

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
-using Contracts.DAL.Base.Mappers;
-using DAL.Base.EF.Repositories;
-using DAL.Base.Mappers;
+
+
+
 using Domain;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base.EF.Repositories;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base.Mappers;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories

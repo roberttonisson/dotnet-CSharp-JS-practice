@@ -1,0 +1,155 @@
+﻿@model CartViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>@Resources.Views.ClientCarts.Index.Cart</h1>
+<div>
+    <h5>@Resources.Views.ClientCarts.Index.PizzasAndDrinkInYourCart</h5>
+    <table class="table table-bordered table-hover">
+        <thead class="bg-danger text-white">
+        <tr>
+            <th>
+                @Resources.Views.ClientCarts.Index.Pizza
+            </th>
+            <th>
+                @Resources.Views.ClientCarts.Index.Type
+            </th>
+            <th>
+                @Resources.Views.ClientCarts.Index.AdditionalToppings
+            </th>
+            <th>
+                @Resources.Views.ClientCarts.Index.Quantity
+            </th>
+            <th>
+                @Resources.Views.ClientCarts.Index.Cost
+            </th>
+            <th class="bg-danger">
+
+            </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        @foreach (var pic in Model.Cart!.PizzaInCarts!)
+        {
+            <tr repeat.for="pic of _cart.pizzaInCarts ">
+                <td>
+                    @(pic.PizzaType!.Name) (€@(pic.PizzaType!.Price)
+                </td>
+                <td>
+                    @(pic.PizzaType!.Name) (€@(pic.Crust!.Price)) + @(pic.Size!.Name) (€@(pic.Size!.Price)
+                </td>
+                <td>
+                    @foreach (var additional in pic.AdditionalToppings!)
+                    {
+                        <div repeat.for="additional of pic.additionalToppings">
+                            @(additional.Topping!.Name)
+                            (€@(additional.Topping!.Price))
+                        </div>
+                    }
+                </td>
+                <td>
+                    @pic.Quantity
+                </td>
+                <td >
+                    @pic.Total€
+                </td>
+
+                <td class="bg-warning">
+                    <form asp-action="Remove">
+                        <input asp-for="PizzaInCart" value="@pic.Id" id="dic" type="hidden">
+                        @foreach (var additional in pic.AdditionalToppings)
+                        {
+                            <input asp-for="AdditionalToppings" value="@additional.Id" type="hidden">
+                        }
+                        <button type="submit" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </form>
+                </td>
+
+            </tr>
+        }
+        </tbody>
+
+        <thead class="bg-danger text-white">
+        <tr>
+            <th>
+                @Resources.Views.ClientCarts.Index.Drink
+            </th>
+            <th>
+                @Resources.Views.ClientCarts.Index.Size
+            </th>
+            <th>
+                @Resources.Views.ClientCarts.Index.Price
+            </th>
+            <th>
+                @Resources.Views.ClientCarts.Index.Quantity
+            </th>
+            <th>
+                @Resources.Views.ClientCarts.Index.Cost
+            </th>
+            <th class="bg-danger">
+
+            </th>
+
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var dic in Model.Cart.DrinkInCarts!)
+        {
+            <tr>
+                <td>
+                    @(dic.Drink!.Name)
+                </td>
+                <td>
+                    @(dic.Drink.Size)l
+                </td>
+                <td>
+                    @(dic.Drink.Price)€
+                </td>
+                <td>
+                    @dic.Quantity
+                </td>
+                <td>
+                    @(dic.Total)€
+                </td>
+                <td class="bg-warning">
+                    <form asp-action="Remove">
+                        <input asp-for="DrinkInCart" value="@dic.Id" id="dic" type="hidden">
+                        <button type="submit" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+        <thead class="bg-danger text-white">
+        <tr>
+            <th colspan="3"></th>
+            <th>
+                @Resources.Views.ClientCarts.Index.Total :
+            </th>
+            <th>
+                @(Model.Cart.Total)€
+            </th>
+        </tr>
+        <tr>
+
+            <td colspan="3"></td>
+            <td colspan="2">
+                <form asp-action="PaymentRedirect">
+                    <input asp-for="Total" value="@Model.Cart.Total" type="hidden">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        @Resources.Views.ClientCarts.Index.OrderNow
+
+                    </button>
+                </form>
+            </td>
+        </tr>
+
+        </thead>
+    </table>
+</div>

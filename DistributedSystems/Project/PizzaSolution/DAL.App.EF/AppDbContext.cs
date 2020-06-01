@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Contracts.DAL.Base;
+
 using Domain;
 using Domain.Identity;
+using ee.itcollege.rotoni.pizzaApp.Contracts.DAL.Base;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +33,7 @@ namespace DAL.App.EF
         public DbSet<PartyOrder> PartyOrders { get; set; } = default!;
         public DbSet<PartyOrderInvoice> PartyOrderInvoices { get; set; } = default!;
         public DbSet<OrderStatus> OrderStatuses { get; set; } = default!;
+        public DbSet<NewProduct> NewProducts { get; set; } = default!;
 
         private readonly Dictionary<IDomainEntityId<Guid>, IDomainEntityId<Guid>> _entityTracker =
             new Dictionary<IDomainEntityId<Guid>, IDomainEntityId<Guid>>();

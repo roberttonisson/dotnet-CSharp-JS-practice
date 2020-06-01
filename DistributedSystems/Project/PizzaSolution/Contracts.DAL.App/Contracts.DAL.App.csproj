@@ -5,9 +5,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Contracts.DAL.Base\Contracts.DAL.Base.csproj" />
         <ProjectReference Include="..\DAL.App.DTO\DAL.App.DTO.csproj" />
         <ProjectReference Include="..\PublicApi.DTO.v1\PublicApi.DTO.v1.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="ee.itcollege.rotoni.pizzaApp.Contracts.DAL.Base" Version="1.0.0" />
     </ItemGroup>
 
 

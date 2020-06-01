@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+#pragma warning disable 1591
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace WebApp.Areas.Identity.Pages

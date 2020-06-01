@@ -1,0 +1,28 @@
+<template>
+    <h1>${langResources[appState.selectedCulture.code].changeEmail}</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <section>
+                <form id="account" method="post" submit.trigger="onSubmit($event)">
+                    <h4 if.bind="_errorMessage != null" style="color:red;">${_errorMessage}</h4>
+                    <h4 if.bind="_successful" style="color:green;">${langResources[appState.selectedCulture.code].emailChangedSuccessfully}</h4>
+                    <hr />
+                    <div class="form-group">
+                        <label for="Input_OldPassword">${langResources[appState.selectedCulture.code].currentEmail}</label>
+                        <input disabled class="form-control" type="text" value="${appState.email}" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Input_Password">${langResources[appState.selectedCulture.code].newEmail}</label>
+                        <input class="form-control" type="email" value.bind="_newEmail" />
+                    </div>
+
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">${langResources[appState.selectedCulture.code].changeEmail}</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+
+    </div>
+</template>

@@ -8,8 +8,39 @@ import { BaseService } from './base-service';
 @autoinject
 export class InvoiceService extends BaseService<IInvoiceCreate, IInvoice>{
 
-    constructor(protected  appState: AppState, protected  httpClient: HttpClient){
-        super("Invoices", appState,httpClient);
+    constructor(protected appState: AppState, protected httpClient: HttpClient) {
+        super("Invoices", appState, httpClient);
+    }
+
+    async reOrder(invoice: IInvoice): Promise<IFetchResponse<boolean>> {
+        try {
+            const response = await this.httpClient
+                .post('Invoices/reOrder', JSON.stringify(invoice), {
+                    cache: 'no-store',
+                    headers: {
+                        authorization: "Bearer " + this.appState.jwt
+                    }
+                })
+
+            if (response.status >= 200 && response.status < 300) {
+                const data = (await response.json()) as boolean;
+                return {
+                    statusCode: response.status,
+                    data: data
+                }
+            }
+
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
+            }
+        }
+        catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
+            }
+        }
     }
 
 }

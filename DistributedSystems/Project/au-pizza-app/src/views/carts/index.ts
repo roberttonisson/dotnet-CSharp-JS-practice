@@ -1,3 +1,5 @@
+import { CartResources } from './../../lang/carts';
+import { AdditionalToppingService } from './../../service/additional-topping-service';
 import { DrinkInCartService } from './../../service/drink-in-cart-service';
 import { inject } from 'aurelia-dependency-injection';
 import { TransportService } from './../../service/transport-service';
@@ -15,9 +17,12 @@ import { IDrinkInCart } from 'domain/IDrinkInCart';
 import { Router } from 'aurelia-router';
 import 'style/payment.css'
 import { PizzaInCartService } from 'service/pizza-in-cart-service';
+import { AppState } from 'state/app-state';
 
 @autoinject
 export class CartsIndex {
+
+    private langResources = CartResources;
 
     private _cart: ICart | null = null;
 
@@ -40,12 +45,17 @@ export class CartsIndex {
     private _changedDrinks: IDrinkInCart[] = [];
 
 
-    constructor(private cartService: CartService, private invoiceLineService: InvoiceLineService, private invoiceService: InvoiceService,
+    constructor(private appState: AppState, private cartService: CartService, private invoiceLineService: InvoiceLineService,private additionalToppingService: AdditionalToppingService, private invoiceService: InvoiceService,
         private transportService: TransportService, private drinkInCartService: DrinkInCartService, private pizzaInCartService: PizzaInCartService, private router: Router) {
         this.router = router;
     }
 
     attached() {
+        if (this.appState.jwt == null) {
+            this.router.navigateToRoute('account-login');
+            return
+        }
+        
         this.cartService.getActive().then(
             response => {
                 if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -54,7 +64,7 @@ export class CartsIndex {
 
                     this.calculateTotals();
                     this._loading = false;
-                    if (this._cart.drinkInCarts!.length > 0 || this._cart.pizzaInCarts!.length > 0) {
+                    if (this._cart.pizzaInCarts!.length > 0) {
                         this._empty = false;
                     }
                 } else {
@@ -175,21 +185,22 @@ export class CartsIndex {
     }
 
     remove(pizzaInCart: IPizzaInCart | null = null, drinkInCart: IDrinkInCart | null = null) {
-
         if (pizzaInCart != null) {
             this._cart!.total! -= pizzaInCart.price! * pizzaInCart.quantity;
             const index = this._cart!.pizzaInCarts!.indexOf(pizzaInCart)
             if (index > -1) {
                 this._cart!.pizzaInCarts!.splice(index, 1);
             }
-            this.pizzaInCartService.delete(pizzaInCart.id)
+            if (this._cart!.pizzaInCarts!.length == 0) {
+                this._empty = true;
+            }
+
+            this.pizzaInCartService.deleteCascade(pizzaInCart.id, pizzaInCart)
                 .then(
                     response => {
                         if (response.statusCode >= 200 && response.statusCode < 300) {
                             this._alert = null;
-                            if (this._cart!.drinkInCarts!.length == 0 || this._cart!.pizzaInCarts!.length == 0) {
-                                this._empty = true;
-                            }
+
                         } else {
                             // show error message
                             this._alert = {
@@ -202,6 +213,7 @@ export class CartsIndex {
                 );
         }
         if (drinkInCart != null) {
+            this._cart!.total! -= drinkInCart.price! * drinkInCart.quantity;
             const index = this._cart!.drinkInCarts!.indexOf(drinkInCart)
             if (index > -1) {
                 this._cart!.drinkInCarts!.splice(index, 1);
@@ -211,9 +223,7 @@ export class CartsIndex {
                     response => {
                         if (response.statusCode >= 200 && response.statusCode < 300) {
                             this._alert = null;
-                            if (this._cart!.drinkInCarts!.length == 0 || this._cart!.pizzaInCarts!.length == 0) {
-                                this._empty = true;
-                            }
+                            
                         } else {
                             // show error message
                             this._alert = {
@@ -246,7 +256,7 @@ export class CartsIndex {
                                 id: undefined,
                                 transportId: this._transport!.id,
                                 appUserId: this._cart!.appUserId,
-                                orderStatusId: "fd73bd7c-e2f5-4836-166e-08d7f67bef1b",
+                                orderStatusId: "c2c9026a-b9d2-4279-6453-08d7ffe78ef8",
                                 estimated: null,
 
                             })

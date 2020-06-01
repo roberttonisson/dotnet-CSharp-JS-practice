@@ -16,6 +16,9 @@ using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers._1._0
 {
+    /// <summary>
+    /// Controller for Drinks
+    /// </summary>
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
@@ -24,12 +27,20 @@ namespace WebApp.ApiControllers._1._0
         private readonly IAppBLL _bll;
         private readonly DrinkDTOMapper _mapper = new DrinkDTOMapper();
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="bll"></param>
         public DrinksController(IAppBLL bll)
         {
             _bll = bll;
         }
         
         // GET: api/Drinks
+        /// <summary>
+        /// Get the list of all Drinks for specific user.
+        /// </summary>
+        /// <returns>List of Drinks</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DrinkDTO>>> GetDrinks()
         {
@@ -39,7 +50,12 @@ namespace WebApp.ApiControllers._1._0
             return Ok(drinks);
         }
 
-     // GET: api/Drinks/5
+        // GET: api/Drinks/5
+        /// <summary>
+        /// Get single Drink by given id
+        /// </summary>
+        /// <param name="id">Id of the Drink that we are returning</param>
+        /// <returns>Drink</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<DrinkDTO>> GetDrink(Guid id)
         {
@@ -56,7 +72,14 @@ namespace WebApp.ApiControllers._1._0
         // PUT: api/Drinks/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        /// <summary>
+        /// Change existing Drink by given ID
+        /// </summary>
+        /// <param name="id">Given ID that we use to find the Drink from DB</param>
+        /// <param name="drinkDTO">DTO with new values tha we need to change</param>
+        /// <returns>Nothing</returns>
         [HttpPut("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> PutDrink(Guid id, DrinkDTO drinkDTO)
         {
             if (id != drinkDTO.Id)
@@ -74,7 +97,13 @@ namespace WebApp.ApiControllers._1._0
         // POST: api/Drinks
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        /// <summary>
+        /// Add a new Drink to the DB.
+        /// </summary>
+        /// <param name="drinkDTO">DTO with the values for the record tha will be inserted into DB.</param>
+        /// <returns>DTO with the values from the record that was added to the DB.</returns>
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<ActionResult<DrinkDTO>> PostDrink(DrinkDTO drinkDTO)
         {
             var bllEntity = _mapper.Map(drinkDTO);
@@ -87,7 +116,13 @@ namespace WebApp.ApiControllers._1._0
         }
 
         // DELETE: api/Drinks/5
+        /// <summary>
+        /// Deletes a Drink record from the DB by id.
+        /// </summary>
+        /// <param name="id">Id for the record that will be removed from the DB.</param>
+        /// <returns>:)</returns>
         [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<ActionResult<DrinkDTO>> DeleteDrink(Guid id)
         {
             var drink = await _bll.Drinks.FirstOrDefaultAsync(id);

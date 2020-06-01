@@ -1,13 +1,18 @@
+import { LayoutResources } from './lang/layout';
+import { ICulture } from './domain/ICulture';
 import { AppState } from 'state/app-state';
 import { autoinject, PLATFORM } from 'aurelia-framework';
 import { RouterConfiguration, Router } from 'aurelia-router';
 import * as environment from '../config/environment.json';
+import { CultureService } from 'service/culture-service';
 
 @autoinject
 export class App {
     router?: Router;
 
-    constructor(private appState: AppState) {
+    private langResources = LayoutResources;
+
+    constructor(private appState: AppState, private cultureService: CultureService) {
 
     }
 
@@ -21,6 +26,9 @@ export class App {
 
             { route: ['account/login'], name: 'account-login', moduleId: PLATFORM.moduleName('views/account/login'), nav: false, title: 'Login' },
             { route: ['account/register'], name: 'account-register', moduleId: PLATFORM.moduleName('views/account/register'), nav: false, title: 'Register' },
+            { route: ['account/manage/index'], name: 'account-index', moduleId: PLATFORM.moduleName('views/account/manage/index'), nav: false, title: 'Index' },
+            { route: ['account/manage/changePassword'], name: 'account-changePassword', moduleId: PLATFORM.moduleName('views/account/manage/changePassword'), nav: false, title: 'ChangePassword' },
+            { route: ['account/manage/changeEmail'], name: 'account-changeEmail', moduleId: PLATFORM.moduleName('views/account/manage/changeEmail'), nav: false, title: 'ChangeEmail' },
 
 
           /*  { route: ['transports', 'transports/index'], name: 'transports-index', moduleId: PLATFORM.moduleName('views/transports/index'), nav: true, title: 'Transports' },
@@ -44,7 +52,7 @@ export class App {
            
             { route: ['pizzas', 'pizzas/index'], name: 'pizzas-index', moduleId: PLATFORM.moduleName('views/pizzas/index'), nav: true, title: 'Pizzas' },
             { route: ['drinks', 'drinks/index'], name: 'drinks-index', moduleId: PLATFORM.moduleName('views/drinks/index'), nav: true, title: 'Drinks' },
-            { route: ['carts', 'carts/index'], name: 'carts-index', moduleId: PLATFORM.moduleName('views/carts/index'), nav: true, title: 'Carts' },
+            { route: ['carts', 'carts/index'], name: 'carts-index', moduleId: PLATFORM.moduleName('views/carts/index'), nav: true, title: 'Cart' },
             { route: ['orders', 'orders/index'], name: 'orders-index', moduleId: PLATFORM.moduleName('views/orders/index'), nav: true, title: 'Orders' },
         ]
         );
@@ -55,6 +63,24 @@ export class App {
     logoutOnClick(){
         this.appState.jwt = null;
         this.router!.navigateToRoute('account-login');
+    }
+
+    setCulture(culture: ICulture){
+        this.appState.selectedCulture = culture;
+    }
+
+    async attached(): Promise<void> {
+        // get the languages from backend
+        const result = await this.cultureService.getAll();
+        if (result.statusCode >= 200 && result.statusCode < 300) {
+            if (result.data) {
+                this.appState.cultures = result.data;
+                this.appState.selectedCulture = this.appState.cultures[0];
+                console.log(this.appState.cultures)
+            }
+        }
+
+
     }
 
 }

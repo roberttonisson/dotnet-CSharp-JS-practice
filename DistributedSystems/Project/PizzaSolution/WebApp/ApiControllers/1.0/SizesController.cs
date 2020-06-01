@@ -16,6 +16,9 @@ using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers._1._0
 {
+    /// <summary>
+    /// Controller for Sizes
+    /// </summary>
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
@@ -24,12 +27,20 @@ namespace WebApp.ApiControllers._1._0
         private readonly IAppBLL _bll;
         private readonly SizeDTOMapper _mapper = new SizeDTOMapper();
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="bll"></param>
         public SizesController(IAppBLL bll)
         {
             _bll = bll;
         }
         
         // GET: api/Sizes
+        /// <summary>
+        /// Get the list of all Sizes for specific user.
+        /// </summary>
+        /// <returns>List of Sizes</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SizeDTO>>> GetSizes()
         {
@@ -39,7 +50,12 @@ namespace WebApp.ApiControllers._1._0
             return Ok(sizes);
         }
 
-     // GET: api/Sizes/5
+        // GET: api/Sizes/5
+        /// <summary>
+        /// Get single Size by given id
+        /// </summary>
+        /// <param name="id">Id of the Size that we are returning</param>
+        /// <returns>Size</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<SizeDTO>> GetSize(Guid id)
         {
@@ -56,7 +72,14 @@ namespace WebApp.ApiControllers._1._0
         // PUT: api/Sizes/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        /// <summary>
+        /// Change existing Size by given ID
+        /// </summary>
+        /// <param name="id">Given ID that we use to find the Size from DB</param>
+        /// <param name="sizeDTO">DTO with new values tha we need to change</param>
+        /// <returns>Nothing</returns>
         [HttpPut("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> PutSize(Guid id, SizeDTO sizeDTO)
         {
             if (id != sizeDTO.Id)
@@ -74,7 +97,13 @@ namespace WebApp.ApiControllers._1._0
         // POST: api/Sizes
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        /// <summary>
+        /// Add a new Size to the DB.
+        /// </summary>
+        /// <param name="sizeDTO">DTO with the values for the record tha will be inserted into DB.</param>
+        /// <returns>DTO with the values from the record that was added to the DB.</returns>
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<ActionResult<SizeDTO>> PostSize(SizeDTO sizeDTO)
         {
             var bllEntity = _mapper.Map(sizeDTO);
@@ -87,7 +116,13 @@ namespace WebApp.ApiControllers._1._0
         }
 
         // DELETE: api/Sizes/5
+        /// <summary>
+        /// Deletes a Size record from the DB by id.
+        /// </summary>
+        /// <param name="id">Id for the record that will be removed from the DB.</param>
+        /// <returns>:)</returns>
         [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<ActionResult<SizeDTO>> DeleteSize(Guid id)
         {
             var size = await _bll.Sizes.FirstOrDefaultAsync(id);

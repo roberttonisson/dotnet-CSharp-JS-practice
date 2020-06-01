@@ -1,6 +1,7 @@
 ﻿using System;
-using DAL.Base;
+
 using Domain;
+using ee.itcollege.rotoni.pizzaApp.DAL.Base;
 
 namespace PublicApi.DTO.v1
 {

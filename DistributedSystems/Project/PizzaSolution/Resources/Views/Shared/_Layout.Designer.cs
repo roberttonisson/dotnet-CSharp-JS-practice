@@ -61,6 +61,24 @@ namespace Resources.Views.Shared {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cart.
+        /// </summary>
+        public static string Cart {
+            get {
+                return ResourceManager.GetString("Cart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drink.
+        /// </summary>
+        public static string Drinks {
+            get {
+                return ResourceManager.GetString("Drinks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
         public static string Home {
@@ -75,6 +93,24 @@ namespace Resources.Views.Shared {
         public static string Language {
             get {
                 return ResourceManager.GetString("Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Orders.
+        /// </summary>
+        public static string Orders {
+            get {
+                return ResourceManager.GetString("Orders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pizzas.
+        /// </summary>
+        public static string Pizzas {
+            get {
+                return ResourceManager.GetString("Pizzas", resourceCulture);
             }
         }
         

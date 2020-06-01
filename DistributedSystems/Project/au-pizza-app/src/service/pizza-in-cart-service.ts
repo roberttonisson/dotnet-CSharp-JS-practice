@@ -12,4 +12,35 @@ export class PizzaInCartService extends BaseService<IPizzaInCartCreate, IPizzaIn
         super("PizzaInCarts", appState,httpClient);
     }
 
+    async deleteCascade(id: string, pic: IPizzaInCart): Promise<IFetchResponse<boolean>> {
+        try {
+            const response = await this.httpClient
+                .delete('PizzaInCarts/delete/' + id, JSON.stringify(pic), {
+                    cache: 'no-store',
+                    headers: {
+                        authorization: "Bearer " + this.appState.jwt
+                    }
+                })
+
+            if (response.status >= 200 && response.status < 300) {
+                const data = (await response.json()) as boolean;
+                return {
+                    statusCode: response.status,
+                    data: data
+                }
+            }
+
+            return {
+                statusCode: response.status,
+                errorMessage: response.statusText
+            }
+        }
+        catch (reason) {
+            return {
+                statusCode: 0,
+                errorMessage: JSON.stringify(reason)
+            }
+        }
+    }
+
 }

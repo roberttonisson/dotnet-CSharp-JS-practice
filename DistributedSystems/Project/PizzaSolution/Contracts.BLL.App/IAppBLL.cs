@@ -1,5 +1,5 @@
 ﻿using Contracts.BLL.App.Services;
-using Contracts.BLL.Base;
+using ee.itcollege.rotoni.pizzaApp.Contracts.BLL.Base;
 
 namespace Contracts.BLL.App
 {
@@ -22,6 +22,6 @@ namespace Contracts.BLL.App
         public ITransportService Transports { get; }
         public IAppUserService AppUsers { get; }
         public IOrderStatusService OrderStatuses { get; }
-
+        public INewProductService NewProducts { get; }
     }
 }

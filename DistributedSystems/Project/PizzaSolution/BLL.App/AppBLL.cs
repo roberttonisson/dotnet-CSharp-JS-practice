@@ -1,10 +1,10 @@
 ﻿using System;
 using BLL.App.Services;
-using BLL.Base;
 using Contracts.BLL.App;
 using Contracts.BLL.App.Services;
 using Contracts.DAL.App;
 using DAL.App.EF;
+using ee.itcollege.rotoni.pizzaApp.BLL.Base;
 
 namespace BLL.App
 {
@@ -65,6 +65,9 @@ namespace BLL.App
         
         public IOrderStatusService OrderStatuses =>
             GetService<IOrderStatusService>(() => new OrderStatusService(UOW));
+        
+        public INewProductService NewProducts =>
+            GetService<INewProductService>(() => new NewProductService(UOW));
         
     }
 }

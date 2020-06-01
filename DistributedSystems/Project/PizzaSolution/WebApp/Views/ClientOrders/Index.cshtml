@@ -1,0 +1,94 @@
+﻿@model OrdersViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>@Resources.Views.ClientOrders.Index.PastOrders</h2>
+
+<div else class="accordion" id="accordionExample">
+    @{ int i = 1; }
+    @foreach (var invoice in Model.Invoices)
+    {
+        <div class="card">
+            <div class="card-header"
+                 id="heading_@(i)">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse"
+                            data-target="#collapse_@(i)" aria-expanded="true"
+                            aria-controls="collapse_@(i)">
+                        <div class="text-success font-weight-bold">@Resources.Views.ClientOrders.Index.OrderId : @invoice.Id</div>
+                        <div class="text-success font-weight-bold">@invoice.CreatedAt</div>
+                        <div class="text-danger font-weight-bold">@invoice.OrderStatus!.Status</div>
+                        @if (invoice.IsPaid)
+                        {
+                            <div class="text-success font-weight-bold">@Resources.Views.ClientOrders.Index.SuccessfullyPaid</div>
+                        }
+                        else
+                        {
+                            <div class="text-danger font-weight-bold">@Resources.Views.ClientOrders.Index.Not_paid</div>
+                        }
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse_@(i)" class="collapse"
+                 aria-labelledby="heading_@(i)" data-parent="#accordionExample">
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <thead>
+                        <tr>
+                            <th scope="col">@Resources.Views.ClientOrders.Index.Item</th>
+                            <th scope="col">@Resources.Views.ClientOrders.Index.Price</th>
+                            <th scope="col">@Resources.Views.ClientOrders.Index.Quantity</th>
+                            <th scope="col">@Resources.Views.ClientOrders.Index.Sum</th>
+                        </tr>
+                        </thead>
+                        @foreach (var invoiceLine in invoice.InvoiceLines!)
+                        {
+                            <tbody>
+                            @if (invoiceLine.DrinkInCart != null)
+                            {
+                                <tr>
+                                    <td>@invoiceLine.DrinkInCart.Drink!.Name</td>
+                                    <td>@invoiceLine.DrinkInCart.Drink!.Price</td>
+                                    <td>@invoiceLine.DrinkInCart.Quantity</td>
+                                    <td>@invoiceLine.DrinkInCart.Total</td>
+                                </tr>
+                            }
+                            @if (invoiceLine.PizzaInCart != null)
+                            {
+                                <tr>
+                                    <td>@invoiceLine.PizzaInCart.PizzaType!.Name</td>
+                                    <td>@(invoiceLine.PizzaInCart.Total / invoiceLine.PizzaInCart.Quantity)</td>
+                                    <td>@invoiceLine.PizzaInCart.Quantity</td>
+                                    <td>@invoiceLine.PizzaInCart.Total</td>
+                                </tr>
+                            }
+                            </tbody>
+                        }
+                        <tbody class="font-weight-bold">
+                        <tr>
+                            <td colspan="2"> </td>
+                            <td>@Resources.Views.ClientOrders.Index.Total :</td>
+                            <td>@invoice.Total</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"> </td>
+                            <td></td>
+                            <td>
+                                <form asp-action="ReOrder">
+                                    <input asp-for="InvoiceId" value="@invoice.Id" type="hidden">
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        @Resources.Views.ClientOrders.Index.ReorderThis
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        i++;
+    }
+</div>
