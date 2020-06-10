@@ -1,0 +1,44 @@
+﻿@model WebApp.ViewModels.UsersViewModel
+
+<h1>Teachers</h1>
+
+
+<form asp-action="Search">
+    <input asp-for="Search"/>
+    <button class="btn btn-primary" type="submit">Search</button>
+</form>
+
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Email
+        </th>
+        <th>
+            First name
+        </th>
+        <th>
+            Last name
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model.Teachers) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => user.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.LastName)
+            </td>
+            <td>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

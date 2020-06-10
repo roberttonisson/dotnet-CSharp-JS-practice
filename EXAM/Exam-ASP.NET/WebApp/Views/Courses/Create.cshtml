@@ -1,0 +1,68 @@
+@using Domain
+@using DAL.App.EF.Helpers
+@using Extensions
+@model WebApp.ViewModels.CourseCreateEditViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Course</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="@Model.Course.Name" class="control-label"></label>
+                <input asp-for="@Model.Course.Name" class="form-control" />
+                <span asp-validation-for="@Model.Course.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Course.Code" class="control-label"></label>
+                <input asp-for="@Model.Course.Code" class="form-control" />
+                <span asp-validation-for="@Model.Course.Code" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Course.ECTS" class="control-label"></label>
+                <input asp-for="@Model.Course.ECTS" class="form-control" />
+                <span asp-validation-for="@Model.Course.ECTS" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Course.Semester" class="control-label"></label>
+                <select asp-for="@Model.Course.Semester" asp-items="@(Html.GetEnumSelectList<Semester>())" class="form-control">
+                    <option disabled selected>Choose teacher</option>
+                </select>
+                <span asp-validation-for="@Model.Course.Semester" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Course.Year" class="control-label"></label>
+                <input asp-for="@Model.Course.Year" class="form-control" />
+                <span asp-validation-for="@Model.Course.Year" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Course.Description" class="control-label"></label>
+                <input asp-for="@Model.Course.Description" class="form-control" />
+                <span asp-validation-for="@Model.Course.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Course.AppUserId" class="control-label"></label>
+                <select asp-for="@Model.Course.AppUserId" class="form-control" asp-items="@Model.TeacherSelectList"></select>
+                <span asp-validation-for="@Model.Course.AppUserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="AdminIndex">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,18 @@
+﻿@model Domain.StudentCourse
+
+<form asp-controller="StudentCourse" asp-action="EditStudentCourse" asp-route-id="@Model.Id">
+    <input type="hidden" asp-for="@Model.Id" value="@Model.Id"/>
+    <input type="hidden" asp-for="@Model.AppUserId" value="@Model.AppUserId"/>
+    <input type="hidden" asp-for="@Model.CourseId" value="@Model.CourseId"/>
+    <input type="hidden" asp-for="@Model.Accepted" value="@Model.Accepted"/>
+    
+    <div style="display: inline-block; white-space: nowrap;">
+        <select class="form-control" asp-for="@Model.Grade">
+            @for (int i = 0; i < 6; i++)
+            {
+                <option value="@i">@i</option>
+            }
+        </select>
+        <button class="btn btn-primary" type="submit">Save</button>
+    </div>
+</form>

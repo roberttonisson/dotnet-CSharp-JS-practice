@@ -1,0 +1,72 @@
+﻿@using Microsoft.AspNetCore.Razor.Language
+@using Microsoft.AspNetCore.Http.Features
+@model IEnumerable<Domain.StudentHomework>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Student Homework</h1>
+
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.AppUser)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Grade)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr style="background-color: @(item.Grade != null ? "": "#f5c6cb")">
+            <td>
+                @Html.DisplayFor(modelItem => item.AppUser.FirstLastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Grade)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+            </td>
+        </tr>
+    }
+    <tr>
+        <td>
+            <b>Average grade: </b>
+        </td>
+        <td>
+            <b> @(Math.Round(Model.Where(ss => ss.Grade != null).Average(ss => ss.Grade) ?? 0, 2)) out of 5</b>
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <b>Not graded students count: </b>
+        </td>
+        <td>
+            <b> @Model.Count(ss => ss.Grade == null) (@((double) Model.Count(ss => ss.Grade != null) / Model.Count() * 100)%)</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Passed students: </b>
+        </td>
+        <td>
+            <b> @Model.Count(ss => ss.Grade != null && ss.Grade > 0) (@((double) Model.Count(ss => ss.Grade != null && ss.Grade > 0) / Model.Count() * 100)%)</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Failed students: </b>
+        </td>
+        <td>
+            <b>@Model.Count(ss => ss.Grade != null && ss.Grade == 0) (@((double) Model.Count(ss => ss.Grade != null && ss.Grade == 0) / Model.Count() * 100)%)</b>
+        </td>
+    </tr>
+    </tbody>
+</table>

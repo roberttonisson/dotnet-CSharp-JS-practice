@@ -1,0 +1,57 @@
+﻿{
+  "version": "1.0.0",
+  "restore": {
+    "projectUniqueName": "C:\\Users\\rober\\Documents\\Kool_robert\\icd0009-2019s\\EXAM\\Exam-ASP.NET\\Extensions\\Extensions.csproj",
+    "projectName": "Extensions",
+    "projectPath": "C:\\Users\\rober\\Documents\\Kool_robert\\icd0009-2019s\\EXAM\\Exam-ASP.NET\\Extensions\\Extensions.csproj",
+    "outputPath": "C:\\Users\\rober\\Documents\\Kool_robert\\icd0009-2019s\\EXAM\\Exam-ASP.NET\\Extensions\\obj\\",
+    "projectStyle": "PackageReference",
+    "originalTargetFrameworks": [
+      "netstandard2.1"
+    ],
+    "sources": {
+      "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+      "https://api.nuget.org/v3/index.json": {}
+    },
+    "frameworks": {
+      "netstandard2.1": {
+        "projectReferences": {}
+      }
+    },
+    "warningProperties": {
+      "warnAsError": [
+        "NU1605"
+      ]
+    }
+  },
+  "frameworks": {
+    "netstandard2.1": {
+      "dependencies": {
+        "Microsoft.IdentityModel.Tokens": {
+          "target": "Package",
+          "version": "[5.5.0, )"
+        },
+        "System.IdentityModel.Tokens.Jwt": {
+          "target": "Package",
+          "version": "[5.5.0, )"
+        }
+      },
+      "imports": [
+        "net461",
+        "net462",
+        "net47",
+        "net471",
+        "net472",
+        "net48"
+      ],
+      "assetTargetFallback": true,
+      "warn": true,
+      "frameworkReferences": {
+        "NETStandard.Library": {
+          "privateAssets": "all"
+        }
+      },
+      "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.300\\RuntimeIdentifierGraph.json"
+    }
+  }
+}

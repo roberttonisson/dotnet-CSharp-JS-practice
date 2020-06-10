@@ -1,0 +1,102 @@
+@model WebApp.ViewModels.StudentCourseViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Students list</h1>
+
+<form asp-action="Search" asp-route-id="">
+    <input asp-for="Search"/>
+    <input type="hidden" asp-for="CourseId" value="@Model.CourseId"/>
+    <button class="btn btn-primary" type="submit">Search</button>
+</form>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Student
+        </th>
+        <th>
+            Course
+        </th>
+        <th>
+            Accepted
+        </th>
+        <th>
+            Grade
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.StudentCourses)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.AppUser.FirstLastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.Name)
+            </td>
+            <td>
+                @if (item.Accepted != null)
+                {
+                    if (item.Accepted == true)
+                    {
+                        <span>Yes</span>
+                    }
+                    else
+                    {
+                        <span>No</span>
+                    }
+                }
+                else
+                {
+                    <a asp-action="ProcessRequest" asp-route-id="@item.Id" asp-route-courseId="@item.CourseId" asp-route-status="true"><button class="btn btn-success btn-sm">Accept</button></a>
+                    <a asp-action="ProcessRequest" asp-route-id="@item.Id" asp-route-courseId="@item.CourseId" asp-route-status="false"><button class="btn btn-danger btn-sm">Deny</button></a>
+                }
+            </td>
+            <td style="display: inline-block; white-space: nowrap;">
+                @if (item.Accepted == true)
+                {
+                    <partial name="GradeFormPartial" model="@item"/>
+                }
+            </td>
+        </tr>
+    }
+    <tr>
+        <td>
+            <b>Average: </b>
+        </td>
+        <td>
+            <b> @(Math.Round(Model.StudentCourses.Where(ss => ss.Grade != null).Average(ss => ss.Grade) ?? 0, 2))</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Not graded students count: </b>
+        </td>
+        <td>
+            <b> @Model.StudentCourses.Count(ss => ss.Grade == null) (@((double) Model.StudentCourses.Count(ss => ss.Grade == null) / Model.StudentCourses.Count() * 100)%)</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Passed students: </b>
+        </td>
+        <td>
+            <b> @Model.StudentCourses.Count(ss => ss.Grade != null && ss.Grade > 0) (@((double) Model.StudentCourses.Count(ss => ss.Grade != null && ss.Grade > 0) / Model.StudentCourses.Count() * 100)%)</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Failed students: </b>
+        </td>
+        <td>
+            <b>@Model.StudentCourses.Count(ss => ss.Grade != null && ss.Grade == 0) (@((double) Model.StudentCourses.Count(ss => ss.Grade != null && ss.Grade == 0) / Model.StudentCourses.Count() * 100)%)</b>
+        </td>
+    </tr>
+    </tbody>
+</table>

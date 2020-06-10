@@ -1,0 +1,57 @@
+﻿{
+  "version": "1.0.0",
+  "restore": {
+    "projectUniqueName": "C:\\Users\\rober\\Documents\\Kool_robert\\icd0009-2019s\\EXAM\\Exam-ASP.NET\\Domain\\Domain.csproj",
+    "projectName": "Domain",
+    "projectPath": "C:\\Users\\rober\\Documents\\Kool_robert\\icd0009-2019s\\EXAM\\Exam-ASP.NET\\Domain\\Domain.csproj",
+    "outputPath": "C:\\Users\\rober\\Documents\\Kool_robert\\icd0009-2019s\\EXAM\\Exam-ASP.NET\\Domain\\obj\\",
+    "projectStyle": "PackageReference",
+    "originalTargetFrameworks": [
+      "netstandard2.1"
+    ],
+    "sources": {
+      "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+      "https://api.nuget.org/v3/index.json": {}
+    },
+    "frameworks": {
+      "netstandard2.1": {
+        "projectReferences": {
+          "C:\\Users\\rober\\Documents\\Kool_robert\\icd0009-2019s\\EXAM\\Exam-ASP.NET\\Extensions\\Extensions.csproj": {
+            "projectPath": "C:\\Users\\rober\\Documents\\Kool_robert\\icd0009-2019s\\EXAM\\Exam-ASP.NET\\Extensions\\Extensions.csproj"
+          }
+        }
+      }
+    },
+    "warningProperties": {
+      "warnAsError": [
+        "NU1605"
+      ]
+    }
+  },
+  "frameworks": {
+    "netstandard2.1": {
+      "dependencies": {
+        "Microsoft.Extensions.Identity.Stores": {
+          "target": "Package",
+          "version": "[3.1.4, )"
+        }
+      },
+      "imports": [
+        "net461",
+        "net462",
+        "net47",
+        "net471",
+        "net472",
+        "net48"
+      ],
+      "assetTargetFallback": true,
+      "warn": true,
+      "frameworkReferences": {
+        "NETStandard.Library": {
+          "privateAssets": "all"
+        }
+      },
+      "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.300\\RuntimeIdentifierGraph.json"
+    }
+  }
+}

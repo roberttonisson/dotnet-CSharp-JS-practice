@@ -1,0 +1,39 @@
+﻿@model List<Domain.Identity.AppUser>
+
+<h1>Users</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Email
+            </th>
+            <th>
+                First name
+            </th>
+            <th>
+                Last name
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var user in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => user.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.LastName)
+            </td>
+            <td>
+                <a asp-action="UserEdit" asp-route-id="@user.Id">Edit</a> |
+                <a asp-action="UserDelete" asp-route-id="@user.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

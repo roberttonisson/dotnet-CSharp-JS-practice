@@ -1,0 +1,95 @@
+﻿@using Domain
+@model WebApp.ViewModels.StudentCourseFilterViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Courses</h1>
+
+<form asp-action="Filter">
+    Semester
+    <select class="form-control w-25" asp-for="Semester">
+        <option value="">Both</option>
+        <option value="Spring">Spring</option>
+        <option value="Autumn">Autumn</option>
+    </select>
+    <br/>
+    Year (set to 0 to disable)
+    <br/>
+    
+    <input class="form-control w-25" asp-for="Year" min="0" max="5000"/>
+    <br/>
+    <button class="btn btn-primary" type="submit">Filter</button>
+    <br/>
+</form>
+<br/>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            Code
+        </th>
+        <th>
+            ECTS
+        </th>
+        <th>
+            Semester
+        </th>
+        <th>
+            Year
+        </th>
+        <th>
+            Grade
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.StudentCourses)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.ECTS)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.Semester)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.Year)
+            </td>
+            <td>
+                @if (item.Grade == null)
+                {
+                    <span>None</span>
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.Grade)
+                }
+            </td>
+            <th>
+                <a asp-controller="Homework" asp-action="StudentIndex" asp-route-id="@item.CourseId">Homework</a>
+            </th>
+        </tr>
+    }
+    <tr>
+            <td colspan="5" style="text-align: right">
+                <b>Average grade: </b>
+            </td>
+            <td>
+                <b> @(Math.Round(Model.StudentCourses.Where(ss => ss.Grade != null).Average(ss => ss.Grade) ?? 0, 2)) out of 5</b>
+            </td>
+        </tr>
+    </tbody>
+</table>

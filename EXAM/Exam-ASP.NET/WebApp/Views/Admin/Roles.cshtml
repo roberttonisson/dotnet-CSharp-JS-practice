@@ -1,0 +1,30 @@
+﻿@model List<Domain.Identity.AppRole>
+
+<h1>Roles</h1>
+<p>
+    <a asp-action="RoleCreate">Create role</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var role in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => role.Name)
+            </td>
+            <td>
+                <a asp-action="RoleEdit" asp-route-id="@role.Id">Edit</a> |
+                <a asp-action="RoleDelete" asp-route-id="@role.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

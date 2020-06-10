@@ -1,0 +1,120 @@
+@using Extensions
+@using Domain
+@using DAL.App.EF.Helpers
+@model WebApp.ViewModels.CourseViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Courses</h1>
+
+<form asp-action="Search">
+    <input asp-for="Search"/>
+    <button class="btn btn-primary" type="submit">Search</button>
+</form>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            Code
+        </th>
+        <th>
+            Teacher
+        </th>
+        <th>
+            ECTS
+        </th>
+        <th>
+            Semester
+        </th>
+        <th>
+            Year
+        </th>
+        <th>
+            Description
+        </th>
+        <th>
+            Students
+        </th>
+        @if (User.IsInRole(RoleNames.RoleStudent))
+        {
+            <th>
+                Enroll
+            </th>
+        }
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Courses)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AppUser!.FirstLastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ECTS)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Semester)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Year)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @if (item.StudentCourses == null)
+                {
+                    <span>0</span>
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.StudentCourses.Where(ss => ss.Accepted == true).ToList().Count)
+                }
+            </td>
+            @{
+                if (!User?.Claims.Any() ?? false)
+                {
+                }
+                else
+                {
+                    var course = User == null ? null : item.StudentCourses?.FirstOrDefault(s => s.AppUserId == User.UserGuidId()) ?? null;
+                    if (User!.IsInRole(RoleNames.RoleTeacher))
+                    {
+                    }
+                    else if (course == null && User != null)
+                    {
+                        <td>
+                            <a asp-controller="StudentCourse" asp-action="Enroll" asp-route-id="@item.Id"> Enrollment </a>
+                        </td>
+                    }
+                    else if (course.Accepted == null)
+                    {
+                        <td>Pending</td>
+                    }
+                    else if (course.Accepted == true)
+                    {
+                        <td>Accepted</td>
+                    }
+                    else if (course.Accepted == false)
+                    {
+                        <td>Denied</td>
+                    }
+                }
+            }
+        </tr>
+    }
+    </tbody>
+</table>
