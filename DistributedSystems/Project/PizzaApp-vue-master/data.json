@@ -10,7 +10,7 @@
             "Accept": "application/json, text/plain, */*",
             "Content-Type": "application/json;charset=utf-8"
         },
-        "baseURL": "https://sportmap.akaver.com/api/v1.0/",
+        "baseURL": "https://rotoni-pizza.azurewebsites.net/",
         "transformRequest": [
             null
         ],
